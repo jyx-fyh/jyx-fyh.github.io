@@ -2,6 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://jyxcpp.netlify.app/tags/index.html</loc>
+    
+    <lastmod>2022-10-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://jyxcpp.netlify.app/archives/index.html</loc>
+    
+    <lastmod>2022-10-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://jyxcpp.netlify.app/categories/index.html</loc>
+    
+    <lastmod>2022-10-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://jyxcpp.netlify.app/2022/10/01/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/</loc>
     
     <lastmod>2022-10-26</lastmod>
