@@ -4,6 +4,44 @@
   
     
     <entry>
+      <title>bochs使用</title>
+      <link href="/2022/10/27/bochs%E4%BD%BF%E7%94%A8/"/>
+      <url>/2022/10/27/bochs%E4%BD%BF%E7%94%A8/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>函数调用过程和约定</title>
+      <link href="/2022/10/27/%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E7%BA%A6%E5%AE%9A/"/>
+      <url>/2022/10/27/%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E7%BA%A6%E5%AE%9A/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      <categories>
+          
+          <category> C语言 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> C语言 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>剖析重定位——程序加载器</title>
       <link href="/2022/10/23/%E5%89%96%E6%9E%90%E9%87%8D%E5%AE%9A%E4%BD%8D%E2%80%94%E2%80%94%E7%A8%8B%E5%BA%8F%E5%8A%A0%E8%BD%BD%E5%99%A8/"/>
       <url>/2022/10/23/%E5%89%96%E6%9E%90%E9%87%8D%E5%AE%9A%E4%BD%8D%E2%80%94%E2%80%94%E7%A8%8B%E5%BA%8F%E5%8A%A0%E8%BD%BD%E5%99%A8/</url>
@@ -21,31 +59,6 @@
         <tags>
             
             <tag> 汇编 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>自制操作系统笔记——草稿</title>
-      <link href="/2022/10/18/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%8D%89%E7%A8%BF/"/>
-      <url>/2022/10/18/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%8D%89%E7%A8%BF/</url>
-      
-        <content type="html"><![CDATA[<p>自制操作系统</p><h3 id="font-color-red-bochs-font"><font color='red'>bochs</font></h3><p>bochs是一个模拟器，能够完整的模拟一台计算机。详细来讲bochs是X86硬件平台的开源模拟器，完全可以通过软件来给我们提供各种所需的硬件资源。和bochs类似的虚拟机软件还有我们常用的VMware、Virtuabox，但区别也是明显的。bochs是完全依靠软件来模拟整个环境的：从启动到重启包括PC的外设键盘、鼠标、磁盘以及网卡等，全部都是由软件来模拟的，而其余软件则不然(部分依赖于硬件)。也就是说，bochs可以从头到尾模拟整个硬件环境。它可以从PC机刚启动的那一刹那起就开始模拟，注意， 这不是从读取磁盘中的引导扇区那开始模拟。同时，bochs能够直接单步调试二进制文件，这是其他软件难以比拟的（一般都需要伪指令提供的信息）。我们可以看到二进制代码在硬件上运行的每一步！</p><h3 id="font-color-red-用bochs-font"><font color='red'>用bochs</font></h3><p>链接：<a href="https://pan.baidu.com/s/1EaNud3VQq1qxUOwp-TTazw?pwd=gzwb">https://pan.baidu.com/s/1EaNud3VQq1qxUOwp-TTazw?pwd=gzwb</a><br>提取码：gzwb<br>–来自百度网盘超级会员V2的分享</p><ul><li>bochs.exe 和 bochsdbg.exe 不同，前者是以虚拟机运行，后者是调试运行。</li></ul><ol><li>在windows下安装好网盘中的所有软件。</li></ol><h3 id="font-color-red-nasm-font"><font color='red'>nasm</font></h3><ul><li>nasm example.asm -l example.lst 生成列表文件，二进制和汇编对应。文件中代码相对程序开头的偏移地址又叫汇编地址。</li><li>如果没有分段，则自成一段</li><li>align用于段对齐。vstart用来将段中的指令。。。</li><li>equ 声明宏：start equ 1000 ，即声明start为1000。该声明不占用空间和地址。</li><li>用户程序从逻辑扇区100开始存放</li><li></li></ul>]]></content>
-      
-      
-      <categories>
-          
-          <category> 操作系统 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 操作系统 </tag>
             
         </tags>
       
@@ -613,33 +626,6 @@
         <tags>
             
             <tag> MySQL </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>异或运算相关题目</title>
-      <link href="/2022/09/06/%E8%AE%A4%E8%AF%86%E5%BC%82%E6%88%96%E8%BF%90%E7%AE%97/"/>
-      <url>/2022/09/06/%E8%AE%A4%E8%AF%86%E5%BC%82%E6%88%96%E8%BF%90%E7%AE%97/</url>
-      
-        <content type="html"><![CDATA[<h4 id="font-color-red-基本概念-font"><font color='red'>基本概念</font></h4><p>异或运算是一种不进位二进制加法，相异位异或得 1 ，相同位异或得 0。<br><strong>基本性质：归零律：N ^ N = 0 ; 恒等律： N ^ 0 = N ; 交换律：A ^ B = B ^ A ; 结合律：A ^ (B ^ C) = (A ^ B) ^ C</strong></p><h4 id="font-color-red-例题-font"><font color='red'>例题</font></h4><h3 id="font-color-red-大小写转换-font"><font color='red'>大小写转换</font></h3><ul><li><p>每个大写字母都比相应小写字母的 ASCII 码小 32，所以通过以下方式完成大小写的转换：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将小写转为大写字母</span></span><br><span class="line"><span class="type">char</span> a = <span class="string">&#x27;h&#x27;</span>;</span><br><span class="line"><span class="keyword">if</span>(a&gt;=<span class="string">&#x27;a&#x27;</span>&amp;&amp;a&lt;=<span class="string">&#x27;z&#x27;</span>)</span><br><span class="line">    a-=<span class="string">&#x27;a&#x27;</span>;</span><br></pre></td></tr></table></figure><p>这种方式必须先判断当前字母是大写还是小写。</p></li><li><p>通过观察大小写字母的二进制码，可以发现它们的差别仅在于高位第3位不同：</p><p><img src="../../public/2022/img/IMG_0470(20221013-155416).PNG" alt=""></p><p>所以，可以使用如下方式完成大小写转换：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将小写转为大写</span></span><br><span class="line"><span class="type">char</span> a = <span class="string">&#x27;h&#x27;</span>;</span><br><span class="line">a = a&amp;<span class="number">32</span>;</span><br><span class="line"><span class="comment">//将大写转为小写</span></span><br><span class="line">a = a|<span class="number">32</span></span><br></pre></td></tr></table></figure><p>这种方式，无需判断就可以直接转换，骚气。</p></li></ul>]]></content>
-      
-      
-      <categories>
-          
-          <category> 数据结构与算法 </category>
-          
-          <category> 技巧 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 数据结构与算法 </tag>
             
         </tags>
       
