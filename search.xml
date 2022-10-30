@@ -4,6 +4,19 @@
   
     
     <entry>
+      <title>处理器微架构</title>
+      <link href="/2022/10/30/%E5%A4%84%E7%90%86%E5%99%A8%E5%BE%AE%E6%9E%B6%E6%9E%84/"/>
+      <url>/2022/10/30/%E5%A4%84%E7%90%86%E5%99%A8%E5%BE%AE%E6%9E%B6%E6%9E%84/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>硬盘基础知识</title>
       <link href="/2022/10/30/%E8%AF%BB%E5%86%99%E7%A1%AC%E7%9B%98/"/>
       <url>/2022/10/30/%E8%AF%BB%E5%86%99%E7%A1%AC%E7%9B%98/</url>
@@ -63,7 +76,7 @@
       
       <categories>
           
-          <category> 汇编,自制操作系统 </category>
+          <category> 自制操作系统 </category>
           
       </categories>
       
@@ -223,7 +236,7 @@
           
           <category> 数据库 </category>
           
-          <category> Mysql </category>
+          <category> MySQL </category>
           
       </categories>
       
@@ -1613,7 +1626,7 @@
       
       <categories>
           
-          <category> 计算机系统 </category>
+          <category> 读书笔记 </category>
           
       </categories>
       
