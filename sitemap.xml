@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://jyxcpp.netlify.app/about/index.html</loc>
+    
+    <lastmod>2022-11-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://jyxcpp.netlify.app/2022/07/08/CSAPP/</loc>
+    
+    <lastmod>2022-11-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://jyxcpp.netlify.app/2022/11/02/%E8%BF%9B%E5%85%A5%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E4%B8%89%E9%83%A8%E6%9B%B2/</loc>
     
     <lastmod>2022-11-02</lastmod>
@@ -86,15 +104,6 @@
     <loc>http://jyxcpp.netlify.app/2022/10/23/%E5%89%96%E6%9E%90%E9%87%8D%E5%AE%9A%E4%BD%8D%E2%80%94%E2%80%94%E7%A8%8B%E5%BA%8F%E5%8A%A0%E8%BD%BD%E5%99%A8/</loc>
     
     <lastmod>2022-10-31</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://jyxcpp.netlify.app/2022/07/08/CSAPP/</loc>
-    
-    <lastmod>2022-10-30</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -891,13 +900,6 @@
     <priority>1.0</priority>
   </url>
 
-  
-  <url>
-    <loc>http://jyxcpp.netlify.app/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/</loc>
-    <lastmod>2022-11-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
   
   <url>
     <loc>http://jyxcpp.netlify.app/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/</loc>
