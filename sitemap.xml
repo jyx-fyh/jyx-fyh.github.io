@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://jyxcpp.netlify.app/2022/12/26/%E5%AE%9E%E7%8E%B0%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B/</loc>
+    <loc>http://jyxcpp.netlify.app/2023/01/06/%E5%AE%9E%E7%8E%B0%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</loc>
     
     <lastmod>2023-01-06</lastmod>
     
@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>http://jyxcpp.netlify.app/2023/01/06/%E5%AE%9E%E7%8E%B0%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</loc>
+    <loc>http://jyxcpp.netlify.app/2022/12/26/%E5%AE%9E%E7%8E%B0%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B/</loc>
     
     <lastmod>2023-01-06</lastmod>
     
@@ -86,15 +86,6 @@
     <loc>http://jyxcpp.netlify.app/2022/10/27/%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E7%BA%A6%E5%AE%9A/</loc>
     
     <lastmod>2022-12-29</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://jyxcpp.netlify.app/2022/12/28/%E9%93%BE%E6%8E%A5%E3%80%81%E8%A3%85%E8%BD%BD%E4%B8%8E%E5%BA%93/</loc>
-    
-    <lastmod>2022-12-28</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
