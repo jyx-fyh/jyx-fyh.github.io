@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>printf底层剖析及实现</title>
+      <link href="/2023/01/07/printf%E5%BA%95%E5%B1%82%E5%89%96%E6%9E%90%E5%8F%8A%E5%AE%9E%E7%8E%B0/"/>
+      <url>/2023/01/07/printf%E5%BA%95%E5%B1%82%E5%89%96%E6%9E%90%E5%8F%8A%E5%AE%9E%E7%8E%B0/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote><p>printf, 底层, 剖析, Linux, 可变参数</p><p>本文前置内容：<a href=""></a></p></blockquote><h3 id="font-color-red-概览-font"><font color='red'>概览</font></h3><p>相信每一位 C 选手写下的第一句代码都是下面这句经典的 Hello World 吧？</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;hello world!&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>理所应当的，其中的 <code>printf</code> 函数也成为了咋们认识的第一个函数。对笔者个人而言， <code>printf</code> 是一个熟悉而陌生的函数，说熟悉是因为它伴随了我整个 C 语言的学习生涯；说陌生是因为学习过程中一直对它存疑，模模糊糊，始终没能一探究竟，不知道各位读者是否也是像笔者一样呢？记得 C 语言萌新阶段时，我时常吐槽 <code>printf</code> 中的那些格式符，如 <code>%d</code>、<code>%s</code>、<code>%c</code>、<code>%x</code> 等，乱七八糟的，实在是太难记啦！入门阶段时，我赞叹 <code>printf</code> 强大的格式处理能力，比如左右对齐、输出宽度、输出精度等；进阶阶段时，我又开始疑惑 <code>printf</code> 是如何做到参数可变的，但因为基础不足，就暂时搁浅。现在，天时地利人和，让我们对 <code>printf</code> 一网打尽吧！</p><p>本文</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> C语言 </category>
+          
+          <category> 自制操作系统 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> C语言, 自制操作系统 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>实现用户进程-代码详解</title>
       <link href="/2023/01/06/%E5%AE%9E%E7%8E%B0%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/"/>
       <url>/2023/01/06/%E5%AE%9E%E7%8E%B0%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</url>
@@ -692,12 +719,14 @@
           
           <category> C语言 </category>
           
+          <category> 自制操作系统 </category>
+          
       </categories>
       
       
         <tags>
             
-            <tag> C语言 </tag>
+            <tag> C语言, 自制操作系统 </tag>
             
         </tags>
       
