@@ -1,0 +1,282 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>内存段与段寄存器保护 | 极简</title><meta name="keywords" content="内存访问保护与储存器保护,自制操作系统"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="内存访问保护与储存器保护,自制操作系统,栈段的正确定义">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存段与段寄存器保护">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/11/01/%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%E4%BF%9D%E6%8A%A4%E4%B8%8E%E5%82%A8%E5%AD%98%E5%99%A8%E4%BF%9D%E6%8A%A4/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="内存访问保护与储存器保护,自制操作系统,栈段的正确定义">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/6.jpg">
+<meta property="article:published_time" content="2022-11-01T10:56:54.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:08.584Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="自制操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/6.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/11/01/%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%E4%BF%9D%E6%8A%A4%E4%B8%8E%E5%82%A8%E5%AD%98%E5%99%A8%E4%BF%9D%E6%8A%A4/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '内存段与段寄存器保护',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:08'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/6.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">内存段与段寄存器保护</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-11-01T10:56:54.000Z" title="发表于 2022-11-01 18:56:54">2022-11-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:08.584Z" title="更新于 2023-03-12 19:21:08">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>4分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="内存段与段寄存器保护"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="font-color-red-修改段寄存器时的保护-font"><font color='red'>修改段寄存器时的保护</font></h3>
+<p>处理器在变更段寄存器以及描述符高速缓存器时，会检查代入值的合法性，若不合法，则抛出异常。将段选择子送入段寄存器时，CPU 的固件会自动确认选择子和该选择子对应的段描述符的正确性。<br>
+<strong><font color='gree'><u>对选择子的检查内容包括</u></font></strong>：</p>
+<ol>
+<li>
+<p><strong>选择子的索引是否超界</strong> ，即对应的段描述符是否在 GDT 范围内。要求 <code>索引号×8+7 &lt;= 边界</code> 。若超过边界，则产生异常中断 13，同时段寄存器的原值不变。</p>
+</li>
+<li>
+<p><strong>选择子的索引是否为 0</strong> 。在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/10/31/%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E6%A6%82%E8%BF%B0/">全局描述符表 &amp; 段选择子概述</a>一文中说过，GDT 的第 0 个描述符不可用。对于 DS,ES,FS,GS 这四个段寄存器，可以向其中加载索引为 0 的段选择子，CS,SS 段寄存器则不可。</p>
+<blockquote>
+<p>虽然能够加载索引为 0 的段选择子，但访问内存时就会出错并抛出中断。CPU 使用这种特殊的设计来保证系统安全。</p>
+</blockquote>
+</li>
+</ol>
+<p><strong><font color='gree'><u>对段描述符的检查内容包括</u></font></strong>：</p>
+<ol>
+<li><strong>结合 S 位判断 TYPE 字段的有效性</strong> 。比如 <code>0000</code> 就是无效值。</li>
+<li><strong>检查描述符类型是否和段寄存器用途匹配</strong> 。段的类别检查规则如下：<br>
+<img src="/2022/img/image-20221101211058505.png" style="zoom:80%;" /><br>
+大概原则可以总结为：<br>
+1）只有可执行的段才能加载进 CS；<br>
+2）只有可读写的段才能加载进 SS；<br>
+3）至少可读的段才能加载进 DS, GS, ES, FS；<br>
+<strong>注意，可读的代码类似于 ROM，既可以用 CS 执行，也可被 DS,ES,FS,GS 当作数据访问</strong> ！</li>
+<li><strong>检查 P 位</strong> 。若 P=0 ，则表示该段虽然已经被定义，但并不在内存中，抛出异常中断11。应当定义相应的中断处理程序，抛出异常后，把该描述符对应的段从硬盘中调入内存，中断返回时，处理器再进行操作。</li>
+</ol>
+<h3 id="font-color-red-对代码段的保护-font"><font color='red'>对代码段的保护</font></h3>
+<p>EIP 中装着下一条指令的偏移地址。在获取下一条指令前，CPU 会检查 EIP 的有效性，以防止执行超出范围之外的指令。检查方式为：<code>0&lt;=(EIP+指令长度-1)&lt;=实际段界限</code> ，其中 <strong><code>实际段界限=(段界限+1)×粒度-1</code></strong> 。跨越边界的指令同样不允许执行，这种指令也已经被包含在此公式中。</p>
+<h3 id="font-color-red-对数据段的保护-font"><font color='red'>对数据段的保护</font></h3>
+<p>同代码段类似，其检查方式为：<code>0&lt;=(EA+操作数的长度-1)&lt;=实际段界限</code> 。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov [0x2000],edx</span><br></pre></td></tr></table></figure>
+<p>其中 EA=0x2000 。</p>
+<h3 id="font-color-red-对栈段的保护-font"><font color='red'>对栈段的保护</font></h3>
+<p>同上类似，其检查方式为：<code>(ESP-操作数长度)&gt;=实际段界限</code> 。</p>
+<p>你可能会在源代码中进行以下的栈段定义：<br>
+<img src="/2022/img/6%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.png" alt="注意图中为偏移地址，不是物理地址"><br>
+将 ESP 初始值设为 <code>0x7c00</code> ，段界限设为 <code>0x7A00</code> ，粒度设为 1 字节，扩展方向设为向下 (E位为1) ，则定义出 <code>0x7C00~0x7A00</code> 的栈段。虽然 ESP 不能低于 <code>0x7A00</code> ，但它却能够一直 POP 从而高于 <code>0x7C00</code> ，这仍然超过了我们指定的空间。最可怕的是，即使高于 <code>0x7C00</code> ，CPU 也不会抛出异常，这很有可能导致我们悄无声息地改变其他内存空间中的重要数据或代码，从而使程序崩溃。<strong><font color='orange'>正确的栈段定义应该采用如下方式：</font></strong><br>
+将段描述符中的段基址设为 <code>0x00007c00</code> ，段界限设为 <code>0x000FFFFE</code> ，粒度设为 4KB（即设 G 为1) ，初始 ESP 设为 0 。则实际段界限为 <code>FFFFEFFF</code> ，又因为 ESP 的最大值为 <code>FFFFFFFF</code> ，所以操作该段时，CPU 的检查规则为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0xFFFFEFFFF&lt;=(ESP-操作数长度)&lt;=0xFFFFFFFF</span><br></pre></td></tr></table></figure>
+<p>访问内存时，<code>物理地址=段基址+ESP</code> ，所以该栈段的栈底 <strong>物理地址</strong> 为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x00007C00 + 0xFFFFF000 = 0X00006C00</span><br></pre></td></tr></table></figure>
+<p>该栈段的最高端地址为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x00007C00 + 0xFFFFFFFF = 0X00007BFF</span><br></pre></td></tr></table></figure>
+<p>从而，该栈段被限制在物理地址 <code>0x00006C00 ~ 0x00007BFF</code> 范围内，长为 512 字节 。这波操作实在 666 。稍加思考就能发现，上面的方法是 <strong><font color='orange'>通过 ESP 本身的最大值限制来为栈段创造了一个上边界</font></strong> 。</p>
+<p>注意，<strong>数据段和栈段的段基址可以相同</strong> 。比如，上面讲的栈的基地址设为 <code>0x7c00</code> ，但其栈底元素所占内存为 <code>0x7BFC~0x7BFF</code> ；若讲数据段的基地址也设为 <code>0x7C00</code> ，则起始数据的内存就是从 <code>0x7C00</code> 开始。</p>
+<p>实际上，可以将数据段作为栈段，这种方式定义起来比较简单，但其中有些细节问题笔者还未搞清楚，搞明白后再更新。</p>
+<h3 id="font-color-red-利用段别名修改代码段-font"><font color='red'>利用段别名修改代码段</font></h3>
+<p>一般情况下，任何指令都不允许向代码段写入数据，而且，只有可读的代码才允许访问。但很多时候又需要对代码作一些修改，比如调试程序时需要加入断点指令 int3。此时，就不能使用原描述符来进行访问，而应该重新定义一个段描述符，并将其定义成可读写的段，这样就可以通过这个新定义的段描述符来修改之前的代码段。像这样，当多个不同的描述符指向同一个段时，把另外的描述符称为该段的别名。</p>
+<blockquote>
+<p>如果两个程序想共享同一个内存区域，也可以采用此方式。</p>
+</blockquote>
+<blockquote>
+<p>文章参考：《操作系统真相还原》《x86汇编语言：从实模式到保护模式》</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/11/01/%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%E4%BF%9D%E6%8A%A4%E4%B8%8E%E5%82%A8%E5%AD%98%E5%99%A8%E4%BF%9D%E6%8A%A4/">http://jyxcpp.netlify.app/2022/11/01/%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%E4%BF%9D%E6%8A%A4%E4%B8%8E%E5%82%A8%E5%AD%98%E5%99%A8%E4%BF%9D%E6%8A%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/6.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/11/02/%E8%BF%9B%E5%85%A5%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E4%B8%89%E9%83%A8%E6%9B%B2/"><img class="prev-cover" src="/2022/img/5.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">进入保护模式五部曲</div></div></a></div><div class="next-post pull-right"><a href="/2022/10/31/%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E6%A6%82%E8%BF%B0/"><img class="next-cover" src="/2022/img/9.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">GDT&amp;段描述符&amp;选择子概述</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/10/31/32%E4%BD%8D%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%A7%88/" title="32位保护模式概览"><img class="cover" src="/2022/img/17.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">32位保护模式概览</div></div></a></div><div><a href="/2022/10/27/bochs%E4%BD%BF%E7%94%A8/" title="bochs虚拟机的使用"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-27</div><div class="title">bochs虚拟机的使用</div></div></a></div><div><a href="/2022/11/29/%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8-8259a/" title="对8259a芯片编程"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-29</div><div class="title">对8259a芯片编程</div></div></a></div><div><a href="/2022/10/31/%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E6%A6%82%E8%BF%B0/" title="GDT&amp;段描述符&amp;选择子概述"><img class="cover" src="/2022/img/9.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">GDT&amp;段描述符&amp;选择子概述</div></div></a></div><div><a href="/2022/12/08/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-%E8%BF%9B%E9%98%B6-%E5%88%86%E9%85%8D%E9%A1%B5%E5%86%85%E5%AD%98/" title="内存管理-进阶-分配页内存"><img class="cover" src="/2022/img/6.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-08</div><div class="title">内存管理-进阶-分配页内存</div></div></a></div><div><a href="/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" title="内存管理-基础-初始化内存池"><img class="cover" src="/2022/img/14.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-02</div><div class="title">内存管理-基础-初始化内存池</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E4%BF%AE%E6%94%B9%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8%E6%97%B6%E7%9A%84%E4%BF%9D%E6%8A%A4-font"><span class="toc-number">1.</span> <span class="toc-text">修改段寄存器时的保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%AF%B9%E4%BB%A3%E7%A0%81%E6%AE%B5%E7%9A%84%E4%BF%9D%E6%8A%A4-font"><span class="toc-number">2.</span> <span class="toc-text">对代码段的保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%AF%B9%E6%95%B0%E6%8D%AE%E6%AE%B5%E7%9A%84%E4%BF%9D%E6%8A%A4-font"><span class="toc-number">3.</span> <span class="toc-text">对数据段的保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%AF%B9%E6%A0%88%E6%AE%B5%E7%9A%84%E4%BF%9D%E6%8A%A4-font"><span class="toc-number">4.</span> <span class="toc-text">对栈段的保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%88%A9%E7%94%A8%E6%AE%B5%E5%88%AB%E5%90%8D%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81%E6%AE%B5-font"><span class="toc-number">5.</span> <span class="toc-text">利用段别名修改代码段</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

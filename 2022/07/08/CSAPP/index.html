@@ -1,0 +1,688 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>CSAPP | 极简</title><meta name="keywords" content="深入理解计算机系统"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="深入理解计算机系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/07/08/CSAPP/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="深入理解计算机系统">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/1.jpg">
+<meta property="article:published_time" content="2022-07-08T07:57:47.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:43.500Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/07/08/CSAPP/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CSAPP',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:43'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/1.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">CSAPP</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-08T07:57:47.000Z" title="发表于 2022-07-08 15:57:47">2022-07-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:43.500Z" title="更新于 2023-03-12 19:21:43">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B9%A6%E7%B1%8D%E7%AC%94%E8%AE%B0/">技术书籍笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">6.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>21分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="CSAPP"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="font-color-red-计算机系统漫游-font"><font color='red'>计算机系统漫游</font></h2>
+<h3 id="font-color-orange-生成可执行文件的过程-font"><font color='orange'>生成可执行文件的过程</font></h3>
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  graph LR
+hello.c--&gt; B{预处理器}--&gt;hello.i--&gt;L{编译器}--&gt;hello.s--&gt;G{汇编器}--&gt;K(&quot;hello.o&quot;)--&gt;A{链接器}--&gt;可执行目标文件
+Z(&quot;printf.o&quot;)--&gt;A
+  </pre></div>
+<blockquote>
+<ul>
+<li><code>hello.i</code> 文件是在 <code>hello.c</code> 的基础上进行了宏替换，头文件展开等操作。</li>
+<li>编译器将C代码转变为汇编语言程序，而汇编器将汇编语言程序转变为机器语言，而不是汇编器将C代码转变为汇编语言。</li>
+<li><strong>汇编语言为不同的高级语言提供了相同的输出语言。任何高级语言都需要先转为汇编语言，因为汇编语言才是和机器语言一一对应的。</strong> 汇编语言的种类取决于电脑使用的 CPU 指令架构。所以机器代码和汇编代码的移植性比高级语言差许多。</li>
+<li><code>printf</code> 函数在单独预编译好的 <code>printf.o</code> 的文件中，这个文件需要以某种方式合并到 <code>hello.c</code> 文件中，链接器就负责此过程。</li>
+</ul>
+</blockquote>
+<h3 id="font-color-orange-系统的硬件组成-font"><font color='orange'>系统的硬件组成</font></h3>
+<ol>
+<li>
+<p><strong>总线</strong></p>
+<blockquote>
+<p>总线在各个部件中传输信息字节。总线被设计成传送定长的字节块，即 <strong>字（word）</strong> ，目前大多数计算机要么是4个字节（32位），要么8字节（63位）。<font color='gree'>由于每次只能传送定长的字节块，所以C语言中的整型提升意义就在于此。</font></p>
+</blockquote>
+</li>
+<li>
+<p>I/O设备</p>
+<blockquote>
+<p>最基本的I/O设备：键盘，鼠标，显示器，磁盘。</p>
+</blockquote>
+</li>
+<li>
+<p>主存</p>
+<blockquote>
+<p>主存又一组 <strong>动态随机存取储存（DRAM）</strong> 芯片组成。</p>
+</blockquote>
+</li>
+<li>
+<p>处理器</p>
+<blockquote>
+<p>处理器看上去是指令集架构的简单实现，大多数离不开下面几个操作：</p>
+<ul>
+<li>加载：从主存复制数据到寄存器。</li>
+<li>存储：从寄存器复制数据到主存。</li>
+<li>操作：把两个寄存器的内容复制到ALU（算术/逻辑单元），ALU对其进行算术运算，并将结果放在一个寄存器中保存结果。</li>
+<li>跳转：指向下一条指令。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<h3 id="font-color-orange-高速缓存-font"><font color='orange'>高速缓存</font></h3>
+<p>运行程序时，需要先将磁盘中的代码复制到主存中，再由主存复制到 CPU 并运行程序，这些复制便是额外开销，减慢了程序真正工作的效率。</p>
+<blockquote>
+<p>所以目前已经有了 CPU 和内存结合的技术，以解决数据运输的巨大开销。</p>
+<p>当下，存取速度远慢于 CPU 计算速度，未来想要进一步提高计算机运行速度，存取技术才是突破口。</p>
+</blockquote>
+<p>为了缓解这样巨大的复制和运输开销，<strong>高速缓存储存器</strong> 应运而生。</p>
+<img src="/2022/img/20220709092100.png" alt="缓存分级" style="zoom:50%;" />
+<div class="note info flat"><p>L1，L2，L3高速缓存由 <strong>静态随机访问储存器（SRAM）</strong> 实现。</p>
+</div>
+<p><strong><font color='greew'>储存器的层次结构的主要思想：上一级储存器作为低一层存储器的高速缓存。</font></strong></p>
+<h3 id="font-color-orange-操作系统管理硬件-font"><font color='orange'>操作系统管理硬件</font></h3>
+<p><strong>操作系统是应用程序和硬件直接的一层软件，所有应用对硬件的操作都必须通过操作系统来进行，即 系统调用 。</strong></p>
+<p>操作系统的两大功能：</p>
+<ol>
+<li>防止硬件被失控的应用滥用。</li>
+<li>向应用程序提供简单一致的机制来控制复杂而大不相同的低级硬件设备。</li>
+</ol>
+<p><strong><font color=#00FFFF>简单而言，操作系统给应用提供硬件的一种抽象。</font></strong></p>
+<p>操作系统通过几个基本的抽象概念（<u>进程</u>，<u>虚拟内存</u>，<u>文件</u>）来实现这两个功能：</p>
+<ul>
+<li>文件是对 I/O 设备的抽象。</li>
+<li>虚拟内存是对主存和磁盘 I/O 设备的抽象。</li>
+<li>进程是对处理器，主存和 I/O 设备的抽象。</li>
+</ul>
+<h3 id="font-color-orange-进程-font"><font color='orange'>进程</font></h3>
+<p><strong><font color=#00FFFF>进程是操作系统对一个正在运行的程序的一种抽象。</font></strong> 一个 CPU 看上去像是在并发地执行多个进程，这是通过处理器在进程间来回切换实现的。操作系统实现这种交错执行的机制称作 <strong>上下文切换</strong> 。操作系统保持跟踪进程运行所需的所有状态信息，这种状态也就是上下文，包含许多信息，如：PC和寄存器的值，主存的内容等。<strong>任何时刻，单处理器只能执行一个进程的代码。</strong> 操作系统从当前进程转到其他进程时，就会保存当前的上下文，并恢复新进程的上下文，新进程就会从之前停止的地方开始。</p>
+<p><strong>进程间的切换由操作系统内核（kernel）管理。内核不是单独的进程，而是系统管理全部进程所用代码和数据结构的集合。</strong></p>
+<h3 id="font-color-orange-文件-font"><font color='orange'>文件</font></h3>
+<blockquote>
+<p>Linux哲学：<strong>一切皆文件</strong></p>
+</blockquote>
+<p><strong>文件就是字节序列，仅此而已。</strong> 在 Linux/Unix 中，每个 I/O 设备，包括磁盘，键盘，显示器甚至网络，都可以看作为文件。所有输入输出操作都是由 Unix I/O 的系统函数调用读写文件来实现的。文件向应用程序提供了统一的视角来看待各种 I/O 设备，大大简化了程序员的工作量。</p>
+<h3 id="font-color-orange-Amdahl定律-font"><font color='orange'>Amdahl定律</font></h3>
+<p><strong><font color='pink'>想要显著加速整个系统，必须要提升全系统中相当大部分的速度</font></strong> 。</p>
+<blockquote>
+<p>如果系统中 60% 的部分加速到无需时间，那么整个系统最终的加速比也只有 2.5X</p>
+</blockquote>
+<hr>
+<h2 id="font-color-red-信息的处理和表示-font"><font color='red'>信息的处理和表示</font></h2>
+<p><strong><font color='greew'>信息 = 位 + 解释</font></strong></p>
+<blockquote>
+<p>由于不同数据类型有不同的底层实现原理，导致它们的行为也大不相同，比如整形能够进行结合律和交换律，而浮点数却不行。整形是精确的，而浮点是近似的。对相同的位进行不同的解释，得到的结果也大不相同。</p>
+</blockquote>
+<h3 id="font-color-orange-信息存储-font"><font color='orange'>信息存储</font></h3>
+<p><strong>字节（byte）是最小的可寻址单位（操作单位），而不是内存中单独的位。</strong> 每个字节由唯一的数字表示，表示其地址，所有字节的地址集合构成了 <strong>虚拟地址空间</strong> 。程序数据，指令和控制信息完全在虚拟内存空间中管理。</p>
+<blockquote>
+<p>C编译器将指针和类型信息联系起来，如此便可以根据指针值的类型来生成不同的机器级代码。</p>
+<p><strong><font color='gree'>实际上，机器代码中并不包含关于数据类型的信息</font></strong> 。问题：那么运行时，CPU 怎么知道用什么方式来解释位？</p>
+</blockquote>
+<h4 id="font-color-00FFFF-十六进制-font"><font color=#00FFFF>十六进制</font></h4>
+<p><strong>一个十六进制数 = 4个位</strong> ，<strong>两个十六进制数 = 2个位 = 1个字节</strong></p>
+<blockquote>
+<p>比如：0x173A4</p>
+<img src="/2022/img/20220709110111.png" alt="image-20220709110110979" style="zoom:67%;" />
+</blockquote>
+<h4 id="font-color-00FFFF-字数据大小-font"><font color=#00FFFF>字数据大小</font></h4>
+<p><strong>字长（word size）指明了指针的大小，决定了虚拟地址空间的最大大小</strong> 。</p>
+<p>64 位机器大多可以运行 32 位程序，而 32 位机器无法运行 64 位程序。”32位程序“ 或 “64位程序” 区别在于该程序是如何编译的，而不是其运行的机器类型。</p>
+<p>同时，C数据类型的大小也受字数据大小的影响。</p>
+<blockquote>
+<p>char 常用于储存单个字符，但它也可以用来储存整数值，因为其本质仍是整数。然而并不值得这样做，编译器有可能生成额外代码将 char 变为 int，造成不必要的开销。</p>
+</blockquote>
+<p>为了数据类型大小对机器的依赖，ISO C99 引入了大小固定的数据类型，如：int32_t，int64_t 。</p>
+<p><strong>C标准仅规定 char 的大小必须为 1 字节，其他类型仅规定了下限，而没有规定上限。</strong></p>
+<blockquote>
+<p>大部分数据类型都默认编码为有符号类型，但 char 是个例外，C标准不保证这一点，尽管大多编译器视其为有符号数。</p>
+</blockquote>
+<h4 id="font-color-00FFFF-寻址和字节顺序-font"><font color=#00FFFF>寻址和字节顺序</font></h4>
+<p><strong>小端（little endian）：</strong> 高位在高地址（违背直觉）</p>
+<p><strong>大端（big   endian）：</strong> 高位在低地址（符合直觉）</p>
+<p>如表示：0x01234567</p>
+<img src="https://jyxcpp.netlify.app/img/20220709113101.PNG" alt="IMG_0381(20220709-113043)" style="zoom:67%;" />
+<p><strong>一旦选定了特定操作系统，字节顺序也就确定了。</strong></p>
+<blockquote>
+<p>如何确定大小端？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">0x12345678</span>;</span><br><span class="line">	<span class="type">char</span> *b = (<span class="type">char</span>*)&amp;a;</span><br><span class="line">	<span class="keyword">if</span> (*b == <span class="number">0x78</span>)</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;little endian&quot;</span> &lt;&lt; endl;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;big endian&quot;</span> &lt;&lt; endl;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> <span class="title class_">Demo</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="type">char</span> ch;</span><br><span class="line">		<span class="type">short</span> sh;</span><br><span class="line">	&#125;demo;</span><br><span class="line"> </span><br><span class="line">	demo.sh = <span class="number">0x0001</span>;<span class="comment">//小端：0x0100    大端:0x0001</span></span><br><span class="line"> </span><br><span class="line">	<span class="keyword">if</span>(demo.ch == <span class="number">0x01</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;little endian&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;big endian&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="font-color-00FFFF-移位运算-font"><font color=#00FFFF>移位运算</font></h4>
+<p><strong>左移 k 位时，丢弃最高的 k 位，并在右边补上 k 个 0 。</strong> 右移时，分为 <strong>算术右移</strong> 和 <strong>逻辑右移</strong> ：</p>
+<p>算术右移：左端补上 k 个 <strong>有效位</strong> 的值。</p>
+<p>逻辑右移：左端补上 k 个 0</p>
+<blockquote>
+<ul>
+<li>
+<p>C语言标准没有明确定义有符号数的右移采用哪种方式，但几乎所有编译器和机器都对有符号数采用算术右移。无符号数只能采用逻辑右移。</p>
+</li>
+<li>
+<p>在许多机器上， <strong><font color=#FF00FF>实际的位移量 = k % w</font></strong> （w是数据类型所占位数），比如 <code>int a = 0x12345678 &lt;&lt; 36</code> ，实际上的的位移量应该是 <code>36%32=4</code> 。不过此行为对于C程序而言是未定义的（java特别要求采用上述方式），应保证位移量小于数据所占位数。</p>
+</li>
+</ul>
+</blockquote>
+<h4 id="font-color-00FFFF-补码编码-font"><font color=#00FFFF>补码编码</font></h4>
+<blockquote>
+<p>C/C++ 支持有符号数（默认）和无符号数，java 只支持有符号数。</p>
+<p><strong>C语言标准并没有要求有符号数的表示需用补码，但基本上所有实现都采用的补码。相反，Java标准要求必须用补码。</strong></p>
+</blockquote>
+<p>补码编码用于有符号整数，不同于无符号数编码，补码编码将最高有效位解释为负权，如下：</p>
+<img src="https://jyxcpp.netlify.app/img/20220710093132.png" alt="image-20220710093132790" style="zoom:67%;" />
+<p><strong><font color='greew'>即：当符号位为1时，为负数；符号位为0时，为负数。</font></strong></p>
+<div class="note info flat"><p>补码如此设计是为了让计算机用加法来实现减法，因为计算机只有加法器。而减法的实现正是通过最高位截断来实现的，如下图：</p>
+<img src="https://jyxcpp.netlify.app/img/20220710103319.png" alt="减法实现" style="zoom:50%;" />
+</div>
+<blockquote>
+<p>至于原码和反码，只是为了帮助我们快速地计算相反数而引入的概念，个人认为学习时最好不要自动引入这两者，否则很容易混乱。</p>
+<p>A - B = A + (-B)，<strong>减一个正数B，等于加上B的相反数，即B的补码</strong> 。对计算机而言，A 和 B 本来就是采用的补码，所以 B 本来就是负数，不存在 -B 这一说。只是对人而言，当补码为负数时不太好计算，所以引入原码和反码来辅助计算(具体见后文) ，就可以很方便的把减 B 变为加上 B 的相反数。</p>
+<p><strong>浮点数中会使用的原码的概念。</strong></p>
+</blockquote>
+<p><strong>补码的属性：</strong></p>
+<ul>
+<li>
+<p>|MIN| = |MAX| + 1</p>
+<blockquote>
+<p>这会造成细微的计算错误： <strong>-MIN = MIN</strong></p>
+<p>所以：<font color='red'>X &gt; Y != (-X) &lt; (-Y)</font></p>
+</blockquote>
+</li>
+<li>
+<p>最大的无符号数比最大的有符号数的两倍还大1。</p>
+</li>
+</ul>
+<div class="note info flat"><p>简单了解一下原码，反码和补码的关系，以应对计算：</p>
+<p>真值：带符号位的机器数对应的真正数值称为机器数的真值。</p>
+<ul>
+<li>
+<p>原码：符号位加上真值的 <strong>绝对值</strong> , 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
+<p>[+1]原 = 0000 0001</p>
+<p>[- 1]原 = 1000 0001</p>
+</li>
+<li>
+<p>反码：正数的反码是其本身，负数的反码是在其原码的基础上, <strong><font color='greew'>符号位不变</font></strong> ，其余各个位取反。</p>
+<p>[+1] = [00000001]原 = [00000001]反</p>
+<p>[- 1] = [10000001]原 = [11111110]反</p>
+</li>
+<li>
+<p>补码：正数的补码就是其本身，负数的补码是在其原码的基础上, <strong><font color='greew'>符号位不变</font></strong> ， 其余各位取反, 最后+1. (即在反码的基础上+1)</p>
+<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
+<p>[-1 ] = [10000001]原 = [11111110]反  = [11111111]补</p>
+</li>
+</ul>
+<p><strong>一般情况下不要引入这几个概念，极易混。对于整形的储存方式，就只分为无符号编码和补码。</strong></p>
+<p><strong><font color='red'>将二进制数（无论补码还是无符号编码）取反加1（补码）的结果和原二进制数相加，其和为0</font></strong> 。</p>
+<p>对补码而言：<strong>-X = ~X + 1</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhangziqiu/archive/2011/03/30/computercode.html">原码, 反码, 补码 详解</a></p>
+</div>
+<h4 id="font-color-00FFFF-有符号数和无符号数的转换-font"><font color=#00FFFF>有符号数和无符号数的转换</font></h4>
+<ul>
+<li>
+<p><strong>当强制地转换在有符号类型和无符号类型间转换时，结果的位值不变，只改变解释这些位的方式</strong></p>
+</li>
+<li>
+<p><strong>当隐式地发生转换时，有如下几个规则：</strong></p>
+<blockquote>
+<ul>
+<li>
+<p><strong><font color='red'>整形提升：</font></strong> signed 符号扩展，unsigned 零扩展。</p>
+<blockquote>
+<p>符号扩展：高位补充符号位的值</p>
+<p>零扩展：高位补零</p>
+<p>这样做可以在保持值不变的情况下将位数少的二进制数（如8位）转为位数多的二进制数（如32位）。</p>
+<p>从直观上理解为什么高位补符号位其值不变：</p>
+<p>a = 1110           -&gt; 取反加一 -&gt; 0010</p>
+<p>b = 11111110    -&gt; 取反加一 -&gt; 00000010</p>
+<p>a和b的相反数相同，故 a = b</p>
+</blockquote>
+</li>
+<li>
+<p><strong><font color='red'>值保护规则：</font></strong> <font color='red'>仅针对无符号数！ </font> <strong>如果 signed int 可以装下扩展前 unsigned 类型的所有值</strong> ，则提升（零扩展）后将其视为 signed int，反之视作 unsigned int 。</p>
+</li>
+<li>
+<p><strong><font color='red'>无符号数和有符号数混合运算时，有符号数会默认转变为无符号数。</font></strong> <font color='red'>此规则发生在前两个规则之后，具体看后文</font></p>
+<div class="note danger flat"><blockquote>
+<p><strong><font color='red'>应极力避免有符号数和无符号数的混合运算，其差错难以发现！</font></strong></p>
+</blockquote>
+</div>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">char</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="type">signed</span> <span class="type">int</span> b = <span class="number">-1</span>;</span><br><span class="line"><span class="keyword">if</span> (a &lt; b)</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;aha&quot;</span>;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;dada&quot;</span>;   <span class="comment">//结果输出dada</span></span><br><span class="line"><span class="comment">//==================================</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="type">signed</span> <span class="type">int</span> b = <span class="number">-1</span>;</span><br><span class="line"><span class="keyword">if</span> (a &lt; b)</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;aha&quot;</span>;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;dada&quot;</span>;  <span class="comment">//结果输出aha</span></span><br></pre></td></tr></table></figure>
+<p>解释：</p>
+<ul>
+<li>第一种情况：
+<ol>
+<li><code>unsigned char</code> 和 <code>signed int</code> 比较，首先 <code>unsigned char</code> 采用值保护规则，进行提升，由于 <code>signed int</code> 可以装下 <code>unsigned char</code> 的所有值，所以提升后，a 的类型为 <code>signed int</code></li>
+<li>a 和 b 都为 <code>signed int</code> ，直接进行比较，a &gt; b，输出 dada</li>
+</ol>
+</li>
+<li>第二种情况：
+<ol>
+<li><code>unsigned int</code> 和 <code>signed int</code> 混合运算，后者变为无符号数，-1 变为 INT_MAX</li>
+<li>进行比较，b &gt; a ，输出aha</li>
+</ol>
+</li>
+</ul>
+<p><strong><font color=#FF00FF>补码转为无符号数：</font></strong></p>
+<p><img src="https://jyxcpp.netlify.app/img/20220710160958.png" alt="关系式"></p>
+<p><strong><font color=#FF00FF>无符号数转换为补码：</font></strong></p>
+<p><img src="https://jyxcpp.netlify.app/img/20220710161025.png" alt="关系式"></p>
+<hr>
+<h4 id="font-color-00FFFF-截断-font"><font color=#00FFFF>截断</font></h4>
+<p><strong>截断无符号数为k位：X’ = X % <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>K</mi></msup></mrow><annotation encoding="application/x-tex">2^K</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8413em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.07153em;">K</span></span></span></span></span></span></span></span></span></span></span></strong></p>
+<p><strong>截断有符号数为k位：X’ = X % <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>K</mi></msup></mrow><annotation encoding="application/x-tex">2^K</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8413em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.07153em;">K</span></span></span></span></span></span></span></span></span></span></span> ，且最高位作符号位</strong></p>
+<blockquote>
+<p><strong><font color='orange'>取模是丢高位，除法是丢低位：</font></strong></p>
+<p>10101 ➗2   = 1110</p>
+<p>10101 %  <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">2^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span> = 1110</p>
+</blockquote>
+<p>不论大端还是小段，截断丢弃的都是高位数据！所以下面方法来判断大端还是小端是无效的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">0x12345678</span>;</span><br><span class="line"><span class="type">char</span> c = a;</span><br><span class="line"><span class="keyword">if</span>(c==<span class="number">0x78</span>)</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;little endian&quot;</span>&lt;&lt;endl;</span><br></pre></td></tr></table></figure>
+<p><strong><font color='red'>整数运算实际上就是一种模运算形式！</font></strong></p>
+<hr>
+<h4 id="font-color-00FFFF-无符号加法-font"><font color=#00FFFF>无符号加法</font></h4>
+<p><strong><font color=#FF00FF>X + Y = ( X + Y ) % <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">2^k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8491em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span></font></strong></p>
+<p><img src="https://jyxcpp.netlify.app/img/20220713083030.png" alt="image-20220713083023388"></p>
+<p>模数加法形成了一种数学结构，即 <strong>阿贝尔群</strong> 。也就是说，模数加法是 <strong>可交换</strong> 和 <strong>可结合的</strong> 。</p>
+<blockquote>
+<p>这说明对于 ( X + Y ) - Y ，无论 ( X + Y ) 是否溢出，始终有 ( X + Y ) - Y = X</p>
+<p><strong><font color=#FF00FF>这也是整形运算可使用交换律和结合律的原因，而浮点数运算则不可。</font></strong></p>
+</blockquote>
+<hr>
+<h4 id="font-color-00FFFF-补码加法-font"><font color=#00FFFF>补码加法</font></h4>
+<img src="https://jyxcpp.netlify.app/img/20220713083826.PNG" alt="公式" style="zoom:67%;" />
+<img src="https://jyxcpp.netlify.app/img/20220713083902.PNG" alt="示意图" style="zoom:67%;" />
+<p><strong>加正数则顺时针，减正数则逆时针</strong>。</p>
+<div class="note danger flat"><p><strong><font color='red'>所以 X&lt;1 不等价于 X-1&lt;0</font></strong> ，当 X = INT_MIN 时，X - 1 = INT_MAX</p>
+<p>此类细节错误经常出现，需要注意！</p>
+</div>
+<hr>
+<h4 id="font-color-00FFFF-乘以常数-font"><font color=#00FFFF>乘以常数</font></h4>
+<blockquote>
+<p>在大多数机器上，整数乘法往往需要较多的时钟周期，而其他整数运算（加减，位级运算，移位）只需要 1 个时钟周期。因此编译器会试着用移位和加法的组合运算来代替常数的乘法</p>
+</blockquote>
+<p><strong><font color=#FF00FF>对无符号和补码值都有： X&lt;&lt; K = X * <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>K</mi></msup></mrow><annotation encoding="application/x-tex">2^K</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8413em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.07153em;">K</span></span></span></span></span></span></span></span></span></span></span></font></strong></p>
+<p>技巧：考虑一组从位位置 n 到位位置 m （n&gt;m）的连续的 1 ，如对于 14 而言有：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 0000 0000 0000 1110</span></span><br><span class="line"><span class="comment">//                ⬆⬆⬆⬆</span></span><br><span class="line"><span class="comment">//                3210</span></span><br></pre></td></tr></table></figure>
+<p><strong>则可以有下面两种形式表示此计算：</strong></p>
+<ol>
+<li>x &lt;&lt; n + x&lt;&lt;(n-1) + … + x&lt;&lt;m</li>
+<li>x&lt;&lt;(n + 1) - (x &lt;&lt; m)</li>
+</ol>
+<p>显然，第二种方法更好。</p>
+<blockquote>
+<p>例如：</p>
+<ul>
+<li>X * 14 = X * ( <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">2^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span> + <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">2^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> +<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">2^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span> ) = (X&lt;&lt;3) + (X&lt;&lt;2)+ (X&lt;&lt;1) = (X&lt;&lt;4) - (X&lt;&lt;1)</li>
+<li>3*A = A&lt;&lt;1 + A</li>
+</ul>
+</blockquote>
+<hr>
+<h4 id="font-color-00FFFF-除以常数-font"><font color=#00FFFF>除以常数</font></h4>
+<blockquote>
+<p>整数除法比整数乘法需要更多的时钟周期（30乃至更多），所以编译器也会 <strong>尝试</strong> 用左移来代替除法。</p>
+</blockquote>
+<p><strong>无符号数和补码数分别使用逻辑右移和算术右移来实现除法。</strong></p>
+<p>对于无符号数和补码数，<strong><font color='greew'>除以 2 的幂的除法</font></strong> ，都有：<strong><font color='greew'>X &gt;&gt;k = [X / <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">2^k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8491em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span>]</font></strong></p>
+<blockquote>
+<p>[ a ] 代表不超过 a 的最大整数，如 [14.5] = 14 ，[-3.5] = -4，即向下舍入。</p>
+</blockquote>
+<div class="note info flat"><p>如果想要变为向上舍入，即令 [ a ] = 超过 a 的最小整数，则需要使用以下 “偏置技术”：</p>
+<p><strong>(x+(1&lt;&lt;k)-1)&gt;&gt;1 = [x/<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">2^k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8491em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span>]</strong></p>
+<p><strong><font color='greew'>而对于大多数补码机器而言，一般策略是：对正数向下舍入，对负数向上舍入（以0为参考点）。所以一般使用如下方法：</font></strong></p>
+<p><mark class="hl-label default">(x &lt; 0?x+(1 &lt;&lt; k ) - 1 : x) &gt;&gt; k</mark></p>
+</div>
+<div class="note danger flat"><p><strong><font color='red'>这种方法不能推广到任意常数的除法！因为除法没有分配律。</font></strong></p>
+</div>
+<hr>
+<h4 id="font-color-00FFFF-浮点数-font"><font color=#00FFFF>浮点数</font></h4>
+<blockquote>
+<p>在六七十年代，计算机界对浮点数的处理比较混乱，各家厂商都有自己的一套规则，缺少统一的业界标准，这给数据交换、计算机协同工作带来了很大不便。Intel 在研发 8087 浮点数协处理器时，聘请到加州大学伯克利分校的 William Kahan 教授以及他的两个伙伴，来为 8087 协处理器设计浮点数格式，他们的工作完成地如此出色，设计的浮点数格式具有足够的合理性和先进性，被 IEEE 组织采用为浮点数的业界标准，并于 1985 年正式发布，这就是 IEEE 754 标准。IEEE 754完成了对浮点数的统一，所有计算机都支持此标准。</p>
+</blockquote>
+<p>了解浮点数之前，我们先来认识一下 <strong>定点数</strong> ：</p>
+<img src="https://jyxcpp.netlify.app/img/20220713113938.png" alt="定点数" style="zoom:50%;" />
+<p><img src="https://jyxcpp.netlify.app/img/20220713114053.png" alt="定点数"></p>
+<p><strong>特点</strong></p>
+<p>如此一来，小数点就永远在第16位之后，整数部分和小数部分一目了然，不管什么时候，整数部分始终占用16位（不足16位前置补0），小数部分也始终占用16位（不足16位后置补0）。</p>
+<p><strong>精度</strong></p>
+<p>小数部分的 <strong>最后一位可能是精确数字，也可能是近似数字</strong>（由四舍五入、向零舍入等不同方式得到）；除此以外，<strong>剩余的31位都是精确数字</strong> 。从二进制的角度看，这种定点格式的小数，<strong>最多有 32 位有效数字，但是能保证的是 31 位；也就是说，整体的精度为 31~32 位</strong> 。</p>
+<p><strong>范围</strong></p>
+<p>将内存中的所有位（Bit）都置为 1，小数的值最大，为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>16</mn></msup></mrow><annotation encoding="application/x-tex">2^{16}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">16</span></span></span></span></span></span></span></span></span></span></span></span> - <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mo>−</mo><mn>16</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{-16}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">16</span></span></span></span></span></span></span></span></span></span></span></span>，极其接近 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>16</mn></msup></mrow><annotation encoding="application/x-tex">2^{16}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">16</span></span></span></span></span></span></span></span></span></span></span></span>，换算成十进制为 65536。将内存中最后一位（第32位）置 1，其它位都置0，小数的值最小，为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mo>−</mo><mn>16</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{-16}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">16</span></span></span></span></span></span></span></span></span></span></span></span>。</p>
+<p><strong>综述</strong></p>
+<p>用定点格式来存储小数，优点是精度高，因为所有的位都用来存储有效数字了，缺点是取值范围太小，不能表示很大或者很小的数字。</p>
+<p><strong><font color=#FF00FF>浮点数</font></strong></p>
+<blockquote>
+<p>浮点数使用指数的形式来存储小数，当指数变化时，其小数点的位置也发生变化，故而称之为浮点数。</p>
+</blockquote>
+<p><strong>C语言标准规定</strong> ，小数在内存中以科学计数法的形式来存储，具体形式为：</p>
+<mark class="hl-label default">flt = sign × mantissa × base^exponent</mark> 
+<p>说明：</p>
+<ul>
+<li>
+<mark class="hl-label default">flt</mark>  是要表示的小数。
+</li>
+<li>
+<mark class="hl-label default">sign</mark>  用来表示 flt 的正负号，它的取值只能是 0 或 1：取值为 0 表示 flt 是正数，取值为 1 表示 flt 是负数。
+</li>
+<li>
+<mark class="hl-label default">base</mark>  是基数（进制），它的取值大于等于 2。
+</li>
+<li>
+<mark class="hl-label default">mantissa</mark>  为尾数，或者说精度，是 base 进制的小数，并且 1 ≤ mantissa ＜ base，这意味着，**小数点前面只能有一位数字**  
+<div class="note danger flat"><p>注意，10.101 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">10^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> ，10.101 不是尾数，尾数必须要满足 1 ≤ mantissa ＜ base 。</p>
+</div>
+</li>
+<li>
+<mark class="hl-label default">exponent</mark>  为指数，是一个整数，可正可负，并且为了直观一般采用十进制表示。
+</li>
+</ul>
+<p>例如：1.0101 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">10^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span> ，其中 1.0101 是尾数，10 是基数，3 是指数。</p>
+<p><strong><font color=#FF00FF>将小数转换为浮点格式</font></strong></p>
+<p>当 base 取值为 10 时，19.625 的浮点形式为：</p>
+<p>19.625 = 1.9625 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">10^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></p>
+<p>当 base 取值为 2 时，将 19.625 转换成二进制为 10011.101，用浮点形式来表示为：</p>
+<p>19.625 = 10011.101 = 1.0011101 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">2^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span></p>
+<blockquote>
+<p>19.625 整数部分的二进制形式为：<br>
+19 = 1 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">2^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span> + 0 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">2^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span> + 0 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">2^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> + 1 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">2^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span> + 1 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>0</mn></msup></mrow><annotation encoding="application/x-tex">2^0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span></span></span></span></span></span></span></span> = 10011<br>
+小数部分的二进制形式为：<br>
+0.625 = 1 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span> + 0 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mo>−</mo><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{-2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span> + 1 × <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mo>−</mo><mn>3</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{-3}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span></span> = 101<br>
+将整数部分和小数部分合并在一起：<br>
+19.625 = 10011.101</p>
+</blockquote>
+<p>可以看出，当基数（进制）base 确定以后，<strong><font color=#00FFFF>指数 exponent 实际上就成了小数点的移动位数</font></strong> ：</p>
+<ul>
+<li>exponent 大于零，mantissa 中的小数点右移 exponent 位即可还原小数的值；</li>
+<li>exponent 小于零，mantissa 中的小数点左移 exponent 位即可还原小数的值。</li>
+</ul>
+<p><strong><font color=#FF00FF>储存</font></strong></p>
+<p><strong>32 位整形（float）：</strong> <mark class="hl-label default">符号位 1 bit</mark>  + <mark class="hl-label default">指数位 8 bit</mark>  + <mark class="hl-label default">尾数位 23 bit</mark> </p>
+<p><strong>64 位整形（double）：</strong> <mark class="hl-label default">符号位 1 bit</mark>  + <mark class="hl-label default">指数位 11 bit</mark>  + <mark class="hl-label default">尾数位 52 bit</mark> </p>
+<ul>
+<li>
+<p><strong>符号位：</strong> 用 0 表示正数，用 1 表示负数。</p>
+</li>
+<li>
+<p><strong>尾数位：</strong> 当采用二进制形式后，尾数部分的取值范围为 1 ≤ mantissa ＜ 2，这意味着：<strong><font color='red'>尾数的整数部分一定为 1（规格化）</font></strong> ，是一个恒定的值，<strong>这样就无需在内存中提现出来，可以将其直接截掉，只要把小数点后面的二进制数字放入内存中即可</strong> 。对于 1.0011101，就是把 0011101 放入内存。</p>
+</li>
+<li>
+<p><strong>指数位：</strong> 指数必须要有正负，但指数的存储并没有像整形那样采用补码编码的形式，而是采用的是 <strong>取中间值</strong> 的方式：</p>
+<blockquote>
+<p><strong><font color=#00FFFF>在规格化的情况下，</font></strong> float 的指数部分占用 8 Bits，能表示从 0-255 的值，取其中间值 127 （偏置值，bias），指数在写入内存前 <strong>先加</strong> 上127，读取时 <strong>再减</strong> 去 127 ，正数负数就显而易见了。19.625 转换后的指数为 4，4+127 = 131，131 换算成二进制为 1000 0011，这就是 19.626 的指数部分在 float 中的最终存储形式。</p>
+<p>对于 double ，bias = 1023 ，</p>
+<p>其中，<strong>bias = <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{k-1} - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9324em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></strong></p>
+</blockquote>
+</li>
+</ul>
+<p><strong>根据 <mark class="hl-label default">exponent</mark>  的不同，编码的值可以分为三种情况：</strong></p>
+<ul>
+<li>
+<p>规格化的</p>
+<p><img src="https://jyxcpp.netlify.app/img/20220713160938.png" alt="规格化"></p>
+</li>
+<li>
+<p>非规格化值</p>
+<p><img src="https://jyxcpp.netlify.app/img/20220713183224.png" alt="非规格化"></p>
+<p><strong><font color=#00FFFF>非规格化值的尾数不包含隐含的开头的 1，而是 0</font></strong></p>
+</li>
+<li>
+<p>无穷大</p>
+<p><img src="https://jyxcpp.netlify.app/img/20220713161208.png" alt="无穷大"></p>
+</li>
+<li>
+<p>NaN（Not a Number）</p>
+<p><img src="https://jyxcpp.netlify.app/img/20220713161445.png" alt="NaN"></p>
+</li>
+</ul>
+<div class="note info flat"><p><strong>了解规范化数</strong></p>
+<p><strong><font color=#00FFFF>规格化数的 E = e - bias ，非规格化数的 E = 1 - bias</font></strong> ，其中 <strong>E 为实际值，e 为内存值</strong> 。非规格化数采用此方式，可以极其巧妙使非规格化值平滑过度到规格化值，如下：</p>
+<p><img src="https://jyxcpp.netlify.app/img/20220713173041.png" alt="假定的8位浮点格式"></p>
+<p>可以看见，最大非规格化数 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>7</mn><mn>512</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac {7} {512}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">512</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 到最小规格化数 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>8</mn><mn>512</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac {8} {512}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">512</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 的平滑转换。这种转换归功于对非规格化数的 E 的定义，其可以弥补非规格化数的尾数没有隐含的开头的 1 。</p>
+<p><strong>同时还可以发现，当把上图中的位表达式解释为无符号数时，其就是升序排列的！</strong> 这并非偶然，IEEE 格式如此设计就是为了使浮点数能够使用整数排序函数来进行排序。</p>
+<p><strong>规格化数的用途：</strong></p>
+<ul>
+<li><font color=#00FFFF>提供了表示浮点 0 的方法。因为使用规格化数，mantissa 必须的整数部分一定为 1，所以无法表示 0 </font>。当所有域都为 0 时，表示 +0.0 ；当符号位为 1 ，其他域为 0 时，表示 -0.0 。</li>
+<li><font color=#00FFFF>表示那些很接近 0 的数</font></li>
+</ul>
+</div>
+<div class="note info flat"><p>一些运算的结果不能是实数或无穷，就会返回 NaN，比如计算 根号下-1 或 ∞ - ∞ ，有时也可以用来表示某些未初始化的数据。</p>
+</div>
+<p><strong><font color='red'>精度</font></strong></p>
+<p>计算机浮点误差主要来源于：一个有限位数的小数并不一定能转换成有限位数的二进制，只有末位是 5 的小数才 <strong>有可能</strong> 转换成有限位数的二进制，其它的小数都不行。 float 和 double 的尾数部分是有限的，固然不能容纳无限的二进制；即使小数能够转换成有限的二进制，也有可能会超出尾数部分的长度，此时也不能容纳。这样就必须“四舍五入”，将多余的二进制“处理掉”，只保留有效长度的二进制，这就涉及到了精度的问题。<strong>也就是说，浮点数不一定能保存真实的小数，很有可能保存的是一个近似值。</strong><br>
+对于 float，尾数部分有 23 位，再加上一个隐含的整数 1，一共是 24 位。最后一位可能是精确数字，也可能是近似数字（由四舍五入、向零舍入等不同方式得到）；除此以外，剩余的 23 位都是精确数字。也就是说，整体的精度为 23~24 位。如果转换成十进制，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>24</mn></msup><mo>=</mo><mn>16777216</mn></mrow><annotation encoding="application/x-tex">2^{24}= 16 777 216</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">24</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">16777216</span></span></span></span> ，一共8位；也就是说，<strong>最多有 8 位有效数字，但是能保证的是 7 位，从而得出整体精度为 7~8 位。对于 double，同理可得，二进制形式的精度为 52~53 位，十进制形式的精度为 15~16 位。</strong></p>
+<blockquote>
+<p>比如，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.5</mn><mo>=</mo><mn>1</mn><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">0.5=1×2^{-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.5</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span> ，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.75</mn><mo>=</mo><mn>1</mn><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>+</mo><mn>1</mn><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">0.75 = 1×2^{-1}+1×2^{-2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.75</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span> ；而 0.55 与 0.755 就无法用有限的二进制位表示。</p>
+</blockquote>
+<p><strong><font color='red'>过程示范：</font></strong></p>
+<p>将 12345 转为浮点格式：</p>
+<ol>
+<li>
+<p>12345 = <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.100000011100</mn><msub><mn>1</mn><mn>2</mn></msub><mo>×</mo><mn>1</mn><msup><mn>2</mn><mn>13</mn></msup></mrow><annotation encoding="application/x-tex">1.1000000111001_2 × 12^{13}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7944em;vertical-align:-0.15em;"></span><span class="mord">1.100000011100</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord">1</span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">13</span></span></span></span></span></span></span></span></span></span></span></span></p>
+</li>
+<li>
+<p>丢弃尾数开头的 1 ，并在 <strong>末尾</strong> 增加 10 个 0 ，来构造尾数字段，得到 <code>10000001110010000000000</code></p>
+<blockquote>
+<p><font color='red'>注意，小数是在末尾添 0 ，整数是在 开头添 0</font></p>
+</blockquote>
+</li>
+<li>
+<p>13 + 127 = 140 ，其二进制为：<code>10001100</code></p>
+</li>
+<li>
+<p>符号位为 0</p>
+</li>
+<li>
+<p>得到 <code>01000110010000001110010000000000</code></p>
+</li>
+</ol>
+<p>同时可以发现，整形 12345 和 浮点 12345 有如下对应关系：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 整形 00000000000000000011000000111001</span></span><br><span class="line"><span class="comment">// 箭头                    ⬇···········⬇</span></span><br><span class="line"><span class="comment">// 浮点           01000110010000001110010000000000</span></span><br></pre></td></tr></table></figure>
+<p>浮点的尾数部分与整形第一位后的所有位相对应。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/07/08/CSAPP/">http://jyxcpp.netlify.app/2022/07/08/CSAPP/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/07/20/%E7%BD%91%E7%BB%9C%E6%98%AF%E5%A6%82%E4%BD%95%E9%93%BE%E6%8E%A5%E7%9A%84/"><img class="prev-cover" src="/2022/img/1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">网络是如何链接的</div></div></a></div><div class="next-post pull-right"><a href="/2022/06/28/git%E5%85%A5%E9%97%A8/"><img class="next-cover" src="/2022/img/7.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Git入门</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#font-color-red-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8-font"><span class="toc-number">1.</span> <span class="toc-text">计算机系统漫游</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-orange-%E7%94%9F%E6%88%90%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%87%E7%A8%8B-font"><span class="toc-number">1.1.</span> <span class="toc-text">生成可执行文件的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-orange-%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%A1%AC%E4%BB%B6%E7%BB%84%E6%88%90-font"><span class="toc-number">1.2.</span> <span class="toc-text">系统的硬件组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-orange-%E9%AB%98%E9%80%9F%E7%BC%93%E5%AD%98-font"><span class="toc-number">1.3.</span> <span class="toc-text">高速缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-orange-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86%E7%A1%AC%E4%BB%B6-font"><span class="toc-number">1.4.</span> <span class="toc-text">操作系统管理硬件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-orange-%E8%BF%9B%E7%A8%8B-font"><span class="toc-number">1.5.</span> <span class="toc-text">进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-orange-%E6%96%87%E4%BB%B6-font"><span class="toc-number">1.6.</span> <span class="toc-text">文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-orange-Amdahl%E5%AE%9A%E5%BE%8B-font"><span class="toc-number">1.7.</span> <span class="toc-text">Amdahl定律</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#font-color-red-%E4%BF%A1%E6%81%AF%E7%9A%84%E5%A4%84%E7%90%86%E5%92%8C%E8%A1%A8%E7%A4%BA-font"><span class="toc-number">2.</span> <span class="toc-text">信息的处理和表示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-orange-%E4%BF%A1%E6%81%AF%E5%AD%98%E5%82%A8-font"><span class="toc-number">2.1.</span> <span class="toc-text">信息存储</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6-font"><span class="toc-number">2.1.1.</span> <span class="toc-text">十六进制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E5%AD%97%E6%95%B0%E6%8D%AE%E5%A4%A7%E5%B0%8F-font"><span class="toc-number">2.1.2.</span> <span class="toc-text">字数据大小</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E5%AF%BB%E5%9D%80%E5%92%8C%E5%AD%97%E8%8A%82%E9%A1%BA%E5%BA%8F-font"><span class="toc-number">2.1.3.</span> <span class="toc-text">寻址和字节顺序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E7%A7%BB%E4%BD%8D%E8%BF%90%E7%AE%97-font"><span class="toc-number">2.1.4.</span> <span class="toc-text">移位运算</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E8%A1%A5%E7%A0%81%E7%BC%96%E7%A0%81-font"><span class="toc-number">2.1.5.</span> <span class="toc-text">补码编码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E6%9C%89%E7%AC%A6%E5%8F%B7%E6%95%B0%E5%92%8C%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%95%B0%E7%9A%84%E8%BD%AC%E6%8D%A2-font"><span class="toc-number">2.1.6.</span> <span class="toc-text">有符号数和无符号数的转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E6%88%AA%E6%96%AD-font"><span class="toc-number">2.1.7.</span> <span class="toc-text">截断</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E6%97%A0%E7%AC%A6%E5%8F%B7%E5%8A%A0%E6%B3%95-font"><span class="toc-number">2.1.8.</span> <span class="toc-text">无符号加法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E8%A1%A5%E7%A0%81%E5%8A%A0%E6%B3%95-font"><span class="toc-number">2.1.9.</span> <span class="toc-text">补码加法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E4%B9%98%E4%BB%A5%E5%B8%B8%E6%95%B0-font"><span class="toc-number">2.1.10.</span> <span class="toc-text">乘以常数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E9%99%A4%E4%BB%A5%E5%B8%B8%E6%95%B0-font"><span class="toc-number">2.1.11.</span> <span class="toc-text">除以常数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-00FFFF-%E6%B5%AE%E7%82%B9%E6%95%B0-font"><span class="toc-number">2.1.12.</span> <span class="toc-text">浮点数</span></a></li></ol></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

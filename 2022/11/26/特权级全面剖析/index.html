@@ -1,0 +1,443 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>特权级全面剖析(LDT/TSS/GATE) | 极简</title><meta name="keywords" content="特权级详解, 操作系统, 门描述符, 特权级转移, 栈保护, 中断门, 调用门, 任务门, 陷阱门"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="特权级详解, 操作系统, 门描述符, 特权级转移, 栈保护, 中断门, 调用门, 任务门, 陷阱门">
+<meta property="og:type" content="article">
+<meta property="og:title" content="特权级全面剖析(LDT&#x2F;TSS&#x2F;GATE)">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/11/26/%E7%89%B9%E6%9D%83%E7%BA%A7%E5%85%A8%E9%9D%A2%E5%89%96%E6%9E%90/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="特权级详解, 操作系统, 门描述符, 特权级转移, 栈保护, 中断门, 调用门, 任务门, 陷阱门">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/7.jpg">
+<meta property="article:published_time" content="2022-11-26T04:59:50.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:02.830Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="自制操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/7.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/11/26/%E7%89%B9%E6%9D%83%E7%BA%A7%E5%85%A8%E9%9D%A2%E5%89%96%E6%9E%90/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '特权级全面剖析(LDT/TSS/GATE)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/7.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">特权级全面剖析(LDT/TSS/GATE)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-11-26T04:59:50.000Z" title="发表于 2022-11-26 12:59:50">2022-11-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:02.830Z" title="更新于 2023-03-12 19:21:02">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">7.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>23分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="特权级全面剖析(LDT/TSS/GATE)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>本文参考：《x86汇编：从实模式到保护模式》《操作系统：真相还原》，<a target="_blank" rel="noopener" href="https://hackmd.io/@0xff07/HJ5FO4xXc">SegmentationAndPrivilege</a> ，<a target="_blank" rel="noopener" href="https://www.scs.stanford.edu/05au-cs240c/lab/i386/s07_02.htm">80386 Programmer’s Reference Manual</a></p>
+</blockquote>
+<h3 id="font-color-red-特权级概述-font"><font color='red'>特权级概述</font></h3>
+<p>我们知道，实模式是单任务系统，对于各个段的隔离，仅依靠分段机制来维护，可以说毫无安全可言。而在保护模式下，通过将内存分为大小不一的段，并用描述符指定各个段的类型与权限，就可以在程序运行时由<u>处理器硬件</u>实施访问保护。但这仍然无法有效保护操作系统，比如，如果恶意程序通过某种方式知道了 GDT 的位置，它就能向段寄存器加载操作系统的数据段描述符，或者在 GDT 中增加一个指向操作系统数据区的描述符，以此来修改操作系统的私有数据。再者，多任务系统对任务之间的隔离与保护，以及任务与操作系统之间的隔离与保护都提出了复杂的要求，基本的段保护机制已经无法胜任。因此，操作系统引入了特权级的概念。</p>
+<p><strong>特权级分为 0、1、2、3 四级，数字越小，权力越大</strong> 。0 级特权级是操作系统拥有的权力；系统程序（如虚拟机, 驱动程序）分别位于 1、2 特权级；用户程序则位于第 3 特权级。<br>
+<img src="/2022/img/IMG_0535(20221127-095601).PNG" alt="特权级环（ring）"></p>
+<blockquote>
+<p>需要注意的是，我们将数值小的级称为高特权级，数值大的称为低特权级，别搞混啦！</p>
+</blockquote>
+<h3 id="font-color-red-LDT-font"><font color='red'>LDT</font></h3>
+<p>LDT，即局部描述符表，大家应该并不陌生了，前文经常提起它的大名。在之前的代码中，我们一直将所有的段描述符放在 GDT 中，而不管它是属于内核还是用户程序（当然，因为我们还没有用户进程，敬请期待）。为了有效地实现任务之间的隔离，处理器建议每个任务都应该有自己专属的描述符表，即 LDT，并且把专属于自己的段放在 LDT 中。</p>
+<blockquote>
+<p>想想看，这是不是很好地呼应了<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5%E6%9C%BA%E5%88%B6/">开启分页</a>中的内容：<strong>一个完整的程序分为用户代码（私有部分）和操作系统代码（全局部分）</strong> 。</p>
+</blockquote>
+<p>LDT 与 GDT 不同的地方有（笔者目前所知道的）：</p>
+<ol>
+<li>
+<p>每个任务都有自己的 LDT，而一个 CPU 只有一张 GDT ，由所有任务共享。</p>
+</li>
+<li>
+<p>GDT 的第 0 号描述符不可用，LDT 的第 0 号描述符则是可用的。</p>
+<blockquote>
+<p>为什么有这个区别呢？因为在某些情况下（后文会提），CPU 为了控制权限会将选择子初始化为 0，如果后续用户忘记给选择子重新初始化，就会引发异常，<u>这是一种积极的保护措施</u>。而如果指定为 LDT，则选择子的 TI 位为 1，这必然是经过用户显式初始化的结果，完全排除了忘记初始化的可能，因此 LDT 的第 0 个描述符可用。</p>
+</blockquote>
+</li>
+<li>
+<p>GDT 由 <code>lgdt</code> 指令加载进 GDTR 寄存器；LDT 由 <code>lldt</code> 指令加载到 <code>LDTR</code> 寄存器。需要注意的是，与 GDTR 不同，LDTR 是一个 16 位的寄存器，且其中装载的是指向 GDT 的索引，是不是蒙圈啦？别急，接下来我们细说。</p>
+</li>
+</ol>
+<p><strong><font color='orange'>LDTR 中本质上装载的是选择子，这个选择子将其引导到 GDT 中的某一个描述符(LDT描述符)，而这个描述符中装载着 LDT 的信息</font></strong>。换句话说，LDT 的基址和界限等信息都存在 GDT 的描述符当中。让我们看看 LDTR 的结构：<br>
+<img src="/2022/img/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE17.png" alt=""></p>
+<blockquote>
+<p>显然，TI 为必须为 0，即指向 GDT，不然就会指向 LDT 本身。<br>
+至于为什么不直接将 LDTR 设计为 48 位，然后直接从其中获取 LDT 的基址和界限，而采用这种迂回的方式？这是考虑到特权级检查的问题：用选择子在 GDT 中索引 LDT 描述符，这样就可以套用引用段描述符时的特权级检查（后面我们将会介绍）。</p>
+</blockquote>
+<p>可见，LDTR 和段寄存器有着神之相似。我们在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/10/31/%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E6%A6%82%E8%BF%B0/">全局描述符表</a>中提到过，32 位 CPU 的段寄存器分为 16 位可见部分(选择子)和不可见部分(高速缓存器,位数根据CPU型号而变)，LDTR 也是如此。<strong><font color='orange'>通过索引在 GDT 中定位到 LDT 描述符所在位置，然后将描述符中的信息加载进不可见部分的高速缓存中</font></strong> 。读者可能忘了，GDT 中可不仅有数据段/代码段，还有系统段，如下：<br>
+<img src="/2022/img/IMG_0502(20221101-114007)-1669466423582-5.png" alt="第三项便是 LDT"></p>
+<blockquote>
+<p>注意，GDT 中不包含中断门和陷阱门。</p>
+</blockquote>
+<p>在多任务系统中，正在执行的任务被称为“当前任务(Current Task)”。<strong><font color='gree'>由于 LDTR 只有一个，所以它仅指向当前任务</font></strong> ，每当发生任务切换，LDTR 中的内容被更新，以指向新的 LDT 。那么问题来了，切换任务时，LDTR 是如何被更新的呢？也就是说 LDTR 中的内容从哪里获取？而且，任务切换时，必须保护旧任务的寄存器现场，这些又保存到哪里呢？这就不得不提到 TSS 了。</p>
+<h3 id="font-color-red-TSS-font"><font color='red'>TSS</font></h3>
+<p>为了保存任务的状态以便在下次切换时恢复，每个任务都需要使用一个额外的区域来保存相关信息，这个区域叫做<strong>任务状态段 (Task State Segment, TSS )</strong> 。TTS 具有固定格式，<u>且最小尺寸为 104 字节</u>，根据需要还可以接上 I/O 位图。TSS 结构如下：<br>
+<img src="/2022/img/2C2361DFB1D1643813669F6D50FF92C5.png" alt=""></p>
+<blockquote>
+<p><strong><font color='pink'>看见 96 字节处的 LDT 段选择子了吗？LDTR 就是从这里获取内容并加载的</font></strong> 。</p>
+</blockquote>
+<p>TSS 是 32 位处理器在<u>硬件上原生支持多任务</u>的一种实现方式，处理器固件能够识别 TSS 中的每个元素，并在任务切换时<u>自动读取</u>其中的信息。既然 TSS 也是内存中的一块区域，且每个任务都有一个 TSS，那 CPU 又如何获取这些 TSS 的位置呢？和 LDT 类似，<strong><font color='orange'>处理器使用 TR(Task Register) 寄存器来指向当前任务的 TSS</font></strong> ，既然是指向当前任务的 TSS，所以 TR 寄存器也只有一个。当发生任务切换时，处理器将当前任务的寄存器现场保存到 TR 指向的 TSS 中；然后再使 TR 指向新任务的 TSS，并根据 TSS 恢复现场。TR 结构如下：<br>
+<img src="/2022/img/fig7-3.gif" alt=""></p>
+<p>可见，TR 寄存器也同段寄存器类似，分为可见的 16 位段选择子与不可见的高速缓冲器。其中 BASE 指向 TSS 所在的起始地址，LIMIT 则为其界限。为什么还有界限呢？因为 TSS 长度是不固定的，会根据 I/O 位图而变化。既然 TR 为选择子，那就肯定有 TSS 描述符，如下：<br>
+<img src="/2022/img/fig7-2.gif" alt=""></p>
+<blockquote>
+<ul>
+<li><strong>TSS 描述符可能只驻留在 GDT 中</strong> ，所以 TR 选择子的 TI 位只能为 1，否则会导致异常。</li>
+<li><strong>LIMIT 字段的值必须等于或大于 103，尝试切换到界限小于 103 的任务会导致异常</strong> 。</li>
+<li>YTPE 字段中的 B 位主要用来判断任务是否重入，即是否为自己调用自己。如果被调用的任务的 B 位为 1，则表明当前任务是在调用自己，这将破坏任务调用链，继而引发严重错误。另外，也并不是只有当前任务的 B 位才为 1，当使用 call 指令进入新任务（成为当前任务）时，不仅新任务的 B 位被置 1，旧任务的 B 位仍保持为 1，这是因为 call 指令是“有去有回”的指令，这说明新任务只是旧任务的分支，待新任务完成后还会回到旧任务，所以本质上它们属于同一个任务。同时，任务的嵌套调用还会影响 eflags 的 NT 位，详见 <a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/21/%E5%8A%A0%E5%85%A5%E4%B8%AD%E6%96%AD/">中断超详解</a> 文末。</li>
+</ul>
+</blockquote>
+<p>另外，注意到一个细节没？TSS 中起始位置存放着前一个任务的指针，而这个指针只有 16 字节！奇了怪了，16 位地址怎么定位？细心的读者可能已经观察到了，上一张系统段类型图中，还包含了 TTS 类型，这说明什么？这说明此处 16 位的 <strong><font color='orange'>TTS 指针也是一个选择子</font></strong> ！<strong><font color='orange'>可见，不仅是 LDT，连 TSS 的信息也是作为段描述符存放在 GDT 当中的(即 TSS 也需要在 GDT 中注册)</font></strong> 。</p>
+<blockquote>
+<p><strong>插一句，由于效率问题，Linux 并没有为每个任务都创建一个 TSS，而是所有任务共享一个 TSS，我们的 OS 也会模仿 Linux 的做法，</strong> 详见<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/12/26/%E5%AE%9E%E7%8E%B0%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B/">实现用户进程</a> 。</p>
+</blockquote>
+<p>加载初始任务时，使用 <code>ltr</code> 指令将 TSS 选择子加载进 TR 寄存器：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ltr 16位寄存器/16位内存单元</span><br></pre></td></tr></table></figure>
+<p>后续任务切换时，由 CPU 自动加载 TR 寄存器。</p>
+<p>关于最上方的 I/O 映射基地址，其内容较多，我们将在另一篇文章中详细阐述。另外一个疑惑是，为什么一个 TSS 中有三个栈呢？这涉及到特权级转移的相关内容，请见下文。</p>
+<h3 id="font-color-red-特权级转移-font"><font color='red'>特权级转移</font></h3>
+<p>代码段发生段间跳转时，其特权级检查是很严格的。<u>一般而言，跳转只允许发生在两个同级的代码段之间</u>。显然，这不能满足我们对操作系统的要求（这意味着不能进行系统调用，用户将什么也做不了）。<strong>因此，为了让低特权级能够调用高特权级的例程，处理器提供了两个办法</strong> ：</p>
+<ol>
+<li><strong><font color='gree'>将高特权级的代码段设为依从</font></strong> 。</li>
+<li><strong><font color='gree'>使用门（ GATE ）</font></strong> 。</li>
+</ol>
+<p>下面我们来详细说明这两点。</p>
+<p><strong><mark class="hl-label blue">依从代码段</mark> </strong><br>
+还记得段描述符中的 type 字段吗？不用说，肯定忘了，再把图搬过来：<br>
+<img src="/2022/img/image-20221101105041738-1669515483779-2.png" alt=""><br>
+其中，代码段的 C 位表示代码段的依从属性。<strong><font color='orange'>依从表示可以从特权级比它低的代码段中进入该段</font></strong> 。注意，<strong><font color='orange'>将控制转移到依从的代码段时，要求当前特权级(CPL)必须低于或等于目标(依从)代码段的DPL</font></strong> ，即：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CPL≥目标代码段的DPL</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong><font color='red'>除了返回指令（retf, iret/iretd），任何时候都不允许将控制从高特权级转移到低特权级上，因为操作系统无法相信用户程序的可靠性</font></strong> 。</p>
+</blockquote>
+<p>同时，<strong><font color='orange'>转移到目标(依从)代码段后，也并不是以它自己的 DPL 运行，而是在调用程序的特权级上运行。换句话说，当控制转移到依从的代码段上执行时，不会改变当前特权级(CPL)！</font></strong> 举个例子，从特权级为 3 的用户程序切换到特权级为 0 的依从代码段时，当前特权级(CPL)依然是 3，而非 0 。</p>
+<blockquote>
+<p>注意，仅代码段有依从属性，数据段只允许比自己更高或同级的代码段访问！</p>
+</blockquote>
+<p><strong><mark class="hl-label blue">门(GATE)</mark> </strong><br>
+<strong><font color='gree'>另一种从低特权级转移到高特权级的方式就是通过门调用</font></strong> 。<strong>操作系统有调用门、中断门、陷阱门、任务门四种门，它们各有自己的应用环境，但相同点是它们都用来从低特权级的代码段转移到高特权级的代码段</strong> 。下面简单说一下各个门的用途与特权级：<br>
+<strong><u>调用门</u>：</strong> 通过 <code>call</code> 和 <code>jmp</code> 指令进入调用门，操作数为门选择子。<strong><font color='orange'>call 以调用函数的方式向高特权级代码转移；jmp 可以转移到高特权级的代码段，但不改变 CPL</font></strong> 。返回时，使用 <code>retf</code> 返回；调用门可用来实现系统调用；<u>位于 GDT/LDT 中</u>。<br>
+<strong><u>中断门</u>：</strong> 由 <code>int</code> 指令主动发起中断的形式向高特权级代码段转移。Linux 采用中断门实现系统调用。中断将在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/21/%E5%8A%A0%E5%85%A5%E4%B8%AD%E6%96%AD/">IDT与中断</a>中详细展开。另外，<strong><font color='orange'><u>进入中断后，eflags 中的 IF 位自动置零（cli），关闭可屏蔽中断以避免中断嵌套</u></font></strong> 。使用 <code>iret/iretd</code> 返回；<u>仅位于 IDT</u> 。</p>
+<p><strong><u>陷阱门</u>：</strong> 由 <code>int3</code> 指令主动发起中断的形式向高特权级代码段转移，这一般是编译器在调试时使用。<strong><font color='orange'><u>陷阱门和中断门很类似，唯一区别是进入中断后，eflags 中的 IF 位不会自动置零</u></font></strong> 。<u>仅位于 IDT</u> 。<br>
+<strong><u>任务门</u>：</strong> 可以借助中断发起，如果对应的中断向量号是任务门，则发起任务切换；也可以用 call 或 jmp 指令，后接任务门的选择子或 TSS 的选择子。<u>位于 GDT/LDT/IDT 中</u>。</p>
+<h3 id="font-color-red-门（GATE）-font"><font color='red'>门（GATE）</font></h3>
+<p>上文我们粗略了解了门结构，下面我们继续深入剖析。<strong><font color='red'>门结构存在目的就是为了让 CPU 提升特权级</font>，以便完成低特权级下不能完成的工作</strong> 。四种门结构的图示如下：<br>
+<img src="/2022/img/IMG_0539(20221127-174054).PNG" alt="调用门描述符"><br>
+<img src="/2022/img/IMG_0538(20221127-174029).PNG" alt="陷阱门描述符"><br>
+<img src="/2022/img/IMG_0537(20221127-174008).PNG" alt="中断门描述符"><br>
+<img src="/2022/img/IMG_0536(20221127-173936).PNG" alt="任务门描述符"><br>
+除了任务门以外，其他三种门都是直接指向一段例程（函数)。<strong>和普通段描述符的区别在于，普通段描述符中包含的是<u>段基址</u>和段界限，是在界定内存区域；而这三种描述符中包含的是<u>段选择子</u>和段内偏移地址，它们直接指向内存中的一段程序</strong> 。因此，<strong><font color='orange'>在调用任务门和调用门时，CPU 会忽略调用指令的偏移量</font></strong> ！比如，<code>call 0x9:0x1000</code> ，如果第 9 号段描述符是这两种门描述符，则 CPU 会忽略偏移量 <code>0x1000</code> 。</p>
+<blockquote>
+<p>大家一定疑惑为什么门描述符中还要放目标代码段的选择子，而不直接存放基址？这样迂回好麻烦啊。这一点笔者也不太清楚，但有理由推测，这应该与 LDTR 相同，都是为了引用段描述符的特权级保护（后文将提到）。</p>
+</blockquote>
+<p><strong><font color='orange'>任务门描述符可以放在 GDT、LDT、IDT 中，调用门可以位于 GDT、LDT 中，中断门和陷阱门则只能位于 IDT 中</font></strong> 。正因为调用门和任务门描述符位于 GDT、LDT 中，所以可以通过 <code>call</code> ，<code>jmp</code> 指令调用，原因是它们和普通段描述符类似，都需要通过选择子。而陷阱门和中断门位于 IDT 中，则只能通过中断信号或 <code>int</code> 指令来触发调用。</p>
+<p>门（GATE）这个词很形象，因为“门槛”是调用者特权级的下限，也就是说 <strong>调用者的特权级(CPL)必须高于门描述符的 DPL(门槛)</strong> ，即：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CPL≤门的DPL</span><br></pre></td></tr></table></figure>
+<p>“门顶”则是调用者特权级的上限，<strong><u>调用者特权级不能高于门描述符中目标程序所在的代码段的 DPL</u></strong> ，即：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CPL≥目标代码段的DPL</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/img/IMG_0543(20221127-230944).PNG" alt="门的作用相当于蹦床，只起引导作用"></p>
+<blockquote>
+<p><strong>有几点需要说明：</strong></p>
+<ul>
+<li>以上规则适用于调用门，中断门有所不同。</li>
+<li>别忘了，门描述符中装载的是选择子而非段基址，选择子还要去索引目标段描述符。</li>
+<li>为什么要求当前特权级必须高于目标代码段特权级？这点我们在前面已经强调过，这是因为，除了返回指令（iret），任何时候都不允许将控制从高特权级转移到低特权级上，因为操作系统无法相信用户程序的可靠性。</li>
+</ul>
+<p><strong>为什么要通过门这种结构来提升特权级？</strong></p>
+<p>因为门不仅有“门顶”，还有“门槛”，门顶规定只能主动从低特权级转移到高特权级，而门槛规定了能向高特权级进行转移的最低特权级。前者在上面第三点解释了，那后者的原因是什么呢？这是为了防止某些低特权级软件通过门访问一些只为内核服务的程序，比如页故障处理。<strong><font color='orange'>这就是门的本质</font></strong> 。</p>
+</blockquote>
+<p>前面这两个检查，相信大家完全能够理解。然而，实际的特权级检查并非如此简单，这还会牵扯到 RPL，后文将详细剖析。先让我们先看看<strong>实际的特权级检查规则全览</strong> 。</p>
+<h3 id="font-color-red-特权级保护规则-font"><font color='red'>特权级保护规则</font></h3>
+<p><strong><font color='orange'>特权级检查只会发生在往段寄存器赋值的一瞬间</font></strong> ，规则如下：<br>
+<strong>1）<font color='gree'>将控制直接转移到非依从的代码段：</font></strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CPL=目标代码段的DPL </span><br><span class="line">RPL=目标代码段的DPL</span><br></pre></td></tr></table></figure>
+<p>典型例子为 <code>jmp 0x0012:0x2000</code> ，当两个代码段的特权级相同，则检查通过，顺利转移。</p>
+<p><strong>2）<font color='gree'>将控制转移转移到依从代码段：</font></strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CPL≥目标代码段的DPL  //注意,数值上,CPL大于目标段DPL;实际上,当前特权级低于目标段DPL</span><br><span class="line">RPL≥目标代码段的DPL</span><br></pre></td></tr></table></figure>
+<p>控制转移后，当前特权级不变。</p>
+<p><strong>3）<font color='gree'>通过门转移控制权：</font></strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">目标代码段的DPL≤CPL≤门描述符的DPL</span><br><span class="line">RPL≤门描述符的DPL</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>注意，调用门和中断门的特权级检查不同，调用门通过 call 和 jmp 进入，选择子中有 RPL 字段，因此还需要检测 RPL ；<u>而中断门通过中断号调用，所以无法检测 RPL</u> 。</strong> 中断门特权级检查还有几点不同，将在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/21/%E5%8A%A0%E5%85%A5%E4%B8%AD%E6%96%AD/">IDT与中断</a>详述。</p>
+</blockquote>
+<p><strong>4）<font color='gree'>访问数据段时：</font></strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CPL≤目标数据段的DPL</span><br><span class="line">RPL≤目标数据段的DPL</span><br></pre></td></tr></table></figure>
+<p>与代码段转移不同，CPU 只允许高特权级代码段访问低特权级数据段。</p>
+<p><strong>5）<font color='gree'>任何时候，栈段的特权级必须和当前特权级相同：</font></strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CPL=目标栈段描述符的DPL</span><br><span class="line">RPL=目标栈段描述符的DPL</span><br></pre></td></tr></table></figure>
+<p>注意，代码段发生特权级转移时，会自动根据 TSS 将栈更换为同特权级的栈（后文会详解），以上检查只发生在主动给 <code>ss</code> 赋值的时候。</p>
+<p>大家肯定对 RPL 还不太明白，下面我们来理清 RPL，CPL，DPL 的关系。</p>
+<h3 id="font-color-red-剖析-RPL-CPL-DPL-font"><font color='red'>剖析 RPL, CPL ,DPL</font></h3>
+<p><strong><mark class="hl-label blue">DPL</mark> </strong><br>
+DPL（Descriptor Privilege Level，描述符特权级），位于 GDT/LDT/IDT 的描述符中。<u>对于门描述符，DPL 意味着访问该门的最低特权级；对于段描述符，DPL 意味着访问该段的最高特权级（参考前面的蹦床示意图）</u>。</p>
+<p><strong><mark class="hl-label blue">CPL</mark> </strong><br>
+CPL（Current Privilege Level，当前特权级），<u>指正在运行的代码所对应的段描述符中的 DPL</u> 。也就是说，当前运行的代码的特权级就是 CPL 。<strong>注意，不要将 CPL 定义为 CS 段寄存器中的 RPL 位（CS.RPL），尽管绝大多数时候 CPL=CS.RPL ，这对后面理解非常重要。</strong></p>
+<p><strong><mark class="hl-label blue">RPL</mark> </strong><br>
+RPL（Request Privilege Leve，请求特权级），指段寄存器中选择子的低 2 位。注意，什么能发出“请求”？<strong>显然，只有具备能动性的代码段（不一定是当前代码段）才能发出请求，所以 RPL 是指发出访问请求的代码段的特权级</strong> ，这对理解也很重要。</p>
+<blockquote>
+<p>不管是实施控制转移，还是访问数据段，这都能看作是一个请求，请求者请求访问指定的段。因此，<strong>RPL 就是指请求者的特权级</strong> 。<strong>请求者<u>往往</u>是当前代码段自己</strong> ，即 CPL=RPL，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">;假设当前代码段的特权级为0</span><br><span class="line">mov eax,0x0009  </span><br><span class="line">mov ds,eax</span><br></pre></td></tr></table></figure>
+<p><strong>由于 CPL 为 0，所以 ds 选择子中的 RPL 也被设置为 0，代表请求者的特权级为 0</strong> 。可是，这个选择子是我们自己设置的呀，我难道不能自己修改 RPL 来伪造请求者的身份吗？想到这点很不错！需要说明的是，上面只是演示，<strong><font color='orange'>实际上选择子是由操作系统提供的（GDT/LDT/IDT都是由操作系统构造，故选择子理所应当也由操作系统提供），操作系统会保障 RPL 的真实身份</font></strong> 。也就是说，<strong><font color='orange'>RPL 一定是为该段寄存器赋值时的代码的特权级</font></strong> ，这话有点绕，还是以上的例子：为 ds 赋值时，该代码段的特权级为 0，因此操作系统会保障 ds 中的 RPL 一定为 0 。怎么保障呢？使用 <code>arpl</code> 指令，其格式为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">arpl 通用寄存器/16位内存, 16位通用寄存器</span><br><span class="line">;即</span><br><span class="line">arpl 用户提交的段选择子,用户代码段CS的值</span><br></pre></td></tr></table></figure>
+<p>具体过程还要涉及栈切换，加上我们的操作系统不会用到该指令，所以此处不做过多讨论，详细请参考《操作系统真相还原》pdf 版第 245 页。有了该指令，即使用户伪造 RPL 也无济于事。</p>
+</blockquote>
+<p>说了半天，我们只了解了 RPL 的内涵，还不知道 RPL 的存在到底有什么必要性。下面对 RPL 的必要性进行阐述。</p>
+<p><strong><mark class="hl-label blue">RPL的必要性</mark> </strong><br>
+<u>假设段选择子不存在 RPL 字段</u>，发生如下场景：某个恶意程序通过一些奇淫巧计获取了内核的数据段选择子，它计划从硬盘读取一个扇区，并将所读数据写入内核的数据段。显然，它自己位于 3 特权级（ring 3），不能直接访问内核数据段。由于涉及硬盘读取，必须通过系统调用访问硬盘，此处使用调用门来进行系统调用。控制转移到调用门后，CPL 从 3 变为 0，此时将内核段选择子传递给内核例程，例程将选择子赋值进 ds，发生特权级检查：CPL=内核数据段描述符的DPL，检测通过。于是，<strong>恶意程序成功向内核数据段写入内容！</strong><br>
+<img src="/2022/img/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE19.png" alt=""><br>
+就这样，恶意程序就这样成功利用调用门的掩护完成了对内核数据段的修改。以上方式出现问题的原因很容易得出：<strong><font color='orange'>受访者不知道访问者的真实身份</font></strong> 。在上例中，访问者的真实身份是恶意程序（ring 3)，然而恶意程序通过调用门这个代理(ring 0)去访问内核数据，内核就以为调用门是真正的请求者（毕竟是调用门直接接触内核的)，于是通过了特权级检查。因此，<strong><font color='orange'>要破解这个问题，我们就必须让内核知道某个请求后有没有背后的请求者，背后真正请求者的特权级是多少</font></strong> 。而 RPL 就是为了解决此问题而生，RPL 代表着 <strong><u>真正</u></strong> 的请求者的特权级。让我们看看当加入了 RPL 后，重复以上情形将发生什么：再一次，恶意程序通过某些方式获取了内核数据段选择子（其中 RPL=0)，当控制权转入调用门时，由于是远转移，处理器会将 cs, eip 等寄存器压栈以保护现场；因此调用门能够从栈中获取恶意程序 cs 中选择子的 RPL（也就是转移前的 CPL)，<strong><u>进而使用 <code>arpl</code> 指令将传入的内核数据段选择子的 RPL 更正为恶意程序自身的 CPL，以保证 RPL 的真实身份</u></strong> ，此时内核数据段选择子的 RPL 变成了 3 ；而后内核例程向 ds 中赋值，发生特权级检查，发现 <code>CPL&lt;=目标数据段的DPL</code> 成立，但 <code>RPL&lt;=目标数据段的DPL</code> 不成立（数据段选择子的RPL=3，而对应描述符的DPL=0)，因此拒绝访问，保卫成功！</p>
+<p>从上面能够看出，<strong>光有 RPL 还不够，必须还要有 <code>arpl</code> 指令保证 RPL 的真实性</strong> 。同时也能发现，<strong>CPL 并不总是等于 RPL，这需要看当前运行的程序在访问数据段或代码段时用的是谁提供的选择子</strong> 。</p>
+<blockquote>
+<p>值得一提的是，<strong>由于效率原因，现代操作系统基本不使用调用门和任务门</strong> ，陷阱门也只在调试时使用。我们的 OS 只用到了中断门。因此，对调用门，任务门，陷阱门不做过多讨论，中断门将在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/21/%E5%8A%A0%E5%85%A5%E4%B8%AD%E6%96%AD/">IDT与中断</a>详细阐述。</p>
+</blockquote>
+<hr>
+<h3 id="font-color-red-特权级下的栈保护-font"><font color='red'>特权级下的栈保护</font></h3>
+<p>之前我们说过，<strong>一个任务被分为用户（私有）和内核（全局）两个部分</strong> ，内核位于第 0 特权级，用户位于第 3 特权级。因此，当特权级发生改变时（系统调用时，从用户态陷入内核态），栈也要发生改变，换句话说，<strong><font color='orange'>不同的特权级应该使用与其同等级的栈</font></strong> 。</p>
+<blockquote>
+<p>不同的特权级应该使用不同的栈，理由如下：</p>
+<ol>
+<li><strong>恶意的低特权级程序可以通过栈获取高特权级的信息，这非常危险。</strong></li>
+<li>如果所有特权级都使用一个栈，那么这种交叉引用将会变得非常混乱。</li>
+<li>用一个栈容纳所有特权级下的数据，栈很可能溢出。</li>
+</ol>
+</blockquote>
+<p>处理器位于 0 特权级时要用 0 特权级的栈，位于 3 特权级时要使用 3 特权级的栈。问题是，一共有 4 个特权级，那么每个任务都应该有 4 个栈，<strong><u>为什么 TSS 中只有 3 个栈呢？这是由于 TSS 中记录的是转移后的高特权级对应的目标栈，因为 ring3 是最低级的，没有更低的特权级会向它转移，所以 TSS 不需要记录 ring3 的栈</u></strong> 。另外，也不是每一个任务都有 4 个栈，这取决于它最低的特权级别。比如 ring3 程序，还能提升 3 级，于是额外拥有 0，1，2 三个特权级的栈；而 ring0 程序则没有额外的栈。下面我们<u>以调用门为例</u>来看看发生特权级转移时，栈是如何变化的。</p>
+<p><strong><font color='gree'>1）</font></strong> 假设当前位于 ring3，有两个参数，欲通过调用门执行 ring0 的内核例程。call 调用门前，先将两个参数压栈，此时的栈理所应当是 ring3 的栈。<br>
+<img src="/2022/img/IMG_0544(20221128-145006).PNG" alt="" style="zoom:67%;" /><br>
+<strong><font color='gree'>2）</font></strong> call 调用门，进行特权级检查，若检查通过，则顺利跳到目标代码段。<br>
+<strong><font color='gree'>3）</font></strong> 由于此时 CPL=0，所以处理器自动在 TSS 中找到合适的栈段选择子 SS0 和 SP0，将其作为新栈。<u>为了在返回时切换回旧栈</u>，需要在新栈中保存旧栈的栈段选择子 SS_old 和栈指针 SP_old：<br>
+<img src="/2022/img/IMG_0545(20221128-150757).PNG" alt="" style="zoom:50%;" /><br>
+<strong><font color='gree'>4）</font></strong> 由于之前压入参数是在旧栈进行的，所以现在需要把参数转移到新栈，处理器怎么知道转移多少个字节呢？这由调用门描述符中的参数个数位给出。通过调用门描述符可知，需要转移两个参数，即 8 字节：<br>
+<img src="/2022/img/IMG_0546(20221128-151203).PNG" style="zoom: 50%;" /></p>
+<blockquote>
+<p>注意，参数复制工作是由 CPU 自动完成，栈切换和参数复制对程序员来说是完全透明的。</p>
+</blockquote>
+<p><strong><font color='gree'>5）</font></strong> 为了将来恢复到用户进程，还需要压入转移前的段选择子 CS 和 EIP：<br>
+<img src="/2022/img/IMG_0547(20221128-153129).PNG" alt="" style="zoom:50%;" /></p>
+<blockquote>
+<p>注意，不论转移前后 CS 中是否是同一个段选择子，CS 都会被重新加载，因此都必须记录 CS 。</p>
+</blockquote>
+<p>转移完成。另外需要注意，<strong><u>如果为平级转移，比如内核程序调用“调用门”，即从 ring0 到 ring0 ，则不会更新当前栈，直接跨过第 3，4 步，来到第 5 步压入 CS 和 EIP</u></strong> 。下面我们再来看看 retf 从调用门返回的过程：<br>
+<strong><font color='gree'>1）</font></strong> 将 EIP_old 和 CS_old 分别弹出到 eip 和 cs 寄存器中，这个过程仍要进行特权级检查！ 若通过检查才能顺利赋值。</p>
+<blockquote>
+<p>你一定觉得返回时的特权级检查很鸡肋，明明我是通过调用门来到高特权级的，怎么返回时还要检查？原因为如下三点：</p>
+<ol>
+<li>retf 也涉及到给 CS 赋值，所以也会有特权级检查。</li>
+<li><strong>retf(从调用门返回)、iret/iretd(从中断门返回) 这两类指令是从高特权级到低特权级的唯一办法</strong> ，而你完全可以使用 retf 来达到远转移的目的。谁说 retf 只能用来返回？给我目标段选择子和偏移量，将其存入栈中，再 retf ，完全可以达到 call 指令的效果。因此，为了防止使用 retf 来进行远转移（而非返回），必须再进行一次特权级检查。</li>
+<li>再者，也可以通过修改栈内的 CS，EIP 来达到返回时进入其他段的目的。其实第 2，3 点也不算正经理由，因为系统调用是系统开发者编写的，开发者总不会这么来玩吧。</li>
+</ol>
+</blockquote>
+<p><strong><font color='gree'>2）</font></strong> 如果有参数，则 ESP_new 跳过参数，指向 ESP_old 。<br>
+<strong><font color='gree'>3）</font></strong> 如果在第 1 步检查中发现特权级发生了改变，则说明切换了新栈，所以从栈中分别弹出 ESP_old 和 SS_old 到 esp 和 ss 中。<br>
+<strong><font color='gree'>4）</font></strong> 如果涉及到特权级改变，则还会检查 DS，ES，FS 和 GS 的内容，如果其中某个寄存器里的选择子所指向的数据段描述符的 DPL 比返回后的 CPL 高(数值上小于)，则会将该寄存器中填充 0 。</p>
+<p>关于第 4 点，做简单解释：当控制转移到内核（ring 0）后，内核程序必然会使用自己的数据段，所以会向 DS/ES/FS/GS 赋予自己的数据段选择子，赋值时发生特权级检查，检查通过则赋值成功，此后对该数据段进行读写时将不再检查。问题就在于此，当从内核返回到用户程序后，DS/ES/FS/GS 很可能还指向内核的数据段，如果此时用户程序对其进行读写，将没有任何限制！因此，<strong>返回后 DS/ES/FS/GS 则可能被自动初始化为 0，如果用户程序直接使用值为 0 的段选择子，则会被索引到 GDT 的第 0 个描述符，而第 0 个描述符是不可用的</strong> ，<strong>从而引发 CPU 第 0x0d 号异常(#GP General Protection)</strong> 。这就是前文提到的为什么 GDT 第 0 号描述符不可用，而 LDT 第 0 号描述符可用的原因。</p>
+<blockquote>
+<p>前文强调过，<strong>特权级检查只发生在向段寄存器赋值的一瞬间，此后任何操作不再受限</strong> 。</p>
+</blockquote>
+<blockquote>
+<p>另外需要注意，发生特权级转移时，调用门和中断门的栈处理是不同的，大概有以下两点：</p>
+<ol>
+<li>中断门还会压入 EFLAGS 寄存器，而调用门不会。</li>
+<li>中断门不能通过栈压入参数，而调用门可以（因为调用门描述符中有4位用来记录参数个数）。</li>
+</ol>
+<p>以上是调用门压栈，关于中断门压栈，参见<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/21/%E5%8A%A0%E5%85%A5%E4%B8%AD%E6%96%AD/">IDT与中断</a>。</p>
+</blockquote>
+<p>本文结束。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/11/26/%E7%89%B9%E6%9D%83%E7%BA%A7%E5%85%A8%E9%9D%A2%E5%89%96%E6%9E%90/">http://jyxcpp.netlify.app/2022/11/26/%E7%89%B9%E6%9D%83%E7%BA%A7%E5%85%A8%E9%9D%A2%E5%89%96%E6%9E%90/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/7.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/11/26/I-O%E4%BD%8D%E5%9B%BE/"><img class="prev-cover" src="/2022/img/1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">I/O位图</div></div></a></div><div class="next-post pull-right"><a href="/2022/11/26/%E5%8A%A0%E5%85%A5%E4%B8%AD%E6%96%AD-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/"><img class="next-cover" src="/2022/img/0.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">加入中断-代码剖析</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/10/31/32%E4%BD%8D%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%A7%88/" title="32位保护模式概览"><img class="cover" src="/2022/img/17.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">32位保护模式概览</div></div></a></div><div><a href="/2022/10/27/bochs%E4%BD%BF%E7%94%A8/" title="bochs虚拟机的使用"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-27</div><div class="title">bochs虚拟机的使用</div></div></a></div><div><a href="/2022/11/29/%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8-8259a/" title="对8259a芯片编程"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-29</div><div class="title">对8259a芯片编程</div></div></a></div><div><a href="/2022/10/31/%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E6%A6%82%E8%BF%B0/" title="GDT&amp;段描述符&amp;选择子概述"><img class="cover" src="/2022/img/9.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">GDT&amp;段描述符&amp;选择子概述</div></div></a></div><div><a href="/2022/12/08/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-%E8%BF%9B%E9%98%B6-%E5%88%86%E9%85%8D%E9%A1%B5%E5%86%85%E5%AD%98/" title="内存管理-进阶-分配页内存"><img class="cover" src="/2022/img/6.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-08</div><div class="title">内存管理-进阶-分配页内存</div></div></a></div><div><a href="/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" title="内存管理-基础-初始化内存池"><img class="cover" src="/2022/img/14.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-02</div><div class="title">内存管理-基础-初始化内存池</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E7%89%B9%E6%9D%83%E7%BA%A7%E6%A6%82%E8%BF%B0-font"><span class="toc-number">1.</span> <span class="toc-text">特权级概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-LDT-font"><span class="toc-number">2.</span> <span class="toc-text">LDT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-TSS-font"><span class="toc-number">3.</span> <span class="toc-text">TSS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E7%89%B9%E6%9D%83%E7%BA%A7%E8%BD%AC%E7%A7%BB-font"><span class="toc-number">4.</span> <span class="toc-text">特权级转移</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E9%97%A8%EF%BC%88GATE%EF%BC%89-font"><span class="toc-number">5.</span> <span class="toc-text">门（GATE）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E7%89%B9%E6%9D%83%E7%BA%A7%E4%BF%9D%E6%8A%A4%E8%A7%84%E5%88%99-font"><span class="toc-number">6.</span> <span class="toc-text">特权级保护规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%89%96%E6%9E%90-RPL-CPL-DPL-font"><span class="toc-number">7.</span> <span class="toc-text">剖析 RPL, CPL ,DPL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E7%89%B9%E6%9D%83%E7%BA%A7%E4%B8%8B%E7%9A%84%E6%A0%88%E4%BF%9D%E6%8A%A4-font"><span class="toc-number">8.</span> <span class="toc-text">特权级下的栈保护</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

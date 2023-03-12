@@ -1,0 +1,275 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>路由器中的排队与调度 | 极简</title><meta name="keywords" content="路由器中的排队与调度"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="输入&#x2F;输出排队与分组调度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="路由器中的排队与调度">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/08/17/%E8%B7%AF%E7%94%B1%E5%99%A8%E4%B8%AD%E7%9A%84%E6%8E%92%E9%98%9F%E4%B8%8E%E8%B0%83%E5%BA%A61/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="输入&#x2F;输出排队与分组调度">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/1.jpg">
+<meta property="article:published_time" content="2022-08-17T02:12:35.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:10.299Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/08/17/%E8%B7%AF%E7%94%B1%E5%99%A8%E4%B8%AD%E7%9A%84%E6%8E%92%E9%98%9F%E4%B8%8E%E8%B0%83%E5%BA%A61/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '路由器中的排队与调度',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:10'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/1.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">路由器中的排队与调度</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-17T02:12:35.000Z" title="发表于 2022-08-17 10:12:35">2022-08-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:10.299Z" title="更新于 2023-03-12 19:21:10">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E5%B1%82/">网络层</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="路由器中的排队与调度"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>经过上一篇文章《<a href="https://jyxcpp.netlify.app/2022/08/17/%E8%B7%AF%E7%94%B1%E5%99%A8%E4%BA%A4%E6%8D%A2%E7%BB%93%E6%9E%84/">路由器的工作原理</a>》的学习，我们应该发现当端口的处理速率与交换结构的转发速率不匹配时，就可能发生排队(Queuing)；以何种方式调离队列中的分组，称之为调度(Scheduling)。本文将详细讨论这两个问题。</p>
+</blockquote>
+<h3 id="font-color-red-何处出现排队-font"><font color='red'>何处出现排队</font></h3>
+<p>排队的位置和程度取决于流量负载、端口处理速率以及交换结构的转发速率，当端口处理速率和转发速率不匹配时，就会发生排队。当队列占满整个缓冲区时，路由器将无法接收到新的分组，这时就会产生 <strong>丢包(packet loss)</strong> 。在 TCP 一章的讨论中，我们经常说到的丢包就在这里产生。</p>
+<h4 id="font-color-orange-输入排队-font"><font color='orange'>输入排队</font></h4>
+<p><u>如果交换结构的转发速率慢于输入端口的处理速率，就会在输入端口发生排队</u>，因为到达的分组必须加入输入端口队列中，以等待通过交换结构传输到输出端口。在输入端口的排队大致能分为两种类型：<strong>1.端口竞争；2.队头阻塞(Head-Of-The-Line, HOL)</strong> 。如下图所示：</p>
+<img src="/2022/img/image-20220819103139081.png" alt="排队示意图" style="zoom:67%;" />
+<p><strong><mark class="hl-label blue">端口竞争</mark> </strong></p>
+<p>如图，当第一排端口的队头分组和第三排的队头分组要发往同一个输出端口时，就会发生排队。即使不发往同一个端口，由于交换结构种类的限制，也可能发生排队，比如经总线交换和经内存交换每次只能交换一个分组，而 crossbar 交换也并非任何时候都能实现并行交换，详见《<a href="https://jyxcpp.netlify.app/2022/08/17/%E8%B7%AF%E7%94%B1%E5%99%A8%E4%BA%A4%E6%8D%A2%E7%BB%93%E6%9E%84/">路由器的工作原理</a>》。</p>
+<p><strong><mark class="hl-label blue">HOL</mark> </strong></p>
+<p>如上图，当发生端口竞争时，第一排队头先交换，第三排队头等待；由于第三排队头的阻塞，即使第三排队尾的分组的目的端口为第二排输出端口(没有端口竞争)，其也无法发送(FIFO策略)，这种阻塞就叫做队头阻塞。有研究表明，由于 HOL 阻塞，只要输入链路上的分组到达速率达到队列容量的 58%，输入队列的长度就将无限增大，导致大量丢包，所以 HOL 是输入队列面临的首要问题之一。解决 HOL 的主流方法是使用 <strong>虚拟输出队列(Virtual Output Queues)</strong> 。虚拟输出队列总体的想法十分朴素：在输入端口<u>将发送到不同端口的数据包虚拟成不同的队列</u>，并且彼此互不影响，这样一来即使队头数据包被阻塞也将不会影响发送到其他端口的数据包的发送。如下图 2 × 4 的输入输出交换结构中，每个输入端口将根据数据包输出端口的不同而加入专属“虚拟队列”（图中以不同的颜色区分），这样一来，在同一输入端口而目的端口不同的数据包的发送将彼此互不影响。除了虚拟输出队列外，还有其他许多解决排头阻塞的算法，如神经网络、<em>i</em>SLIP等等。</p>
+<img src="/2022/img/format,f_auto.png" alt="虚拟输出队列" style="zoom:67%;" />
+<blockquote>
+<p>只有在缓存式输入的交换机中才会出现队头阻塞的情况，如果交换机内部的带宽足够的话，缓存输入就是没有必要的了——所有的缓存都可以在输出处被处理，从而也避免了队头阻塞。这样的无缓存式输入架构在中小型规模的乙太网交换机中非常常见。</p>
+</blockquote>
+<h4 id="font-color-orange-输出排队-font"><font color='orange'>输出排队</font></h4>
+<p>当交换速度较慢时，可能在输入端口形成排队；那么当交换速度足够快时，就能避免队列的形成吗？答案是否定的。即使 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>s</mi><mi>w</mi><mi>i</mi><mi>t</mi><mi>c</mi><mi>h</mi></mrow></msub><mo>=</mo><mi>N</mi><mo>×</mo><msub><mi>R</mi><mrow><mi>l</mi><mi>i</mi><mi>n</mi><mi>e</mi></mrow></msub></mrow><annotation encoding="application/x-tex">R_{switch}=N×R_{line}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight" style="margin-right:0.02691em;">w</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">c</span><span class="mord mathnormal mtight">h</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">in</span><span class="mord mathnormal mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> ，一旦当大量分组需要从不同输入端口传输到同一个输出端口时，队列也会在这个输出端口形成。当没有足够的内存来缓存分组时，要么将其丢弃(drop-tail)，要么删除队列中的某个分组来为新分组腾出空间。有时可能会在队列被填满之前就主动丢弃新分组，以此向发送方提供拥塞信号，这种策略被称为 <strong>主动队列管理(AQM)</strong> 算法。</p>
+<p><strong><mark class="hl-label blue">多少缓存才足够？</mark> </strong></p>
+<p>通过上述的简单讨论，不难发现似乎都是因为队列空间(缓存)不够大才造成的丢包，那么我们直接扩大路由器的缓存不就行了吗？事实上，确定合适的缓冲大小是一个复杂的问题。<strong>缓存设置过小会发生丢包，这不难理解；缓存设置过大，即使不会丢包，但也会引发高延迟并形成恶性循坏，其危害甚至比丢包更为严重</strong> ！这就是臭名昭著的 <strong>缓冲膨胀(buffer bloat)</strong> 。<strong>大多数<a href="https://jyxcpp.netlify.app/2022/08/07/tcp%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6/">TCP拥塞控制</a>算法都依靠测量丢包的发生来确定连接两端之间的可用带宽</strong> 。该算法会加快数据传输速度，直到数据包开始丢失，然后降低传输速率。理想情况下，他们会不断调整传输速率，直到达到链路的平衡速度为止。为了使算法能够选择合适的传输速度，必须及时收到有关丢包的反馈。使用大容量缓冲区时，数据包虽然最后会到达目的地，但延迟较高。因为数据包没有丢失，所以即使上行链路饱和，TCP 也不会减慢速度，从而进一步导致缓冲区饱和，从而进一步造成高延迟，这对实时类应用无疑是致命的。</p>
+<p>缓冲膨胀的解决可以从两个角度切入：针对网络的解决方案和针对端点的解决方案。前者通常采用队列管理算法的形式，如 AQM 算法；后者包含 TCP 的 BBR 算法，详见笔者另一篇文章《<a href="https://jyxcpp.netlify.app/2022/08/07/tcp%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6/">TCP拥塞控制详解(二)</a>》。关于缓存大小的经验法则是：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>=</mo><mi>R</mi><mi>T</mi><mi>T</mi><mo>×</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">B=RTT×C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span> ，其中 C 是链路的容量，RTT 是平均往返时延。</p>
+<h3 id="font-color-red-分组调度-font"><font color='red'>分组调度</font></h3>
+<p>队列形成后，我们自然会考虑如何将分组调离队列并发送。就实际生活而言，一般我们排队会遵循 <strong>先到先服务(FCFS, 也称之为先进先出(FIFO))</strong> 策略；然而我们也经常在车站售票窗口看见“军人优先服务”。类似地，路由器中的队列也有不同的排队策略，这些方式叫做 <strong>分组调度(Packets Scheduling)</strong> 。</p>
+<h4 id="font-color-orange-先进先出-FIFO-font"><font color='orange'>先进先出(FIFO)</font></h4>
+<p>先进先出属于典型的被动队列管理的方法，它调度包的方法是：先到达路由器的分组先被传输，其它分组采用默认的排队方式。然而，路由器的缓存总是有限的，如果分组到达时缓存已满，那么路由器就不得不丢弃该分组。由于 FIFO 总是丢弃队尾的分组，所以又称它为“去尾”（drop-tail）算法。FIFO和“去尾”是最简单的分组调度和丢弃策略，两者有时可被视为一体，简单称为 FIFO 排队。<br>
+FIFO排队的算法简单，实施容易，是目前Internet使用最为广泛的一种方式。然而 FIFO 无法“识别”面向连接的连续 TCP 数据流，当存在占用大量带宽的对 TCP 不友好的流时，网络可能会持续拥塞，TCP 流分享不到应有的带宽。</p>
+<h4 id="font-color-orange-优先权排队-priority-queuing-font"><font color='orange'>优先权排队(priority queuing)</font></h4>
+<p>在此规则下，<strong>到达的分组根据既定规则被划入一个优先权类，每一个优先权类都有自己的队列，同一个队列中的分组采用 FIFO 策略</strong> 。如下图，分组 1、3、4 属于高优先权类，分组 2、5 属于低优先权类。分组 1 达到后即开始传输，在这期间分组 2、3 相继到达；分组 3 的优先权高于分组 2，所以分组 1 传输完成后轮到 3 传输；分组 4 在分组 2 传输时到达，在 <strong>非抢占式优先权排队</strong> 规则下，一旦分组开始传输，就不能被打断，所以即使分组 4 的优先权高于分组 2，也需要等到分组 2 传输完毕后才能传输分组 4 。</p>
+<img src="/2022/img/image-20220819170315190.png" alt="image-20220819170315190" style="zoom:67%;" />
+<p>然而，虽然高优先级业务的带宽和时延得到了最大限度的保证，但若高优先级业务持续占据带宽，会导致低优先级业务一直得不到调度，这显然是不公平的，所以有了下面的 <strong>轮循和加权公平排队</strong> 策略。</p>
+<h4 id="font-color-orange-轮循和加权公平排队-WFQ-font"><font color='orange'>轮循和加权公平排队(WFQ)</font></h4>
+<p>WFQ是在发生拥塞时稳定网络运行的一种自动的方法，它能提高处理性能并减少分组的重发。WFQ主要有三个目的：</p>
+<ol>
+<li>
+<p>为每个活动流提供公平的带宽分配机制，即WFQ名字中的F（fairness）的含义</p>
+</li>
+<li>
+<p>为少量交互流提供更快的调度机制</p>
+</li>
+<li>
+<p>为高优先级的流提供更多的带宽</p>
+</li>
+</ol>
+<p>WFQ 根据流对报文进行动态分类，分类判据可为五元组和 IP 服务类型(TOS字段)，然后使用 Hash 算法映射到不同的队列中。另外，如果使用WFQ，那么 low-volume（字节数小的报文）、higher-precedence（优先级高的报文）的流会比 large-volume、lower-precedence 的流更先处理(目的二)。在出队的时候，WFQ 按流的优先级来分配每个流应占有出口的带宽。优先级的数值越小，所得的带宽越少。优先级的数值越大，所得的带宽越多。这样就保证了相同优先级业务之间的公平，体现了不同优先级业务之间的权值。详细内容参考[WFQ](<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/WFQ/10000942">WFQ_百度百科 (baidu.com)</a>) 。</p>
+<blockquote>
+<p>参考文章：《计算机网络自顶向下》，<a href="%5B%E7%BD%91%E7%BB%9C%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E9%98%9F%E5%88%97%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95%E6%AF%94%E8%BE%83_%E7%9F%A5%E8%A1%8C%E6%B5%81%E6%B5%AA%E7%9A%84%E5%8D%9A%E5%AE%A2-CSDN%E5%8D%9A%E5%AE%A2_%E7%BD%91%E7%BB%9C%E9%98%9F%E5%88%97%5D(https://blog.csdn.net/zengxiantao1994/article/details/53080941#:~:text=%E5%85%88%E8%BF%9B%E5%85%88%E5%87%BA%E5%B1%9E%E4%BA%8E%E5%85%B8%E5%9E%8B,%E9%BB%98%E8%AE%A4%E7%9A%84%E6%8E%92%E9%98%9F%E6%96%B9%E5%BC%8F%E3%80%82)">FIFO</a>，<a target="_blank" rel="noopener" href="http://lihaizhou.top/2020/08/27/%E8%87%AD%E5%90%8D%E6%98%AD%E8%91%97%E7%9A%84bufferbloat/">缓冲膨胀</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/08/17/%E8%B7%AF%E7%94%B1%E5%99%A8%E4%B8%AD%E7%9A%84%E6%8E%92%E9%98%9F%E4%B8%8E%E8%B0%83%E5%BA%A61/">http://jyxcpp.netlify.app/2022/08/17/%E8%B7%AF%E7%94%B1%E5%99%A8%E4%B8%AD%E7%9A%84%E6%8E%92%E9%98%9F%E4%B8%8E%E8%B0%83%E5%BA%A61/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/08/23/Qt-%E4%BF%A1%E5%8F%B7%E4%B8%8E%E6%A7%BD%E6%9C%BA%E5%88%B6/"><img class="prev-cover" src="/2022/img/1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Qt-信号与槽机制</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/17/%E8%B7%AF%E7%94%B1%E5%99%A8%E4%BA%A4%E6%8D%A2%E7%BB%93%E6%9E%84/"><img class="next-cover" src="/2022/img/15.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">路由器的工作原理</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/08/16/IP%E7%BC%96%E5%9D%80/" title="IP编址"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-16</div><div class="title">IP编址</div></div></a></div><div><a href="/2022/08/05/RTT%E7%9A%84%E6%B5%8B%E9%87%8F/" title="RTT的测量（RTTM）"><img class="cover" src="/2022/img/12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-05</div><div class="title">RTT的测量（RTTM）</div></div></a></div><div><a href="/2022/08/04/SYN%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" title="SYN泛洪攻击"><img class="cover" src="/2022/img/10.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-04</div><div class="title">SYN泛洪攻击</div></div></a></div><div><a href="/2022/08/04/TCP-%E5%BA%8F%E5%88%97%E5%8F%B7%E5%9B%9E%E7%BB%95%E9%97%AE%E9%A2%98/" title="时间戳——RTTM与序列号回绕"><img class="cover" src="/2022/img/11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-04</div><div class="title">时间戳——RTTM与序列号回绕</div></div></a></div><div><a href="/2022/08/05/TCP-Fast-Open-TFO/" title="TCP Fast Open(TFO)"><img class="cover" src="/2022/img/14.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-05</div><div class="title">TCP Fast Open(TFO)</div></div></a></div><div><a href="/2022/08/08/TCP%E4%B8%83%E7%A7%8D%E8%AE%A1%E6%97%B6%E5%99%A8%E8%AF%A6%E8%A7%A3/" title="TCP计时器详解"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-08</div><div class="title">TCP计时器详解</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E4%BD%95%E5%A4%84%E5%87%BA%E7%8E%B0%E6%8E%92%E9%98%9F-font"><span class="toc-number">1.</span> <span class="toc-text">何处出现排队</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-orange-%E8%BE%93%E5%85%A5%E6%8E%92%E9%98%9F-font"><span class="toc-number">1.1.</span> <span class="toc-text">输入排队</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-orange-%E8%BE%93%E5%87%BA%E6%8E%92%E9%98%9F-font"><span class="toc-number">1.2.</span> <span class="toc-text">输出排队</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%88%86%E7%BB%84%E8%B0%83%E5%BA%A6-font"><span class="toc-number">2.</span> <span class="toc-text">分组调度</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-orange-%E5%85%88%E8%BF%9B%E5%85%88%E5%87%BA-FIFO-font"><span class="toc-number">2.1.</span> <span class="toc-text">先进先出(FIFO)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-orange-%E4%BC%98%E5%85%88%E6%9D%83%E6%8E%92%E9%98%9F-priority-queuing-font"><span class="toc-number">2.2.</span> <span class="toc-text">优先权排队(priority queuing)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#font-color-orange-%E8%BD%AE%E5%BE%AA%E5%92%8C%E5%8A%A0%E6%9D%83%E5%85%AC%E5%B9%B3%E6%8E%92%E9%98%9F-WFQ-font"><span class="toc-number">2.3.</span> <span class="toc-text">轮循和加权公平排队(WFQ)</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>开启分页-代码详解 | 极简</title><meta name="keywords" content="开启分页-代码详解, 操作系统, CR3寄存器"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="开启分页机制-代码详解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开启分页-代码详解">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="开启分页机制-代码详解">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/17.jpg">
+<meta property="article:published_time" content="2022-11-13T08:42:53.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:12.252Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="自制操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/17.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '开启分页-代码详解',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2023-03-12 19:21:12'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/17.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">开启分页-代码详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-11-13T08:42:53.000Z" title="发表于 2022-11-13 16:42:53">2022-11-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:12.252Z" title="更新于 2023-03-12 19:21:12">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="开启分页-代码详解"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>阅读<a href="">开启分页机制</a>是本节的前置要求。<br>
+本节代码对应分支 <code>open-page</code> 。</p>
+</blockquote>
+<p><strong><mark class="hl-label blue">boot.inc</mark> </strong><br>
+在进入保护模式的基础上，<code>boot.inc</code> 增添了如下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;========页目录地址和页表起始地址===========</span><br><span class="line">PAGE_DIR_POS    equ  0x00100000            ;目录表起始位置为1MB处</span><br><span class="line">PAGE_TABLE_POS  equ  PAGE_DIR_POS + 4096   ;页表起始位置</span><br><span class="line">;===========页表相关属性===================</span><br><span class="line">PG_P     equ   1b</span><br><span class="line">PG_RW_R	 equ  00b</span><br><span class="line">PG_RW_W	 equ  10b</span><br><span class="line">PG_US_S	 equ  000b</span><br><span class="line">PG_US_U	 equ  100b</span><br></pre></td></tr></table></figure>
+<ul>
+<li>和 GDT 相同，<strong>页目录也可以放置在内存中的任何地方</strong> ，这里我们直接将其放在 <code>0x100000</code> 处。</li>
+<li>为了使内存紧凑，这里让页表紧挨着页目录。注意，这不是必须的！页目录表大小为 4KB，所以页表地址在页目录地址的基础上加 4096 (0x1000)。</li>
+</ul>
+<p>以下为内存映像图：<br>
+<img src="/2022/img/未命名绘图9.png" style="zoom:67%;" /></p>
+<p><strong><mark class="hl-label blue">loader.s</mark> </strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br></pre></td><td class="code"><pre><span class="line">;文件说明：loader.s</span><br><span class="line">;%include &quot;boot.inc&quot;</span><br><span class="line">;%include &quot;loader.inc&quot;</span><br><span class="line"></span><br><span class="line">SECTION loader vstart=BASE_ADDR              ;定义用户程序头部段</span><br><span class="line">    program_length  dd program_end           ;程序总长度[0x00]</span><br><span class="line">    ;用户程序入口点</span><br><span class="line">    code_entry      dw start-BASE_ADDR       ;偏移地址[0x04]</span><br><span class="line">                    dd section.loader.start  ;段地址[0x06]</span><br><span class="line">    realloc_tbl_len dw 0                     ;段重定位表项个数为0</span><br><span class="line">;=========================================================</span><br><span class="line">;GDT</span><br><span class="line">;第0描述符不可用</span><br><span class="line">    GDT_BASE        dd    0x00000000</span><br><span class="line">                    dd    0x00000000</span><br><span class="line">;第1描述符CODE</span><br><span class="line">    DESC_CODE       dd    0x0000FFFF</span><br><span class="line">                    dd    DESC_CODE_HIGH4</span><br><span class="line">;第2描述符DATA</span><br><span class="line">    DESC_DATA       dd    0x0000FFFF</span><br><span class="line">                    dd    DESC_DATA_HIGH4</span><br><span class="line">;第3描述符VIDEO</span><br><span class="line">    DESC_VIDEO      dd    0x80000007</span><br><span class="line">                    dd    DESC_VIDEO_HIGH4</span><br><span class="line"></span><br><span class="line">    GDT_SIZE        equ   $ - GDT_BASE</span><br><span class="line">    GDT_LIMIT       equ   GDT_SIZE - 1</span><br><span class="line">;GDT指针</span><br><span class="line">    gdt_ptr         dw    GDT_LIMIT</span><br><span class="line">                    dd    GDT_BASE</span><br><span class="line"></span><br><span class="line">    SELECTOR_CODE   equ   ((DESC_CODE - GDT_BASE)/8)&lt;&lt;3 + TI_GDT + RPL0</span><br><span class="line">    SELECTOR_DATA   equ   ((DESC_DATA - GDT_BASE)/8)&lt;&lt;3 + TI_GDT + RPL0</span><br><span class="line">    SELECTOR_VIDEO  equ   ((DESC_VIDEO- GDT_BASE)/8)&lt;&lt;3 + TI_GDT + RPL0</span><br><span class="line"></span><br><span class="line">    loader_msg      db    &#x27;r&#x27;,11000010b,&#x27;e&#x27;,11000010b,&#x27;a&#x27;,11000010b,&#x27;l&#x27;,11000010b,&#x27;-&#x27;,11000010b</span><br><span class="line">                    db    &#x27;m&#x27;,11000010b,&#x27;o&#x27;,11000010b,&#x27;d&#x27;,11000010b,&#x27;e&#x27;,11000010b</span><br><span class="line">;=======================================================</span><br><span class="line"></span><br><span class="line">start: ;程序入口</span><br><span class="line">	mov ax,0             ;转移到loader代码后,如果不想立即进入保护模式</span><br><span class="line">	mov ds,ax            ;则最好先将各段寄存器清0</span><br><span class="line">	mov es,ax</span><br><span class="line">	mov ss,ax</span><br><span class="line">	mov gs,ax</span><br><span class="line">	mov fs,ax</span><br><span class="line">print:</span><br><span class="line">	mov ax,0xb800        ;彩色字符模式视频缓冲区</span><br><span class="line">	mov es,ax</span><br><span class="line">	mov si,loader_msg    ;ds:si</span><br><span class="line">	mov di,0             ;es:di</span><br><span class="line">	mov cx,18            ;9个字符,占18字节</span><br><span class="line">	cld</span><br><span class="line">	rep movsb</span><br><span class="line">;========================================================</span><br><span class="line">;1.打开A20</span><br><span class="line">;2.加载GDT</span><br><span class="line">;3.置PE=1</span><br><span class="line">prepare:</span><br><span class="line">;关中断</span><br><span class="line">    cli</span><br><span class="line">;打开A20</span><br><span class="line">    in   al,0x92</span><br><span class="line">    or   al,0000_0010B</span><br><span class="line">    out  0x92,al</span><br><span class="line">;加载GDT</span><br><span class="line">    mov  ax,0</span><br><span class="line">    mov  ds,ax</span><br><span class="line">    lgdt [gdt_ptr]</span><br><span class="line">;CR0的第0位置1</span><br><span class="line">    mov  eax,cr0</span><br><span class="line">    or   eax,0x0000_0001</span><br><span class="line">    mov  cr0,eax</span><br><span class="line">;此后进入保护模式</span><br><span class="line">    jmp  dword SELECTOR_CODE:p_mode_start ;刷新流水线,装载CODE选择子</span><br><span class="line">;======================================================</span><br><span class="line">[bits 32]</span><br><span class="line">p_mode_start:</span><br><span class="line">    mov ax,SELECTOR_DATA</span><br><span class="line">    mov ds,ax</span><br><span class="line">    mov es,ax</span><br><span class="line">    mov ss,ax</span><br><span class="line">    mov esp,BASE_ADDR       ;可以找其他合适的地方作为栈顶，这里使用BASE_ADDR</span><br><span class="line">    mov ax,SELECTOR_VIDEO</span><br><span class="line">    mov gs,ax</span><br><span class="line"></span><br><span class="line">    mov byte [gs:160],&#x27;p&#x27;   ;在保护模式下打印</span><br><span class="line">    mov byte [gs:161],11000010b</span><br><span class="line">    </span><br><span class="line">	call setup_page</span><br><span class="line">	sgdt [gdt_ptr]          ;store gdt,将GDTR中的信息存到标号gdt_ptr处</span><br><span class="line">	mov  ebx,[gdt_ptr+2]    ;此时ebx中为GDT的基地址</span><br><span class="line">	</span><br><span class="line">	;显存段是第3个段描述符，段描述符8字节,24~31段基址在高4字节</span><br><span class="line">	or dword [ebx+8*3+4],0xc0000000   ;c刚好对应高字节</span><br><span class="line">	</span><br><span class="line">	;将gdt的基址加上0xc0000000使其位于内核镜像所在的高地址</span><br><span class="line">	add dword [gdt_ptr + 2], 0xc0000000</span><br><span class="line">	</span><br><span class="line">	add esp, 0xc0000000     ;将栈指针同样映射到内核地址</span><br><span class="line">	</span><br><span class="line">	mov eax, PAGE_DIR_POS   ;把页目录地址赋给cr3</span><br><span class="line">	mov cr3, eax</span><br><span class="line">	</span><br><span class="line">	mov eax, cr0            ;打开cr0的pg位(第31位)</span><br><span class="line">	or eax, 0x80000000</span><br><span class="line">	mov cr0, eax</span><br><span class="line">	</span><br><span class="line">	;在开启分页后,用gdt新的地址重新加载</span><br><span class="line">	lgdt [gdt_ptr]          ; 重新加载</span><br><span class="line">	</span><br><span class="line">	mov byte [gs:320], &#x27;V&#x27;  ;视频段段基址已经被更新</span><br><span class="line">	mov byte [gs:322], &#x27;i&#x27;     </span><br><span class="line">	mov byte [gs:324], &#x27;r&#x27;     </span><br><span class="line">	mov byte [gs:326], &#x27;t&#x27;     </span><br><span class="line">	mov byte [gs:328], &#x27;u&#x27;     </span><br><span class="line">	mov byte [gs:330], &#x27;a&#x27;     </span><br><span class="line">	mov byte [gs:332], &#x27;l&#x27;     	</span><br><span class="line">	jmp $</span><br><span class="line">	</span><br><span class="line">;=======================================================</span><br><span class="line">;将页目录要存放的内存清零,每次清空4bytes,清1024次,共4KB</span><br><span class="line">setup_page:</span><br><span class="line">	mov ecx,1024</span><br><span class="line">	mov esi,0</span><br><span class="line">.clear:</span><br><span class="line">	mov dword [PAGE_DIR_POS+esi],0</span><br><span class="line">	add esi,4</span><br><span class="line">	loop .clear</span><br><span class="line"></span><br><span class="line">;创建页目录项,向页目录项中安装各个页表的物理地址</span><br><span class="line">.create_PDE:</span><br><span class="line">	mov eax,PAGE_TABLE_POS       ;此时eax为第0个页表的物理位置</span><br><span class="line">	mov ebx,eax                  ;备用</span><br><span class="line">	</span><br><span class="line">;下面在第0和0xc00目录项中安装第0个页表的地址，一个页表可表示4MB内存,</span><br><span class="line">;这样虚拟地址中高1GB空间的起始4MB和低3GB空间的起始4MB都指向相同的页表。详见博客分析</span><br><span class="line">;这是在为内核映射做准备。</span><br><span class="line">	or  eax, PG_US_U | PG_RW_W | PG_P        ;写入目录项属性,RW,PG位和US都为1</span><br><span class="line">	mov [PAGE_DIR_POS + 0*4], eax            ;安装第0个目录项,对应虚拟地址0~4MB</span><br><span class="line">	mov [PAGE_DIR_POS + 768*4], eax          ;安装第768个目录项,对应虚拟地址3GB~3GB+4MB</span><br><span class="line">	</span><br><span class="line">	mov eax, PAGE_DIR_POS</span><br><span class="line">	or  eax, PG_US_U | PG_RW_W | PG_P</span><br><span class="line">	mov [PAGE_DIR_POS + 1023*4], eax ;使最后一个目录项(第1023项)指向页目录表自己的地址</span><br><span class="line">	</span><br><span class="line">;下面创建第0页表的部分表项(PTE)</span><br><span class="line">	mov ecx,256                      ;1M低端内存/每页大小4KB=256</span><br><span class="line">	mov esi,0</span><br><span class="line">	mov edx,PG_US_U | PG_RW_W | PG_P ;属性为7,US=1,RW=1,P=1;高12~31位的物理页地址为0,所以直接mov</span><br><span class="line">.create_PTE:</span><br><span class="line">	mov [PAGE_TABLE_POS+4*esi],edx</span><br><span class="line">	add edx,4096                     ;一个页表项一个物理页框,包含的物理空间为4KB</span><br><span class="line">	inc esi</span><br><span class="line">	loop .create_PTE                 </span><br><span class="line"></span><br><span class="line">;创建虚拟地址高1GB空间其他对应的目录项</span><br><span class="line">	mov eax,PAGE_TABLE_POS+4096*1    ;此时eax为第1个页表的物理位置</span><br><span class="line">	or  eax,PG_US_U | PG_RW_W | PG_P ;页目录项的属性US,RW和P位都为1</span><br><span class="line">	mov ecx, 254                     ;范围为第769~1022的所有目录项数量,第1023目录项已经安装</span><br><span class="line">	mov esi, 769                     ;从第769目录项开始</span><br><span class="line">.create_kernel_pde:</span><br><span class="line">	mov ebx,PAGE_DIR_POS</span><br><span class="line">	mov [ebx+esi*4], eax</span><br><span class="line">	inc esi</span><br><span class="line">	add eax, 4096</span><br><span class="line">	loop .create_kernel_pde</span><br><span class="line">	ret</span><br><span class="line">;========================================================</span><br><span class="line">program_end  equ  $-BASE_ADDR</span><br></pre></td></tr></table></figure>
+<p>首先，务必先理清楚<u>页目录表</u>、<u>页目录项</u>、<u>页表</u>、<u>页表项</u>的关系，否则上面的代码将会看得你一头雾水！另外再次强调，页目录项和页表项中装载的是物理地址，这点很重要。为方便对照，将<a href="">开启分页机制</a>中的页目录项/页表项的结构图搬过来：</p>
+<img src="/2022/img/IMG_0522(20221113-175513).PNG" style="zoom: 67%;" />
+<p>让我们先聚焦 <code>setup_page</code> ，从第 123 行代码开始。</p>
+<ol>
+<li>
+<p>第 137 行，<code>PG_US_U | PG_RW_W | PG_P</code> ，这三位为 1，其他位都为 0 。</p>
+</li>
+<li>
+<p>第 140 行，为什么要将第 0 号页表的地址装载到第 0 号目录项中？原因是：分页机制是在 loader 中开启的，而 loader 本身已经位于 1MB 物理内存中，所以我们必须保证开启分页前后 <code>CS : EIP</code> 都正确指向 1MB 内的相关 loader 代码，<strong><font color='orange'>即必须保证之前段机制下的线性地址和分页后的虚拟地址所对应的物理地址一致</font></strong> 。<strong>也就是说虚拟地址下的 1MB 内存与真实物理地址下的 1MB 内存是完全一一对应的</strong> 。还是举个例子：开启分页前一瞬间 <code>CS:IP=0x0000:1002</code> 即 <code>0x00001002</code>，<u>这是真实的物理地址</u>；开启分页后执行的一条指令的地址为 <code>CS:IP=0x0000:1004</code> ，由于已经开启分页，这就成了虚拟地址，即 <code>0x00001004</code> 。按照<a href="">分页机制</a>中的计算方法，这个虚拟地址将映射到第 0 号页目录，因为其中装载的是第 0 号页表的地址，进而到第 0 号页表，虚拟地址中的 <code>1</code> 则将其映射到第 1 号页表项，对应的物理页框为 <code>0x1000</code> (<u>后续147~155行代码会将物理页框写入页表项</u>)，最后加上偏移地址 <code>0x04</code> ，得到物理地址 <code>0x00001004</code> 。可见，开启分页前后物理地址和虚拟地址是相同的。</p>
+</li>
+<li>
+<p>第 141 行，为什么将第 0 号页表的地址装载到第 768 号目录项中？原因是：<strong>第 768 号目录项对应的虚拟地址是 3GB~3GB+4MB，我们的内核镜像就在此处。实际内核位于低 1MB 的内存中，现在将其映射到内存 3GB 处，所以必须把第 0 号页表的地址装载到第 768 号目录项中</strong> 。</p>
+<blockquote>
+<p><strong>必须说明的是，第 2, 3点之所以能够顺利将虚拟地址下的 1MB 内存与真实物理地址下的 1MB 内存一一映射，其基础是 147~155 代码，这段代码将虚拟 1MB 与物理 1MB 地址空间一一对应。</strong></p>
+</blockquote>
+</li>
+<li>
+<p>第 145 行，为什么往最后一个(1023)目录项中安装目录表自身的地址？<strong><font color='orange'>这是为了在开启分页后，通过虚拟地址找到页表，这样才能动态操作页表</font></strong> 。二级页表是一种动态的数据结构，要申请一大块内存时可能会添加页表项，释放一块内存时可能会删减页表项。而页表和页目录都是存在于内存中的，要对其进行删减就必须知道它的地址，问题是现在已经进入了虚拟地址空间，我们该如何访问它呢？通过往最后一个目录项中安装目录表自身的地址可以迂回实现。当虚拟地址为 <code>0xfffff000</code> ，即高 10 位和中间 10 位都为 <code>0x3ff(1023)</code> 时，通过高 10 位访问到第 1023 目录项，取得其中的地址；因为该地址为目录表自身地址，所以通过中间 10 位进行索引时会以该地址为基准， <strong>也就是说，第一次索引和第二次索引都是在目录表中进行的（原本第一次索引是在目录表中，第二次索引在页表中）；第二次索引后，取得的地址仍为目录表自身起始地址，<u><font color='gree'>而 CPU 会将其当作物理页框地址来使用</font></u>；最后 12 位页内偏移地址置为 0，<font color='orange'>则最终虚拟地址就被映射成了目录表起始地址</font></strong> 。<strong>如果想访问目录表项，将 <code>0xfffff000</code> 改为 <code>0xfffffxxx</code> 即可，其中 <code>xxx</code> 为 <code>索引值*4</code> ，原因不再赘述。如果想访问页表项，则高 10 位为 <code>0x3ff</code> ，中间 10 位为索引值，此时得到相应页表的起始地址，CPU 将其作为物理页框地址，加上最后 12 位，为 <code>索引值*4</code> ，最终映射成某页表项的地址</strong> 。此方式的核心在于：CPU 很笨，通过目录项原本应该取得页表的地址，然后访问该页表；然而此方式通过目录项取得的却仍是目录表的起始地址，但 CPU 可不知道这个是目录表的地址，它仍将其看作页表地址，并用中间 10 位继续索引。用代码描述可能更清晰：</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> PDE_IDX(addr) ((addr &amp; 0xffc00000) &gt;&gt; 22) <span class="comment">//取得addr对应的页目录表索引,其实直接addr&gt;&gt;22也是可以的</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE_IDX(addr) ((addr &amp; 0x003ff000) &gt;&gt; 12) <span class="comment">//取得addr对应的页表索引</span></span></span><br><span class="line"><span class="type">uint32_t</span>* pte = (<span class="type">uint32_t</span>*)(<span class="number">0xffc00000</span> + ((vaddr &amp; <span class="number">0xffc00000</span>) &gt;&gt; <span class="number">10</span>) + PTE_IDX(vaddr) * <span class="number">4</span>);</span><br><span class="line"><span class="comment">//此时pte即为虚拟地址vaddr对应的PTE的地址</span></span><br><span class="line"><span class="type">uint32_t</span>* pde = (<span class="type">uint32_t</span>*)((<span class="number">0xfffff000</span>) + PDE_IDX(vaddr) * <span class="number">4</span>);</span><br><span class="line"><span class="comment">//此时pde即为虚拟地址vaddr对应的PDE的地址</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>第 148 行，注意这里只填充了一张页表的四分之一，一张页表可映射 4MB 内存，但我们的内核当前只有不到 1MB，所以只映射了 1MB 的空间。</p>
+</li>
+<li>
+<p>第 157~168 行，物理内核不是只映射在高 1GB 虚拟空间的最低 1MB 处吗？为什么还要安装高 1GB 虚拟地址对应的其他目录项？<strong><font color='gree'>这是为了实现内核完全共享</font></strong> 。所有用户进程的高 1GB 虚拟空间都会被映射到物理内核处，<strong>所以在为用户进程创建页表时，我们必须把内核页目录中第 768~1022 目录项复制到用户进程页目录的相同位置处（第 1023 目录项指向用户目录表的起始位置）</strong> 。如果不这样的话，进程陷入内核时，内核可能因为申请大量内存而新增页表，此时就必须手动将新增的内核页表同步到其他进程的页目录中，否则就只能部分共享。手动同步是很麻烦的，最简单的方式就是提前把高 1GB 的目录项定下来，未来创建用户进程页目录时直接复制过去。<strong>这是实现内核共享的关键！</strong></p>
+<blockquote>
+<p>读者可能还是对这点存有疑惑，不要慌，学到<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">内存管理基础篇</a>后，你将恍然大悟。</p>
+</blockquote>
+</li>
+</ol>
+<p>以上是对 <code>setup_page</code> 代码的解析，下面我们聚焦 91~199 行代码。</p>
+<ol>
+<li>第 91 行，<code>sgdt</code> 即 <code>store gdt</code> ，作用是将 GDTR 中的基地址和边界重新倒(dump)在指定地址处。因为无法直接在 GDTR 中修改，所以要先倒出来，在内存中修改，然后再使用 <code>lgdt</code> 重新加载进去。此处 <code>sgdt</code> 似乎有点鸡肋，因为 <code>gdt_ptr</code> 还在内核中，没有被覆盖。</li>
+<li>第 95 行，将显存段的基地址放在了 3GB 处。打印功能涉及硬件(显存)，所以是在内核中实现的，用户要打印须陷入内核，然后再调用打印功能，<strong>肯定不能让用户直接控制显存</strong> 。因此显存段的段基址要改为 3GB 以上。</li>
+<li>第 98 行，将 GDT 也移入内核空间，将其基地址加上 3GB 。<strong>这不是必须的，如果分页后不重复加载 GDT，也可以不修改 GDT 的基址</strong> 。</li>
+<li>第 100 行，将栈指针也指向内核空间，这点原因暂不清楚，后续补充。</li>
+</ol>
+<p>最终效果如下：<br>
+<img src="/2022/img/image-20221115112336872.png" alt=""></p>
+<p>另外，也可以通过 C 语言来设置页表，读者可自行尝试。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/">http://jyxcpp.netlify.app/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/17.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/11/16/%E6%B5%85%E6%9E%90C%E5%92%8C%E6%B1%87%E7%BC%96%E6%B7%B7%E5%90%88%E7%BC%96%E7%A8%8B/"><img class="prev-cover" src="/2022/img/23.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">浅析C和汇编混合编程/ABI规则</div></div></a></div><div class="next-post pull-right"><a href="/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5%E6%9C%BA%E5%88%B6/"><img class="next-cover" src="/2022/img/25.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">开启分页机制</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/10/31/32%E4%BD%8D%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%A7%88/" title="32位保护模式概览"><img class="cover" src="/2022/img/17.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">32位保护模式概览</div></div></a></div><div><a href="/2022/10/27/bochs%E4%BD%BF%E7%94%A8/" title="bochs虚拟机的使用"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-27</div><div class="title">bochs虚拟机的使用</div></div></a></div><div><a href="/2022/11/29/%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8-8259a/" title="对8259a芯片编程"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-29</div><div class="title">对8259a芯片编程</div></div></a></div><div><a href="/2022/10/31/%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E6%A6%82%E8%BF%B0/" title="GDT&amp;段描述符&amp;选择子概述"><img class="cover" src="/2022/img/9.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">GDT&amp;段描述符&amp;选择子概述</div></div></a></div><div><a href="/2022/12/08/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-%E8%BF%9B%E9%98%B6-%E5%88%86%E9%85%8D%E9%A1%B5%E5%86%85%E5%AD%98/" title="内存管理-进阶-分配页内存"><img class="cover" src="/2022/img/6.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-08</div><div class="title">内存管理-进阶-分配页内存</div></div></a></div><div><a href="/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" title="内存管理-基础-初始化内存池"><img class="cover" src="/2022/img/14.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-02</div><div class="title">内存管理-基础-初始化内存池</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">极简</div><div class="author-info__description">轩的个人博客</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/jyxcpp"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/jyxcpp" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1572676601@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/03/05/Socket%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="Socket网络编程入门笔记"><img src="/2022/img/15.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Socket网络编程入门笔记"/></a><div class="content"><a class="title" href="/2023/03/05/Socket%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="Socket网络编程入门笔记">Socket网络编程入门笔记</a><time datetime="2023-03-05T10:30:46.000Z" title="发表于 2023-03-05 18:30:46">2023-03-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/03/04/%E8%8B%B1%E8%AF%AD%E5%A4%96%E5%88%8A%E8%B6%85%E7%B2%BE%E8%AF%BB%E7%AC%94%E8%AE%B0/" title="英语外刊超精读笔记"><img src="/2022/img/13.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="英语外刊超精读笔记"/></a><div class="content"><a class="title" href="/2023/03/04/%E8%8B%B1%E8%AF%AD%E5%A4%96%E5%88%8A%E8%B6%85%E7%B2%BE%E8%AF%BB%E7%AC%94%E8%AE%B0/" title="英语外刊超精读笔记">英语外刊超精读笔记</a><time datetime="2023-03-04T05:36:46.000Z" title="发表于 2023-03-04 13:36:46">2023-03-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/10/%E5%85%B3%E4%BA%8ECHAT-GPT%E7%9A%84%E4%B8%80%E4%BA%9B%E6%83%B3%E6%B3%95/" title="关于CHATGPT的一些想法"><img src="/2022/img/11.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="关于CHATGPT的一些想法"/></a><div class="content"><a class="title" href="/2023/02/10/%E5%85%B3%E4%BA%8ECHAT-GPT%E7%9A%84%E4%B8%80%E4%BA%9B%E6%83%B3%E6%B3%95/" title="关于CHATGPT的一些想法">关于CHATGPT的一些想法</a><time datetime="2023-02-10T13:23:48.000Z" title="发表于 2023-02-10 21:23:48">2023-02-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/01/27/%E6%B7%B1%E5%BA%A6%E6%80%9D%E7%BB%B4-%E8%AF%BB%E4%B9%A6%E6%80%BB%E7%BB%93/" title="深度思维-读书总结"><img src="/2022/img/15.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="深度思维-读书总结"/></a><div class="content"><a class="title" href="/2023/01/27/%E6%B7%B1%E5%BA%A6%E6%80%9D%E7%BB%B4-%E8%AF%BB%E4%B9%A6%E6%80%BB%E7%BB%93/" title="深度思维-读书总结">深度思维-读书总结</a><time datetime="2023-01-27T01:07:46.000Z" title="发表于 2023-01-27 09:07:46">2023-01-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/01/13/%E6%9B%B4%E5%AE%89%E5%85%A8%E7%9A%84%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B/" title="更安全的用户进程?"><img src="/2022/img/1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="更安全的用户进程?"/></a><div class="content"><a class="title" href="/2023/01/13/%E6%9B%B4%E5%AE%89%E5%85%A8%E7%9A%84%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B/" title="更安全的用户进程?">更安全的用户进程?</a><time datetime="2023-01-13T06:55:11.000Z" title="发表于 2023-01-13 14:55:11">2023-01-13</time></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>浅谈锁机制 | 极简</title><meta name="keywords" content="锁, 操作系统, 信号量, 死锁的几种情况"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="锁, 操作系统, 信号量, 死锁的几种情况">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈锁机制">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/12/22/%E9%94%81%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="锁, 操作系统, 信号量, 死锁的几种情况">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/30.jpg">
+<meta property="article:published_time" content="2022-12-22T02:50:21.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:02.830Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="自制操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/30.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/12/22/%E9%94%81%E6%9C%BA%E5%88%B6/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '浅谈锁机制',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/30.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">浅谈锁机制</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-12-22T02:50:21.000Z" title="发表于 2022-12-22 10:50:21">2022-12-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:02.830Z" title="更新于 2023-03-12 19:21:02">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="浅谈锁机制"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="font-color-red-前言-font"><font color='red'>前言</font></h3>
+<p>在上节<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/12/16/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E9%98%B6/">线程 - 进阶 - 任务调度</a>的末尾，笔者演示了当删去 <code>put_str()</code> 上下的 <code>STI</code> 和 <code>CLI</code> 后发生的错误情况（打印不规律，且发生 GP 异常）这是为什么呢？这里就不卖关子了，直接原因是 <strong>线程不同步</strong> 。这样说了也当白说，让我们仔细还原现场：</p>
+<ol>
+<li>k_thread_a 在 put_char 中读取了字符打印的光标位置 p 。</li>
+<li>当 k_thread_a 准备更新光标位置时，中断发生，切换到 k_thread_b 。</li>
+<li>k_thread_b 读取光标位置，由于 k_thread_a 还未更新光标，所以此时光标值仍为 p 。</li>
+<li>于是，k_thread_b 在相同地方打印字符，覆盖了 k_thread_a 的字符。</li>
+</ol>
+<p>因此才出现少字符的情况。对于其他错误，比如一大串空格以及 GP 异常，就不详细说明原因了，只需明白，它们的罪魁祸首都是线程不同步造成的。为了进一步解释什么叫线程不同步，先来看看下面几个概念：</p>
+<ul>
+<li>
+<p><strong><font color='gree'>临界区</font>：</strong> 是指包含有共享数据的一段 <strong><u>代码</u></strong> ，这些代码可能被多个线程访问或修改。临界区的存在就是为了保证当有一个线程在临界区内执行的时候，不能有其他任何线程被允许在临界区执行。</p>
+<blockquote>
+<p><strong>注意，临界区是代码，不是受访的静态公共资源。</strong></p>
+</blockquote>
+</li>
+<li>
+<p><strong><font color='gree'>互斥</font>：</strong> 某一时刻公共资源只能被一个任务访问，即，不允许多个任务同时出现在临界区中。</p>
+</li>
+<li>
+<p><strong><font color='gree'>竞争条件</font>：</strong> 多个任务以竞争的方式（非互斥）进入临界区，其最终的的结果依赖于多个进程的指令执行顺序。<br>
+举例：假设两个进程 P1 和 P2 共享了变量 a。在某一执行时刻，P1 更新 a 为 1，在另一时刻，P2 更新 a 为 2。因此两个任务竞争地写变量 a。在这个例子中，竞争的失败者（最后更新的进程）决定了变量 a 的最终值。多个进程并发访问和操作同一数据且执行结果与访问的特定顺序有关，称为竞争条件。</p>
+</li>
+</ul>
+<p>显然，我们代码中的临界区就应该为 put_char（准确来说，是 put_char 中操作光标的代码部分），而 k_thread_a 和 k_thread_b 两个线程以竞争的方式访问临界区，从而产生竞争条件，最终引发不同步导致错误。那么，如何才能实现互斥访问呢？<strong><u>最简单的方式就是像视频演示中的那样开关中断，但现实的方式是采用锁</u></strong> 。关于这两种方式的比较，请见文末。</p>
+<p>下面我们来看看锁的进化历程，以此加深读者对锁的理解。</p>
+<h3 id="font-color-red-锁的进化-font"><font color='red'>锁的进化</font></h3>
+<p>情景：金鱼有个很奇怪的特点，就是没有饱的感觉，如果你不停地给它喂食，它就会一直进食直到把自己撑死。现在线程 A 和线程 B 共同喂养一条金鱼，要求只能由其中一个线程进行喂食，即，若 A 线程已经投喂，那么 B 就不能再继续投喂；如果 B 线程已经投喂，则 A 线程也不能再投喂，否则金鱼被撑死。除了不能多次投喂外，也不能不进行投喂，即 A 和 B 线程中总有一者必须投喂金鱼，否则金鱼被饿死。</p>
+<p><strong><mark class="hl-label blue">第一阶段</mark> </strong></p>
+<p>使用全局变量 if_feed 标记喂食情况：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//thread_A</span></span><br><span class="line"><span class="keyword">if</span>(if_feed == <span class="literal">false</span>)&#123;</span><br><span class="line">    feed fish;</span><br><span class="line">    if_feed = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//thread_B</span></span><br><span class="line"><span class="keyword">if</span>(if_feed == <span class="literal">false</span>)&#123;</span><br><span class="line">    feed fish;</span><br><span class="line">    if_feed = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就能防止多次投喂了吗？<br>
+<img src="/2022/img/未命名绘图29.png" style="zoom:67%;" /><br>
+哦豁，依旧投喂了两次，金鱼被撑死。这里的原因在于，A、B 两线程同时进入了临界区。</p>
+<p><strong><mark class="hl-label blue">第二阶段</mark> </strong></p>
+<p>经过第一阶段的失败，我们吸取了教训：要防止金鱼胀死，就必须避免多个线程同时进入临界区，即需要做到互斥。下面通过留字条的方式来互斥：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//thread_A</span></span><br><span class="line">noteA = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">if</span>(noteB == <span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(if_feed==<span class="literal">false</span>)</span><br><span class="line">        feed fish;</span><br><span class="line">&#125;</span><br><span class="line">noteA = <span class="literal">false</span>;</span><br><span class="line"><span class="comment">//==================</span></span><br><span class="line"><span class="comment">//thread_B</span></span><br><span class="line">noteB = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">if</span>(noteA == <span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(if_feed==<span class="literal">false</span>)</span><br><span class="line">        feed fish;</span><br><span class="line">&#125;</span><br><span class="line">noteB = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+<p>以上代码无论按什么顺序穿插执行 A、B 线程，都不会再造成金鱼胀死了，但却可能饿死！如下：</p>
+<img src="/2022/img/未命名绘图30.png" style="zoom:80%;" />
+哈哈，即使饿死，也比撑死好。这是因为几个线程同时获得一个资源，最终出现崩溃几乎是必然的事；如果谁都获取不了资源，则可能只是停止推进，而不一定产生错误结果。让我们继续改进。
+<p><strong><mark class="hl-label blue">第三阶段</mark> </strong></p>
+<p>为了保证投喂，我们让某个线程一直等着，直到确认对方投喂之后再离开：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//thread_A</span></span><br><span class="line">noteA = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">while</span>(noteB == <span class="literal">true</span>)&#123;&#125;</span><br><span class="line"><span class="keyword">if</span>(noteB == <span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(if_feed==<span class="literal">false</span>)</span><br><span class="line">        feed fish;</span><br><span class="line">&#125;</span><br><span class="line">noteA = <span class="literal">false</span>;</span><br><span class="line"><span class="comment">//================</span></span><br><span class="line"><span class="comment">//thread_B</span></span><br><span class="line">noteB = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">if</span>(noteA == <span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(if_feed==<span class="literal">false</span>)</span><br><span class="line">        feed fish;</span><br><span class="line">&#125;</span><br><span class="line">noteB = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+<p>这样一来就能够保证金鱼能够被投喂了。但即使如此，以上方式仍存在较大问题：</p>
+<ol>
+<li>程序不对称。功能完全相同，程序却不一样，这加大了代码的难度。</li>
+<li>浪费 CPU 资源。线程 A 的 while 完全是白占着 CPU 资源。</li>
+<li>可能造成优先级倒挂。</li>
+</ol>
+<p><strong><mark class="hl-label blue">第四阶段</mark> </strong><br>
+那么现在，我们又该怎么办呢？仔细思考后其实可以发现，第 2、3 个阶段的重心都落在字条上，即留字条是为了防止两个线程同时投喂或都不投喂金鱼。既然留字条不能完美地解决办法，那有没有其他方法来进行互斥呢？有，当要投喂时，进入房间，把门锁上，投喂金鱼，打好标记，解锁并离开房间：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//thread_A</span></span><br><span class="line">lock();</span><br><span class="line"><span class="keyword">if</span>(if_feed == <span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    feed fish;</span><br><span class="line">    if_feed = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line">unlock();</span><br><span class="line"><span class="comment">//thread_B</span></span><br><span class="line">lock();</span><br><span class="line"><span class="keyword">if</span>(if_feed == <span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    feed fish;</span><br><span class="line">    if_feed = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line">unlock();</span><br></pre></td></tr></table></figure>
+<p>这种为房间上锁的方式实际上是对第一种方案的改善，即，将检查标记和打标记合并为一个原子操作（投喂金鱼也被合并了）。如此一来，似乎就完美了。但再仔细观察后仍可以发现一个问题：如果线程 A 喂鱼的动作很慢，那么线程 B 将会被锁很长一段时间，这种等待不仅浪费 CPU 资源，也会降低系统效率。而且，喂鱼这个动作并非临界区，对标记的操作才是，所以完全可以将喂鱼的动作移出去：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//thread_A</span></span><br><span class="line">lock();</span><br><span class="line"><span class="keyword">if</span>(noteB == <span class="literal">false</span>)</span><br><span class="line">    noteA = <span class="literal">true</span>;</span><br><span class="line">unlock();</span><br><span class="line"><span class="keyword">if</span>(noteB == <span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(if_feed == <span class="literal">false</span>)</span><br><span class="line">        feed fish;</span><br><span class="line">    noteA = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//==================</span></span><br><span class="line"><span class="comment">//thread_A</span></span><br><span class="line">lock();</span><br><span class="line"><span class="keyword">if</span>(noteA == <span class="literal">false</span>)</span><br><span class="line">    noteB = <span class="literal">true</span>;</span><br><span class="line">unlock();</span><br><span class="line"><span class="keyword">if</span>(noteA == <span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(if_feed == <span class="literal">false</span>)</span><br><span class="line">        feed fish;</span><br><span class="line">    noteB = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><font color='orange'>谨记，临界区的动作越少越好！</font></strong> 另外，当其他线程被锁在临界区外时，只能苦等锁被打开，除此之外无法进行任何动作，<strong><font color='orange'>所以这些线程就不应该再占用 CPU 资源，即，在锁被打开前，CPU 不再调度这些任务，直到锁被打开后再恢复调度</font></strong> 。这就涉及到线程的 <strong><font color='orange'>睡眠</font></strong> 与 <strong><font color='orange'>觉醒</font></strong> 。</p>
+<h3 id="font-color-red-睡眠与觉醒：生产者和消费者问题-font"><font color='red'>睡眠与觉醒：生产者和消费者问题</font></h3>
+<p><strong>线程的睡眠和觉醒是指：当对方持有锁，将你锁在外面时，你无需一直敲门，而是可以在门口睡觉，等到对方解锁之后再来叫醒你</strong> 。下面用线程中经典的生产者和消费者问题来演示睡眠与觉醒。我们知道，一般来说，生产者（厂家）会将商品批发给超市，然后消费者在超市进行购买。如果没有超市这个中转站，生产者就无法独立操作，必须拿到消费者的订单才能生产；消费者也必须在每次订货后且等待商品完工后才能拿到货。显然，超市扮演着重要的缓冲区角色。现在抛出两个问题：1）当超市没货了怎么办？2）当超市货太多装不下怎么办？</p>
+<p>现实的实际做法一般是：<strong>当超市没货了，如果有顾客上门购买商品，则告知顾客缺货并让顾客回家等候通知；当超市货满了，则通知厂商暂时不要再生产</strong> 。用代码表示即如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> N 100  <span class="comment">//超市最多能存下的商品数</span></span></span><br><span class="line"><span class="type">int</span> count = <span class="number">0</span>; <span class="comment">//超市中现存的商品数</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">producer</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(count == N)</span><br><span class="line">            sleep();         <span class="comment">//不再生产</span></span><br><span class="line">        count++;</span><br><span class="line">        <span class="keyword">if</span>(count == <span class="number">1</span>)</span><br><span class="line">            wakeup(consumer);<span class="comment">//通知客户取货</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">consumer</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(count == <span class="number">0</span>)</span><br><span class="line">            sleep();         <span class="comment">//回家等通知</span></span><br><span class="line">        count--;</span><br><span class="line">        <span class="keyword">if</span>(count == N<span class="number">-1</span>)     <span class="comment">//如果count==N-1,说明厂家一定处于睡眠状态</span></span><br><span class="line">            wakeup(producer);<span class="comment">//通知厂家生产</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>注意，wakeup() 只是叫醒对方线程，即让其重新在 thread_ready_list 中，而不是立刻调度！</strong></p>
+</blockquote>
+<p>以上代码看上去正确无误，实际上存在着巨大问题：<strong><font color='red'>可能造成死锁！</font></strong></p>
+<blockquote>
+<p>死锁，即生产者和消费者均无法向前推进。</p>
+</blockquote>
+<p>例如，若消费者先来，此时 count=0，则去睡觉，但在<u>睡下的前一刻</u>，CPU 任务调度，执行流转移到生产者。生产者开始运行，生产一件商品后发现 count=1，于是叫醒消费者。但此时消费者并没有睡觉（还在 thread_ready_list 中），所以这个叫醒信号无用。缓冲区满后，生产者转入睡眠，执行流转移到消费者。而消费者执行的第一个操作就是 sleep()，于是消费者也转入睡眠。最后两者都陷入睡眠状态并等待彼此叫醒自己，显然，它们都无法再醒来，系统死锁发生。</p>
+<p>解决上述问题的方法也很简单。很容易发现，造成死锁的原因是因为叫醒信号的丢失。那我们想个办法将信号收集起来不就OK了嘛！消费者换上 CPU 执行 sleep 后，生产者发送的叫醒信号依然保留，因此消费者检测到该信号而觉醒。<strong><font color='gree'>这种能够累积的信号就叫做信号量</font></strong> 。</p>
+<h3 id="font-color-red-信号量-font"><font color='red'>信号量</font></h3>
+<p>实际上，信号量是操作系统中一个极其重要，威力巨大的概念，它不仅可以用来线程同步，还能用于进程间通信。我们现在仅讨论其作为锁的用途。<strong>当信号量的取值限制在 0 和 1 时，则获得了一把锁，也称二元信号量</strong> 。对信号量有 up、down 两种操作：</p>
+<p><strong><font color='orange'>up：</font></strong> 1）将信号量加 1；2）唤醒在此信号量上等待的线程。<br>
+<strong><font color='orange'>down：</font></strong> 1）判断信号量是否大于 0；2）若信号量大于 0，则将信号量减 1；3）若信号量等于 0，则在此信号量上睡眠。</p>
+<blockquote>
+<p>因为信号量是荷兰科学家 Dijkstra 发明的一种程序设计规范，所以 up 和 down 也被称为 PV 操作，即荷兰语中的 Proberen 和 Verhogen 。</p>
+</blockquote>
+<p><strong><u><font color='orange'>down 即获得锁，up 即解锁</font></u></strong> 。<strong>初始状态下信号量值为 1，某线程获得锁后，其值减为 0，当其他线程申请锁时，则只能在此锁上陷入睡眠，直到该线程解锁。</strong></p>
+<p>值得一说的是，信号量也不是完美的解决方案，当二元信号量多起来后，死锁也有极大的概率会发生，但由于我们的操作系统非常简单，不会发生如此复杂的情况，所以不考虑这些情况，详细内容请参考《操作系统之哲学原理》。</p>
+<h3 id="font-color-red-死锁-font"><font color='red'>死锁</font></h3>
+<p>有大概如下几种情况会产生死锁：</p>
+<ul>
+<li><strong>忘记释放锁</strong></li>
+<li><strong>单线程重复申请锁</strong></li>
+<li><strong>多线程多锁申请</strong></li>
+</ul>
+<h3 id="font-color-red-锁比开关中断好在哪？-font"><font color='red'>锁比开关中断好在哪？</font></h3>
+<p>前文提到，关中断是避免资源竞争最简单的方式，那为什么还需要锁呢？<br>
+<img src="/2022/img/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE31.png" alt=""><br>
+从上图可见，当红色箭头进入临界区时，关闭中断，虽然这避免了资源竞争，但却令红色箭头在整个临界区内独占 CPU，其他任务得不到调度，从而导致系统效率下降。这是关中断的方式，下面来看看用锁是什么情况：<br>
+<img src="/2022/img/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE32.png" alt=""><br>
+锁就不一样了，当红色箭头获得锁进入临界区后，绿色箭头仍然能够得到 CPU 调度，直到到达临界区才会被锁住而进入睡眠。因此，<strong>相比于开关中断，锁机制在任务调度上的效率更高</strong> 。</p>
+<blockquote>
+<p>以上是笔者的个人想法，若读者还有其他想法，不妨在评论区提出。</p>
+</blockquote>
+<p>本文就到这里，下节我们将实现锁机制。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/12/22/%E9%94%81%E6%9C%BA%E5%88%B6/">http://jyxcpp.netlify.app/2022/12/22/%E9%94%81%E6%9C%BA%E5%88%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/30.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/12/23/%E9%94%81%E6%9C%BA%E5%88%B6%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/"><img class="prev-cover" src="/2022/img/48.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">锁机制—代码实现</div></div></a></div><div class="next-post pull-right"><a href="/2022/12/16/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E9%98%B6/"><img class="next-cover" src="/2022/img/27.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">线程-进阶-任务调度</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/10/31/32%E4%BD%8D%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%A7%88/" title="32位保护模式概览"><img class="cover" src="/2022/img/17.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">32位保护模式概览</div></div></a></div><div><a href="/2022/10/27/bochs%E4%BD%BF%E7%94%A8/" title="bochs虚拟机的使用"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-27</div><div class="title">bochs虚拟机的使用</div></div></a></div><div><a href="/2022/11/29/%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8-8259a/" title="对8259a芯片编程"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-29</div><div class="title">对8259a芯片编程</div></div></a></div><div><a href="/2022/10/31/%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E6%A6%82%E8%BF%B0/" title="GDT&amp;段描述符&amp;选择子概述"><img class="cover" src="/2022/img/9.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">GDT&amp;段描述符&amp;选择子概述</div></div></a></div><div><a href="/2022/12/08/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-%E8%BF%9B%E9%98%B6-%E5%88%86%E9%85%8D%E9%A1%B5%E5%86%85%E5%AD%98/" title="内存管理-进阶-分配页内存"><img class="cover" src="/2022/img/6.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-08</div><div class="title">内存管理-进阶-分配页内存</div></div></a></div><div><a href="/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" title="内存管理-基础-初始化内存池"><img class="cover" src="/2022/img/14.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-02</div><div class="title">内存管理-基础-初始化内存池</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%89%8D%E8%A8%80-font"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E9%94%81%E7%9A%84%E8%BF%9B%E5%8C%96-font"><span class="toc-number">2.</span> <span class="toc-text">锁的进化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E7%9D%A1%E7%9C%A0%E4%B8%8E%E8%A7%89%E9%86%92%EF%BC%9A%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98-font"><span class="toc-number">3.</span> <span class="toc-text">睡眠与觉醒：生产者和消费者问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E4%BF%A1%E5%8F%B7%E9%87%8F-font"><span class="toc-number">4.</span> <span class="toc-text">信号量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E6%AD%BB%E9%94%81-font"><span class="toc-number">5.</span> <span class="toc-text">死锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E9%94%81%E6%AF%94%E5%BC%80%E5%85%B3%E4%B8%AD%E6%96%AD%E5%A5%BD%E5%9C%A8%E5%93%AA%EF%BC%9F-font"><span class="toc-number">6.</span> <span class="toc-text">锁比开关中断好在哪？</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

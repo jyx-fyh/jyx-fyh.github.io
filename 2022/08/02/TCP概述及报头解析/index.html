@@ -1,0 +1,340 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>TCP概述及报头解析 | 极简</title><meta name="keywords" content="TCP详解"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="TCP概述">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP概述及报头解析">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/08/02/TCP%E6%A6%82%E8%BF%B0%E5%8F%8A%E6%8A%A5%E5%A4%B4%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="TCP概述">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jyxcpp.netlify.app/img/22.jpg">
+<meta property="article:published_time" content="2022-08-02T13:13:52.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:27.191Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jyxcpp.netlify.app/img/22.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/08/02/TCP%E6%A6%82%E8%BF%B0%E5%8F%8A%E6%8A%A5%E5%A4%B4%E8%A7%A3%E6%9E%90/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'TCP概述及报头解析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:27'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://jyxcpp.netlify.app/img/22.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">TCP概述及报头解析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-02T13:13:52.000Z" title="发表于 2022-08-02 21:13:52">2022-08-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:27.191Z" title="更新于 2023-03-12 19:21:27">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCP/">TCP</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="TCP概述及报头解析"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="font-color-red-TCP-特征概述-font"><font color='red'>TCP 特征概述</font></h3>
+<p>TCP 协议在网络 OSI 参考模型中的第四层——传输层，是一个 <strong><font color='red'>面向连接的（connection-oriented）、可靠的（reliable）、字节流式的（byte stream）</font></strong> 传输协议。</p>
+<blockquote>
+<ul>
+<li><strong>面向连接</strong> ：在应用 TCP 协议进行通信之前，双方通常需要通过三次握手来建立 TCP 连接，连接建立后才能进行正常的数据传输。但是同时面向连接的特性给 TCP 带来了复杂的 <strong>连接管理</strong> 以及用于检测连接状态的 <strong>存活检测机制</strong> 。同时，TCP 提供全双工通信。</li>
+<li><strong>可靠性</strong> ：TCP 层需要解决来自 IP 层的四种常见传输错误问题，分别是 <strong>比特错误</strong> (packet bit errors)、<strong>包乱序</strong> (packet reordering)、<strong>包重复</strong> (packet duplication)、<strong>丢包</strong> (packet drops)，TCP要提供可靠的传输，就需要有额外的机制处理这几种错误。TCP 通过使用 <strong>确认</strong> ，<strong>重传</strong> ，<strong>校验和</strong> 这三种基本机制来实现可靠传输。因此TCP协议具有<u>超时与重传管理、窗口管理、流量控制、拥塞控制</u>等功能。</li>
+<li><strong>字节流式</strong> ：应用层发送的数据会在 TCP 的发送端缓存起来，统一分段(例如一个应用层的数据包分成两个TCP包)或者打包(例如多个应用层的数据包打包成一个TCP数据包)发送，到接收端的时候接收端也是直接按照字节流将数据传递给应用层。也就是说，<strong>TCP 的数据流是没有边界的</strong> ，这可能导致粘包。作为对比，同样是传输层的协议，UDP 并不会对应用层的数据包进行打包和分片的操作，一般一个应用层的数据包就对应一个 UDP 包。</li>
+</ul>
+</blockquote>
+<h3 id="font-color-red-报头解析-font"><font color='red'>报头解析</font></h3>
+<img src="/2022/img/IMG_0433(20220803-094417).PNG" alt="报头格式" style="zoom:67%;" />
+<p>报头大小为 <strong>20 ~ 60 字节</strong> ，若没有 option ，则为 20 字节。下面对图中各部分进行解析。</p>
+<ul>
+<li>
+<p><strong>源端口和目的端口：</strong> 分别用来唯一标识主机和服务器的进程。</p>
+<blockquote>
+<p>源端口、目的端口、以及源 IP 地址、目的 IP 地址统称为 <strong>四元组</strong> ，它唯一的标识了一个 TCP 连接。一个 IP 地址和一个端口号组成 <strong>套接字地址</strong> 。接收端的 TCP 层根据不同的端口号来将数据包传送给应用层的不同程序，这个过程叫做 <strong>解复用</strong> (demultiplex)。相应的发送端会把应用层不同程序的数据映射到不同的端口号，这个过程叫做 <strong>复用</strong> (multiplex)。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>序列号(SN)：</strong>  TCP 为待发送缓冲区中的数据编号，与 ARQ 协议不同，此处<u>是为每个字节进行编号，而不是为段进行编号</u> 。序列号范围为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span> ~ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>32</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{32}-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">32</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span> 。</p>
+<blockquote>
+<p>连接时，TCP 在范围内生成一个 <u>随机数</u> 作为 <strong>初始序号（ISN）</strong> ，那么第一个字节的序号应为 ISN + 1 。例如，ISN = 23 ，第一个分组大小为 500，则其序号为 24 ~ 500 ，那么下一个分组就需要从 501 开始编号。当 SYN =1 时，该序列号有效。TCP 通过序列号来判断丢包，重复和失序。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>确认号(ACK)：</strong> 当 ACK 位为 1 时，该确认号有效。接收方通过使用确认号来告知发送方已收到的字节数（或下一次想收到的字节），比如，接收方收到 <code>SN = 54</code> 的分组，然后回复 <code>ACK = 55</code> 的分组来告知发送方我已收到 55 之前的字节（或下一次我想收到 55 开头的字节流）。与 <a href="https://jyxcpp.netlify.app/2022/07/31/%E8%AF%A6%E8%A7%A3arq%E5%8D%8F%E8%AE%AE/">GBN</a> 相同，<u>确认号时累积的。</u></p>
+</li>
+<li>
+<p><strong>头部长度：</strong> 表示报头总大小。注意，头部长度仅占 4 bit ，范围为 0 ~ 15 ，而报头大小为 20 ~ 60 bytes，所以头部长度的单位是 4 bytes，也就是说，若头部长度为 11，则报头总大小为 <code>11 × 4 = 44</code> bytes 。</p>
+</li>
+<li>
+<p><strong>保留：</strong> 占 6 位，这些位必须是0。为了将来定义新的用途所保留，其中 RFC3540 将保留字段中的最后一位定义为 Nonce 标志，用于处理拥塞。</p>
+</li>
+<li>
+<p><strong>窗口大小：</strong> 16 位，表明接收端窗口的空闲空间大小，<u>最大的窗口大小为64Kb</u> 。这个值通常被称为 <strong>rwnd</strong> 。注意，它也可以表示为<u>对方必须维持的窗口大小</u> ，因为发送方必须服从接收方的支配。用于流量控制。</p>
+</li>
+<li>
+<p><strong>校验和：</strong> 发送端基于数据内容计算一个数值，接收端要与发送端数值结果完全一样，才能证明数据的有效性。接收端 checksum 校验失败的时候会直接丢掉这个数据包。CheckSum 是根据 <u>伪头部+TCP头+TCP数据</u> 三部分进行计算的。</p>
+<blockquote>
+<p><u>伪首部只参与校验，不占空间，不参与传输</u> 。UDP 伪头部 = 源 IP 地址 + 目的 IP 地址 + 8位协议 + 16位UDP长度 。<br>
+<strong>UDP 发送方可以选择不计算校验和，而 TCP 必须计算校验和</strong> 。UDP 伪首部目的是让UDP两次检查数据是否已经正确到达目的地：第一次，通过伪首部的IP地址检验，UDP可以确认该数据报是不是发送给本机IP地址的；第二，通过伪首部的协议字段检验，UDP可以确认IP有没有把不应该传给UDP而应该传给别的高层的数据报传给了UDP。相较于链路层的 CRC 校验，TCP/UDP 校验和提供相对较弱的差错保护。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>紧急指针：</strong> 16位，指向优先数据的字节，在URG标志设置了时才有效。<u>如果URG标志没有被设置，紧急域作为填充</u> 。</p>
+</li>
+<li>
+<p><strong>标志位：</strong></p>
+<ul>
+<li><strong>CWR(Congestion Window Reduce)</strong> ：拥塞窗口减少标志被发送主机设置，用来表明它接收到了设置ECE标志的TCP包，发送端通过降低发送窗口的大小来降低发送速率</li>
+<li><strong>ECE(ECN Echo)</strong> ：ECN 响应标志被用来在 TCP 3次握手时表明一个 TCP 端是具备 ECN 功能的，并且表明接收到的TCP包的IP头部的ECN被设置为11。ECN(Explicit Congestion Notification)是一种由网络层辅助的拥塞控制方法，用于显式通知终端拥塞的发生。参考<a href="https://jyxcpp.netlify.app/2022/08/07/tcp%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6/">此处</a></li>
+<li><strong>URG(Urgent)</strong> ：该标志位置位表示紧急(The urgent pointer) 标志有效。该标志位目前已经很少使用。</li>
+<li><strong>ACK(Acknowledgment)</strong>：取值 1 代表 ACK 字段有效，这是一个确认包，取值0则不是确认包。</li>
+<li><strong>PSH(Push)</strong> ：该标志置位时，一般是表示发送端缓存中已经没有待发送的数据，接收端不将该数据进行队列处理，而是尽可能快将数据转由应用处理。<u>在处理 telnet 或 rlogin 等交互模式的连接时，该标志总是置位的。</u></li>
+<li><strong>RST(Reset)</strong> ：用于复位相应的TCP连接。通常在发生异常或者错误的时候会触发复位 TCP 连接，这可能导致数据丢失。作用如下：
+<ol>
+<li>向一个未打开的端口发送连接请求</li>
+<li>应用程序主动终止一个连接</li>
+<li>应用程序还没有接收缓存中的数据，连接被提前关闭</li>
+<li>TWA(TIME-WAIT Assassination)</li>
+<li>半开连接的情况下发送数据。参考 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/lshs/p/6038500.html">此处</a></li>
+</ol>
+</li>
+<li><strong>SYN(Synchronize</strong>) ：该标志仅在三次握手建立TCP连接时有效。它提示TCP连接的服务端检查序列编号.</li>
+<li><strong>FIN(Finish)</strong> ：带有该标志置位的数据包用来结束一个TCP会话，<u>但对应端口仍处于开放状态</u> ，准备接收后续数据。</li>
+</ul>
+</li>
+<li>
+<p><strong>选项(Option)</strong> ：长度不定，但长度必须以是32bits的整数倍。常见的选项包括 MSS、SACK、Timestamp 等。<u>可用于填充</u> 。</p>
+<blockquote>
+<img src="/2022/img/20191026141216154.png" alt="可选字段的格式" style="zoom:67%;" />
+<p><img src="/2022/img/740952-20161107134032077-307444296.png" alt="选项含义"></p>
+<p>常用选项为：</p>
+<ul>
+<li>
+<p><strong>最大报文传输段(Maximum Segment Size — MSS )</strong> ：<strong><font color='red'>MSS只出现在前两次握手中</font></strong> ，默认值为 536 。</p>
+</li>
+<li>
+<p><strong>窗口扩大选项(window scaling – WSOPT  )</strong> ：<strong><font color='red'>该选项只出现在前两次握手中</font></strong> ，因此当TCP连接建立起来后，window scale就固定了。</p>
+<blockquote>
+<p><code>window size</code> 占 16 位，最大 64 kb，在网络情况很好的状态下，这么小的窗口无法满足较高的网络性能，所以需要用 WSOPT 选项扩大窗口。该选项格式如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//         +---------+---------+---------+</span></span><br><span class="line"><span class="comment">//         | Kind=3  |Length=3 |shift.cnt|</span></span><br><span class="line"><span class="comment">//         +---------+---------+---------+</span></span><br></pre></td></tr></table></figure>
+<p>当使用 WSOPT 选项的时候，接收窗口的实际大小则为 <code>Window Size &lt;&lt; shift.cnt</code>，其中 <u><strong>shift.cnt 按照协议最大只能为14</strong></u> ，当接收端接收到的 shift.cnt 大于 14 的时候，则按照 14 来处理 <strong>Window Size</strong> 。WSOPT 选项最大可将原有的 16 位 <strong>Window Size</strong> 扩展到近 30 位大小(大约1GB)，可以有效提升TCP允许使用的接收缓存。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>选择确认选项(Selective Acknowledgements —SACK )</strong> ：用于重传和拥塞控制，笔者其他文章会详述。</p>
+</li>
+<li>
+<p><strong>时间戳选项(timestamps )</strong> ：用于 <u>测量往返时延</u> （RTTM，利于掌握网络拥塞信息），<u>防止序列号回绕</u> （PAWS）（参见：<a href="https://jyxcpp.netlify.app/2022/08/04/tcp-%E5%BA%8F%E5%88%97%E5%8F%B7%E5%9B%9E%E7%BB%95%E9%97%AE%E9%A2%98/">序列号回绕</a> ）</p>
+</li>
+<li>
+<p><strong>NOP</strong> ：<u>选项部分的每种选项长度必须是4字节的倍数，不足时用NOP补充</u> 。注意，是用来填充选项之间的空隙。</p>
+</li>
+<li>
+<p><strong>EOL</strong> ：用来填充整个选项部分的末尾。</p>
+<blockquote>
+<p>举例：假如 <strong>Header Length</strong> 指定的 TCP 头长为 40 bytes，其中第 29-38 bytes 为 TSOPT 选项，则可以在第 39 byte 处添加一个 EOL 选项指示选项列表结束，可以看到 EOL 并没有位于 TCP 头的结束位置的第 40 byte。对于最后一个 byte RFC793 协议规定需要以 0 来填充。这个EOL后面填充的 0 已经不属于 TCP 选项的一部分了。然而，linux 本身发送 TCP 数据包的时候并不会添加 EOL 选项，而是通过添加一个或者多个 NOP 选项来实现整个 TCP 头长的四字节对齐。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>FOC</strong> ：用于 <strong>TFO</strong> 的 Cookie 选项，参见<a href="https://jyxcpp.netlify.app/2022/08/05/tcp-fast-open-tfo/">此处</a></p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>文章参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lshs/p/6038458.html">TCP协议01</a> ,<a target="_blank" rel="noopener" href="https://www.gingerdoc.com/tcp-intro">姜知笔记</a> ,<a target="_blank" rel="noopener" href="https://coolshell.cn/articles/11564.html">TCP那些事</a> , <a target="_blank" rel="noopener" href="https://www.cnblogs.com/lshs/p/6038494.html">TCP 8</a> , 《计算机网络自顶向下》</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/08/02/TCP%E6%A6%82%E8%BF%B0%E5%8F%8A%E6%8A%A5%E5%A4%B4%E8%A7%A3%E6%9E%90/">http://jyxcpp.netlify.app/2022/08/02/TCP%E6%A6%82%E8%BF%B0%E5%8F%8A%E6%8A%A5%E5%A4%B4%E8%A7%A3%E6%9E%90/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a></div><div class="post_share"><div class="social-share" data-image="https://jyxcpp.netlify.app/img/22.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/08/03/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E6%8C%A5%E6%89%8B/"><img class="prev-cover" src="/2022/img/8.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">TCP三次握手与四次挥手</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/02/%E5%88%9D%E8%AF%86%E7%AB%AF%E5%8F%A3/"><img class="next-cover" src="/2022/img/23.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">初识端口</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/08/16/IP%E7%BC%96%E5%9D%80/" title="IP编址"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-16</div><div class="title">IP编址</div></div></a></div><div><a href="/2022/08/05/RTT%E7%9A%84%E6%B5%8B%E9%87%8F/" title="RTT的测量（RTTM）"><img class="cover" src="/2022/img/12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-05</div><div class="title">RTT的测量（RTTM）</div></div></a></div><div><a href="/2022/08/04/SYN%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" title="SYN泛洪攻击"><img class="cover" src="/2022/img/10.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-04</div><div class="title">SYN泛洪攻击</div></div></a></div><div><a href="/2022/08/04/TCP-%E5%BA%8F%E5%88%97%E5%8F%B7%E5%9B%9E%E7%BB%95%E9%97%AE%E9%A2%98/" title="时间戳——RTTM与序列号回绕"><img class="cover" src="/2022/img/11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-04</div><div class="title">时间戳——RTTM与序列号回绕</div></div></a></div><div><a href="/2022/08/05/TCP-Fast-Open-TFO/" title="TCP Fast Open(TFO)"><img class="cover" src="/2022/img/14.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-05</div><div class="title">TCP Fast Open(TFO)</div></div></a></div><div><a href="/2022/08/08/TCP%E4%B8%83%E7%A7%8D%E8%AE%A1%E6%97%B6%E5%99%A8%E8%AF%A6%E8%A7%A3/" title="TCP计时器详解"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-08</div><div class="title">TCP计时器详解</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-TCP-%E7%89%B9%E5%BE%81%E6%A6%82%E8%BF%B0-font"><span class="toc-number">1.</span> <span class="toc-text">TCP 特征概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E6%8A%A5%E5%A4%B4%E8%A7%A3%E6%9E%90-font"><span class="toc-number">2.</span> <span class="toc-text">报头解析</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

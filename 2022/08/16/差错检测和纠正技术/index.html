@@ -1,0 +1,376 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>差错检测和纠正技术 | 极简</title><meta name="keywords" content="奇偶校验，检验和，循环冗余检验，汉明码"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="奇偶校验，检验和，汉明码，循环冗余检测">
+<meta property="og:type" content="article">
+<meta property="og:title" content="差错检测和纠正技术">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/08/16/%E5%B7%AE%E9%94%99%E6%A3%80%E6%B5%8B%E5%92%8C%E7%BA%A0%E6%AD%A3%E6%8A%80%E6%9C%AF/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="奇偶校验，检验和，汉明码，循环冗余检测">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/13.jpg">
+<meta property="article:published_time" content="2022-08-16T01:05:53.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:24.146Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/13.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/08/16/%E5%B7%AE%E9%94%99%E6%A3%80%E6%B5%8B%E5%92%8C%E7%BA%A0%E6%AD%A3%E6%8A%80%E6%9C%AF/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '差错检测和纠正技术',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:24'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/13.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">差错检测和纠正技术</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-16T01:05:53.000Z" title="发表于 2022-08-16 09:05:53">2022-08-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:24.146Z" title="更新于 2023-03-12 19:21:24">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E9%93%BE%E8%B7%AF%E5%B1%82/">链路层</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="差错检测和纠正技术"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>虽然将本节放入链路层专栏，但需要知道，差错检测和纠正技术不单单出现在链路层，传输层也有此技术的应用，比如 TCP/UDP 中的校验和。校验和主要用于传输层，奇偶校验和循环冗余检测(CRC)则主要用于链路层。</p>
+</blockquote>
+<h3 id="font-color-red-校验和-font"><font color='red'>校验和</font></h3>
+<p><strong>校验和(Checksum)</strong> 是一个端到端的校验方式，<u>由发送端计算，然后由接收端验证，如果接收方检测到校验和有差错，则报文会被直接丢弃</u> 。其目的是为了发现首部和数据在发送端到接收端之间发生的任何改动。<strong>UDP 可选择使用校验和，而 TCP 则强制使用校验和</strong> 。CheckSum 不同领域可能采用不同算法，算法存在细微差别，且覆盖区域也不同：</p>
+<ul>
+<li>
+<p>IP校验和：IP 首部</p>
+</li>
+<li>
+<p>ICMP校验和：ICMP 首部 + ICMP 数据</p>
+</li>
+<li>
+<p>UDP、TCP校验和：首部 + 数据 + 伪首部</p>
+</li>
+</ul>
+<blockquote>
+<p><u>伪首部并非 TCP&amp;UDP 数据报中实际的有效成分，它是一个虚拟的数据结构，其中的信息是从数据报所在 IP 分组头的分组头中提取的，既不向下传送也不向上递交，而仅仅是为计算校验和</u> 。伪头部 = 源 IP 地址 + 目的 IP 地址 + 8 位协议 + 16 位 UDP 长度，通过 伪头部+UDP头部+应用层数据，就可以检测出网络层(被递交到错误主机)，传输层(被递交到错误进程)，应用层(应用数据错误)的比特错误。</p>
+</blockquote>
+<p>下面以 UDP 校验和举例(TCP类似)。</p>
+<p><strong><mark class="hl-label blue">一.计算校验和：</mark> </strong></p>
+<ol>
+<li>
+<p>把校验和字段设置为 0 (下一步计算时，会包含此部分，所以必须设置为零)</p>
+</li>
+<li>
+<p>把需要校验的数据看成以 16 位为单位的数字组成，依次进行 <strong><font color='orange'>二进制反码求和</font></strong></p>
+</li>
+<li>
+<p>把得到的结果存入校验和字段中</p>
+</li>
+</ol>
+<p>另外注意：</p>
+<ul>
+<li>UDP、TCP 数据报的长度可以为奇数字节，因为计算时是 16 位为单位，所以此时计算校验和时需要在最后增加一个填充字节 0 (<u>只是计算校验和用，不发送出去</u>)。</li>
+<li><strong>二进制反码求和，就是先把这两个数取反，然后求和，如果最高位有进位，则向低位进 1</strong> 。<strong>先取反后相加与先相加后取反，得到的结果是一样的，因此实现代码都是先相加，最后再取反。</strong></li>
+</ul>
+<p><img src="/2022/img/image-20220816104346070.png" alt="示意图"></p>
+<p><strong><mark class="hl-label blue">二.检验校验和：</mark> </strong></p>
+<p>把需要校验的内容(包括校验和字段)看成以 16 位为单位的数字，依次进行二进制反码求和，<strong>如果结果是0表示正确，否则表示错误</strong> 。</p>
+<p><strong><mark class="hl-label blue">三.实现代码：</mark> </strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">uint16_t</span> <span class="title">check_sum</span><span class="params">(<span class="type">const</span> <span class="type">uint16_t</span> *buffer, <span class="type">int</span> size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> cksum = <span class="number">0</span>;</span><br><span class="line">     </span><br><span class="line">    <span class="comment">//16位为单位数字相加</span></span><br><span class="line">    <span class="keyword">while</span>(size&gt;<span class="number">1</span>)&#123;</span><br><span class="line">        cksum += *buffer++;</span><br><span class="line">        size -= <span class="built_in">sizeof</span>(<span class="type">uint16_t</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//长度奇数情况</span></span><br><span class="line">    <span class="keyword">if</span>(size)</span><br><span class="line">        cksum += *((<span class="type">unsigned</span> <span class="type">char</span> *)buffer);</span><br><span class="line">     </span><br><span class="line">    <span class="comment">//高位有进位，进位到低位，下面两行代码保证了高16位为0。</span></span><br><span class="line">    cksum = (cksum&gt;&gt;<span class="number">16</span>) + (cksum&amp;<span class="number">0xffff</span>);</span><br><span class="line">    cksum += (cksum&gt;&gt;<span class="number">16</span>);</span><br><span class="line">     </span><br><span class="line">    <span class="comment">//最后取反</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="type">uint16_t</span>)(~cksum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong><mark class="hl-label blue">为什么要用反码计算校验和？</mark> </strong></p>
+<p><strong>因为使用反码计算就可以避免依赖系统的字节序(大小端)</strong> 。即无论你是发送方计算机或者接收方检查校验和时，都不要调用htons或者ntohs，直接通过上面的算法就可以得到正确的结果。用反码求和时，交换16位数的字节顺序，得到的结果相同，只是字节顺序相应地也交换了；而如果使用原码或者补码求和，得到的结果可能就不同。举例如下：</p>
+<p><img src="/2022/img/20160929173826754.png" alt="反码计算校验和"></p>
+<p>可见，使用反码进行校验和计算，不同字节序所得结果相同。</p>
+<p><strong><mark class="hl-label blue">UDP可选校验和：</mark> </strong></p>
+<p>UDP 协议可以不选择使用校验和。在这种情况下，发送前 CheckSum 字段全部填充 0 ；如果在 UDP 发送方决定使用 CheckSum 的情况下计算出其值全为0，则在发送前将其全改为 1；注意，这这并不会产生混淆，因为 CheckSum 有可能被计算为全 0 ，但不可能被计算为全 1 (这意味着 CheckSum 覆盖的数据全为 0 ，这是不可能的)。</p>
+</blockquote>
+<h3 id="font-color-red-奇偶校验-font"><font color='red'>奇偶校验</font></h3>
+<p>奇偶校验用来检测数据传输过程中是否发生比特错误，是众多校验码中最为简单的一种。<strong>采用何种校验是事先规定好的</strong> 。<u>通常专门设置一个奇偶校验位</u> ，用它使这组代码中“1”的个数为奇数或偶数。若用奇校验，则当接收端收到这组代码时，校验“1”的个数是否为奇数，从而确定传输代码的正确性，偶校验同理。</p>
+<img src="/2022/img/v2-ed494a01b2527927febaac2845b51d9c_1440w.jpg" alt="奇偶校验" style="zoom:67%;" />
+<blockquote>
+<p>上图中直接将校验位放在了原始字节流的末尾，但实际上通常专门设置一个奇偶校验位。</p>
+</blockquote>
+<p><strong><mark class="hl-label blue">计算原理：</mark> </strong></p>
+<p>如果事先规定了采用奇校验，则发送方利用校验位将 <u>数据+校验位</u>  中的 1 的个数调整为奇数个（如上图），接收方收到分组后检验 <u>数据+校验位</u> 的 1 的个数，如果为奇数个，则 <strong>基本</strong> 能够说明数据没有发生错误，反之 <strong>一定</strong> 出错。偶校验同理。</p>
+<p><strong><mark class="hl-label blue">万一校验位本身出错呢？</mark> </strong></p>
+<p>目前笔者没有了解到此问题的解决方案，但需要知道的是，相对于数据而言校验位本身占的位数极少，本来一个分组发生比特错误的概率就极少，而错误发生在校验位而非数据位的概率就更加少了，所以并不用很担心此问题。即使发生错误，链路层和传输层也提供 <a href="https://jyxcpp.netlify.app/2022/07/31/%E8%AF%A6%E8%A7%A3arq%E5%8D%8F%E8%AE%AE/">ARQ 协议</a>来保障数据的正确性。</p>
+<p><strong><mark class="hl-label blue">当出错比特数为偶数，此方法不就失效了吗？</mark> </strong></p>
+<p>是的，奇偶校验只能检测到出错比特数为奇数的情况，一旦为偶数，就无法检测出错误。但需要知道的是，在某些可靠性较高的链路上(如,以太网)发生比特错误的概率是很小的，而同一个分组中发生多个比特错误的概率则是极小的，在这种情况下，单个奇偶校验位应该是足够的。然而即使如此，测量已经表明差错经常以“突发”的方式聚集在一起，而不是独立的发生，使用单比特奇偶校验保护的一帧中，未检测差错的概率达到了 50%，所以显然我们需要更健壮的差错保护方式。下面我们提供三种方式来提高其健壮性：</p>
+<ol>
+<li>
+<p>为每 N 个字节设置一个校验位。比如有 1000 字节的数据，每 100 字节设置一个校验位，则需要总共 10 个校验位。只有在连续的 100 个字节中同时出现多个比特错误才可能导致校验失败，这再次大大减少了失误发生的概率。（此方法为笔者推测，仅供参考）</p>
+</li>
+<li>
+<p><strong><font color='orange'>二维奇偶校验：</font></strong> 将数据的 N 个比特划分为 D 行 D 列，对每行和每列都计算校验位。一旦某处发生错误，那么其行/列校验位都会发生变动，<strong>因此接收方不仅可以检测的错误的发生，还能定位错误并将其纠正！</strong></p>
+<img src="/2022/img/IMG_0440(20220816-154217).PNG" alt="IMG_0440(20220816-154217)" style="zoom: 50%;" />
+<p>需要注意的是，并非任何差错情况都能够纠正(但都可检测到)，只要一个分组中出现多个比特差错，就无法纠正。原因是，假设发生两个比特错误，则再上图中就会有三条或四条线，对应三个或四个交点，而只发生了两处错误，所以无法准确定位。</p>
+</li>
+<li>
+<p><strong><font color='orange'>汉明码：</font></strong> 汉明码(海明码)在上世纪 40 年代早早地就诞生了，不过直到今天的 ECC 内存里面，我们还在使用这个技术方案，而海明也因为海明码获得了图灵奖。汉明码与二维奇偶校验类似，也属于多重奇偶校验。汉明码不仅可以验证数据是否有效，还能在数据出错的情况下指明错误位置(仅发生一处错误时)。下面我们详细了解其计算方法。</p>
+</li>
+</ol>
+<p><strong><mark class="hl-label blue">汉明码计算方法</mark> </strong></p>
+<p><strong>冗余位：</strong> “冗余位”是一种二进制位，它被用来添加到需要传输的数据信息中，以侦测数据在传输过程中发生的丢失或者改变。汉明码需要多少个冗余位？答案如图：</p>
+<img src="/2022/img/image-20220816170748013.png" alt="image-20220816170748013" style="zoom:50%;" />
+<p>对于 7 位有效数据，汉明码需要 4 位冗余码进行纠错，所以最早的汉明码又叫 <u>7-4 汉明码</u> 。<u>下面的讨论采用 7-4 方式且使用 <strong>奇校验</strong> 进行举例说明</u> 。</p>
+<p><strong>编码方式：</strong></p>
+<ol>
+<li>
+<p>为方便讨论，对比特位进行编号。7个有效位，4个冗余位，一共11位。<br>
+<img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE5NzgyMDE5,size_16,color_FFFFFF,t_70.png" alt="img" style="zoom: 33%;" /></p>
+</li>
+<li>
+<p><u>汉明码对于奇偶校验位的位置有特殊要求</u> ：<strong>所有2的幂次位（2^0=1,2^1=2,2^2=4,2^3=8……）作为“奇偶校验位”</strong> ，因此，第1位，第2位，第4位，第8位为奇偶校验位，其他的7位为数据位。<br>
+<img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE5NzgyMDE5,size_16,color_FFFFFF,t_70-166064187407110.png" alt="示意图" style="zoom:33%;" /></p>
+</li>
+<li>
+<p>表示出索引的二进制：<br>
+<img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE5NzgyMDE5,size_16,color_FFFFFF,t_70-166064194823213.png" alt="示意图" style="zoom: 50%;" /><br>
+并对索引进行分类：<u>从右往左（低位往高位）数</u> ，第一位是“1”的索引有：1011, 1001, 0111, 0101, 0011, 0001；于是这些位置由第一个校验码管理：<br>
+<img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE5NzgyMDE5,size_16,color_FFFFFF,t_70-166064212510716.png" alt="示意图" style="zoom: 50%;" /><br>
+第二位是“1”的索引有：1011, 1010, 0111, 0110, 0011, 0010；于是这些位置由第二个校验码管理：<br>
+<img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE5NzgyMDE5,size_16,color_FFFFFF,t_70-166064216439519.png" alt="示意图" style="zoom: 50%;" /><br>
+其他两组同理。</p>
+</li>
+<li>
+<p>填充数据位：<br>
+<img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE5NzgyMDE5,size_16,color_FFFFFF,t_70-166064231040322.png" alt="示意图" style="zoom: 50%;" /><br>
+填充冗余位：第一组(1,3,5,7,9,11位)：1 的个数为 4 个，偶数个，因此①号应该为 1(采用的是奇校验)；类似的，得出其他冗余位：<br>
+<img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE5NzgyMDE5,size_16,color_FFFFFF,t_70-166064258132625.png" alt="示意图" style="zoom:50%;" /></p>
+<p>构造完毕。</p>
+</li>
+</ol>
+<p><strong>汉明码的纠错机制：</strong><br>
+汉明码通过检查每一小组的“奇校验”，来确定是否发生了错误。<br>
+首先第一组（1,3,5,7,9,11位）：1 的个数为 6 位，不再是奇数个了，因此，我们可以断定，这一组中肯定有某个数据发生了错误，但不能确定是哪一位上发生了错误。为了达到“奇校验”，我们必须补 1 个 1 来达到奇数个 1。<br>
+接下来，我们检查第二组（2,3,6,7,10,11） ，1的个数为3位，仍然满足“奇校验”，因此我们也可以断定这一组中没有任何一位数据发生了改变。所以，我们只需要补 0。<br>
+我们继续检查第三组（4,5,6,7），1 的个数为 2，不在满足“奇校验”，因此，我们可以断定，这一组中也有数据发生改变。为了达到“奇校验”，我们必须补 1 个 1 来达到奇数个1。<br>
+我们检查第四组（8,9,10,11位），1 的个数为 3 位，满足“奇校验”，因此没有发生改变。所以我们只需要补0。<br>
+如下图所示：</p>
+<p><img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE5NzgyMDE5,size_16,color_FFFFFF,t_70-166064303859628.png" alt="示意图"></p>
+<p>我们发现，最后得出来的二进制数是：<code>0101</code> ，我们会神奇地发现，<code>0101</code> 就是十进制 5 的二进制表现，因此，我们可以准确的知道，5号位上发生了数据的改变，我们只要对 5 号位进行置反操作即可。最后，接收方就可以修改成为正确的数据。</p>
+<blockquote>
+<p>二维奇偶校验与汉明码谁略胜一筹？<br>
+笔者提供一个思路(仅供参考)：对于 10000 字节的数据而言，二维奇偶校验需要 200 个冗余字节(行100，列100)；而汉明码则最少只需要约 14 个字节(通过上面的公式计算得出)，所以在有效利用率上，汉明码更胜一筹。但显然二维奇偶校验的思路更加简单。</p>
+</blockquote>
+<h3 id="font-color-red-循环冗余校验-CRC-font"><font color='red'>循环冗余校验(CRC)</font></h3>
+<p>CRC 循环冗余校验属于检错码，只能检测出现了错误，但<u>无法纠正错误</u> 。与 CRC 循环冗余校验类似的，还有奇偶校验，<u>但是 CRC 漏检率更低</u> ，因此在实际应用中更为重要。CRC 常用于数据链路层的错误检测，通常在帧尾添加 CRC 校验码。<br>
+<strong>CRC 校验流程概述</strong> ：发送方在原始数据的基础上，加上 CRC 校验码，组成新的发送数据；然后接收方对收到的 <code>原始数据 + 校验码</code> 进行校验，判断数据在传输过程中是否出现错误，若出错则丢弃，并反馈相应信息。</p>
+<p><strong><mark class="hl-label blue">CRC校验步骤：</mark> </strong></p>
+<p><strong><font color=#3b8dfe>发送方追加校验码：</font></strong></p>
+<ol>
+<li>假设原始数据是：<code>101001</code></li>
+<li><strong>生成待追加的校验码，需要使用一个生成多项式G(x)(收发双方事先约定)</strong> ，例如 G(x) = <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x^3 + x^2 + 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></li>
+<li>构造被除数：原始数据 + 生成多项式最高次项个0，即：<code>101001000</code></li>
+<li>除数：除数实际上就是生成多项式的系数，G(x) <strong>展开得到</strong> : G(x) = <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>×</mo><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mn>1</mn><mo>×</mo><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mn>0</mn><mo>×</mo><msup><mi>x</mi><mn>1</mn></msup><mo>+</mo><mn>1</mn><mo>×</mo><msup><mi>x</mi><mn>0</mn></msup><mtext>，</mtext></mrow><annotation encoding="application/x-tex">1 × x^3 + 1 × x^2 + 0 × x^1 + 1 × x^0，</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span></span></span></span></span><span class="mord cjk_fallback">，</span></span></span></span>即 <code>1101</code></li>
+<li>两数相除得余数，<u>并进行补位(补到与生成多项式最高次项一致)</u> ，即得到校验码。但是，这里的除法跟常规除法并不相同，本处使用的是<strong>模2除法</strong> ；常规除法在上下两行数进行运算时，使用的是减法运算，而这里使用的是异或运算。通过上述运算，得到校验码 <code>001</code>，添加到原始数据之后，得到最终发送数据为   <code>101001001</code></li>
+</ol>
+<p><img src="/2022/img/2021021213262352.png" alt="示意图"></p>
+<p><strong><font color=#3b8dfe>接收方进行校验：</font></strong></p>
+<ol>
+<li>继续接前文，假设收到的数据为 <code>101001001</code></li>
+<li>接收方对该数据做除法，除数仍然是之前使用的多项式的系数 <code>1101</code> ，过程如下：</li>
+</ol>
+<p><img src="/2022/img/20210212134841902.png" alt="示意图"></p>
+<p><strong>若余数不为0，则表明发生比特错误</strong> 。</p>
+<blockquote>
+<p>另外，在实际使用 CRC 时，采用的生成多项式更为复杂，从而确保较低的漏检率：<br>
+<img src="/2022/img/20210212140304184.png" alt="常见多项式"></p>
+</blockquote>
+<h3 id="font-color-red-总结-font"><font color='red'>总结</font></h3>
+<p>接收方检测和纠正差错的能力被称为 <strong>前向纠错(Forward Error Correction, FEC)</strong> 。在网络环境中，FEC 可以单独应用，也可以与链路层的 ARQ 技术一起应用。FEC 技术具有很高应用价值，因为它们可以减少重发次数，避免了潜在的往返时延，这对于实时网络应用尤其重要。</p>
+<blockquote>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://blog.csdn.net/jiangqin115/article/details/39315085">伪首部</a>，<a target="_blank" rel="noopener" href="http://www.metools.info/code/c128.html">校验和计算器</a>，<a target="_blank" rel="noopener" href="https://www.cnblogs.com/iamwho/p/11510160.html">校验和计算方法</a>，<a target="_blank" rel="noopener" href="https://blog.csdn.net/axiqia/article/details/52704061?spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-52704061-blog-103358272.pc_relevant_vip_default&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-52704061-blog-103358272.pc_relevant_vip_default&amp;utm_relevant_index=1">校验和计算原理</a>，<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_19782019/article/details/87452394">汉明码通俗讲解</a>，<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%B1%89%E6%98%8E%E7%A0%81/3226749">汉明码-百度</a>，<a target="_blank" rel="noopener" href="https://blog.csdn.net/TL18382950497/article/details/113794438">CRC计算流程详解</a>，<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/61636624">CRC代码实现</a>，《计算机网络自顶向下》</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/08/16/%E5%B7%AE%E9%94%99%E6%A3%80%E6%B5%8B%E5%92%8C%E7%BA%A0%E6%AD%A3%E6%8A%80%E6%9C%AF/">http://jyxcpp.netlify.app/2022/08/16/%E5%B7%AE%E9%94%99%E6%A3%80%E6%B5%8B%E5%92%8C%E7%BA%A0%E6%AD%A3%E6%8A%80%E6%9C%AF/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/13.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/08/16/%E7%BD%91%E7%BB%9C%E5%B1%82%E6%A6%82%E8%BF%B0/"><img class="prev-cover" src="/2022/img/22.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">网络层概述</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/08/TCP%E5%AD%98%E6%B4%BB%E6%A3%80%E6%B5%8B/"><img class="next-cover" src="/2022/img/2.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">TCP存活检测机制</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/08/16/IP%E7%BC%96%E5%9D%80/" title="IP编址"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-16</div><div class="title">IP编址</div></div></a></div><div><a href="/2022/08/05/RTT%E7%9A%84%E6%B5%8B%E9%87%8F/" title="RTT的测量（RTTM）"><img class="cover" src="/2022/img/12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-05</div><div class="title">RTT的测量（RTTM）</div></div></a></div><div><a href="/2022/08/04/SYN%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" title="SYN泛洪攻击"><img class="cover" src="/2022/img/10.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-04</div><div class="title">SYN泛洪攻击</div></div></a></div><div><a href="/2022/08/04/TCP-%E5%BA%8F%E5%88%97%E5%8F%B7%E5%9B%9E%E7%BB%95%E9%97%AE%E9%A2%98/" title="时间戳——RTTM与序列号回绕"><img class="cover" src="/2022/img/11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-04</div><div class="title">时间戳——RTTM与序列号回绕</div></div></a></div><div><a href="/2022/08/05/TCP-Fast-Open-TFO/" title="TCP Fast Open(TFO)"><img class="cover" src="/2022/img/14.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-05</div><div class="title">TCP Fast Open(TFO)</div></div></a></div><div><a href="/2022/08/08/TCP%E4%B8%83%E7%A7%8D%E8%AE%A1%E6%97%B6%E5%99%A8%E8%AF%A6%E8%A7%A3/" title="TCP计时器详解"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-08</div><div class="title">TCP计时器详解</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E6%A0%A1%E9%AA%8C%E5%92%8C-font"><span class="toc-number">1.</span> <span class="toc-text">校验和</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%A5%87%E5%81%B6%E6%A0%A1%E9%AA%8C-font"><span class="toc-number">2.</span> <span class="toc-text">奇偶校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%BE%AA%E7%8E%AF%E5%86%97%E4%BD%99%E6%A0%A1%E9%AA%8C-CRC-font"><span class="toc-number">3.</span> <span class="toc-text">循环冗余校验(CRC)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E6%80%BB%E7%BB%93-font"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

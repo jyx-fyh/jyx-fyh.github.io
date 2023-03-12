@@ -1,0 +1,299 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>TCP流量控制详解 | 极简</title><meta name="keywords" content="滑动窗口，延迟确认，nagle、Cork、Clark算法"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="滑动窗口，延迟确认，nagle、Cork、Clark Solution">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP流量控制详解">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/08/07/TCP%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="滑动窗口，延迟确认，nagle、Cork、Clark Solution">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/15.jpg">
+<meta property="article:published_time" content="2022-08-07T09:44:15.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:26.299Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/15.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/08/07/TCP%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E8%AF%A6%E8%A7%A3/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'TCP流量控制详解',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/15.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">TCP流量控制详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-07T09:44:15.000Z" title="发表于 2022-08-07 17:44:15">2022-08-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:26.299Z" title="更新于 2023-03-12 19:21:26">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCP/">TCP</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="TCP流量控制详解"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="font-color-red-滑动窗口-font"><font color='red'>滑动窗口</font></h3>
+<p>TCP 流量控制基于 <strong>滑动窗口</strong> (连续 ARQ 协议) 实现。滑动窗口既保证了分组无差错、有序接收，也实现了流量控制。</p>
+<p><img src="/2022/img/101120ihanzfsth0hhcllk.png" alt="发送方滑动窗口示意图"></p>
+<p>发送方的滑动窗口由接收方控制，实现方法为：在接收方传递给发送方的报文中加入 Window Size 信息，从而告知发送方自己的窗口大小，<strong>且发送方必须服从接收方的管理</strong> 。在 TCP 实现中，<strong>两端的窗口大小相同</strong> 。另外需要注意的是，发送方不一定会一次性发送整个窗口的数据，这根据网络情况而定。</p>
+<blockquote>
+<p><strong><font color='orange'>窗口本身是一种抽象</font></strong> ，发送窗口有三个变量实现，分别为：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>f</mi></msub></mrow><annotation encoding="application/x-tex">S_f</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span> （第一个未完成分组）<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>n</mi></mrow><annotation encoding="application/x-tex">Sn</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">n</span></span></span></span> （下一个待发送分组）<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mrow><mi>s</mi><mi>i</mi><mi>z</mi><mi>e</mi></mrow></mrow><annotation encoding="application/x-tex">S{size}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord"><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">ze</span></span></span></span></span> （窗口大小）。</p>
+<img src="/2022/img/IMG_0427(20220802-163852).PNG" alt="窗口的抽象" style="zoom:50%;" />
+</blockquote>
+<p><img src="/2022/img/104946z1skgjjxx8g0txbx.png" alt="滑动窗口示意图"></p>
+<p>一般而言，流量控制分为两种：1）发送方输出的流量过多，接收方来不及接收。2）发送方发得太少，导致浪费带宽（数据只有一两个字节，而报头就占了几十个字节）。对于第一种则很好控制，只要发送方将每次输出的流量控制在接收方告知的窗口大小内即可；对于第二种情况(被称之为 <strong>糊涂窗口综合征</strong> )，则相对复杂。</p>
+<blockquote>
+<p><strong>糊涂窗口综合征</strong> ：当发送端进程产生数据缓慢或接收端进程数据拉取缓慢时，会导致发送方以很小的段发送，这会降低信道的利用率。这个问题称之为糊涂窗口综合征。此问题可以从发送方和接收方解决：</p>
+<ul>
+<li><strong><font color='orange'>发送方： Nagle 算法，Cork 算法</font></strong></li>
+<li><strong><font color='orange'>接收方：Clark Solution，延迟确认</font></strong></li>
+</ul>
+</blockquote>
+<h3 id="font-color-red-延迟确认-font"><font color='red'>延迟确认</font></h3>
+<p><strong>延迟确认（Delayed Acknowledgements）用于接收方</strong> ，其工作原理：当包到达接收方时，不立即确认，而是等待一定时间再发送确认。等待一段时间有两个好处：</p>
+<ol>
+<li>此时间内接收方进程可以拉取数据，清空部分缓冲区以提供更大窗口（这样就可以使发送方一次发送更多的字节）。</li>
+<li>接收方不必确认每一个段，减少了 pure ACK ，提高了通信效率。这基于发送方的 <strong>累积确认</strong> 。</li>
+</ol>
+<p>需要注意，<strong><font color='orange'>延迟确认最多延迟一次，即每两个报文就必须发送 ACK 报文；最多延迟 0.5 秒，若未等到下一个包，则直接发送 ACK</font></strong> 。同时，<u>延迟确认必须同时满足以下几点才可使用</u> ：</p>
+<ol>
+<li>
+<p><strong>当前已经收到的但是还没有回复 ACK 的报文长度小于接收 MSS。</strong></p>
+<blockquote>
+<p>这很好理解，<u>TCP 是基于字节流的协议</u> ，数据没有边界，所以发送方填充数据时应该会将每个段填充到最大长度（ MMS ）时才会继续填充下一个。若数据长度未达 MMS，我们就可以合理猜测对方数据已经发送完（也可能是因为对方进程产生数据太慢）。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>当前没有处于 quick ACK模式</strong></p>
+</li>
+<li>
+<p><strong>当前接收窗口中没有先前接收的乱序报文</strong></p>
+</li>
+</ol>
+<p>仅有延迟确认机制，不会导致请求延迟(初以为是必须等到 ACK 包发出去，recv系统调用才会返回)。一般来说，只有当该机制与Nagle算法或拥塞控制(慢启动或拥塞避免)混合作用时，才可能会导致时耗增长。</p>
+<blockquote>
+<p><strong>quick ACK：</strong></p>
+<p>与延迟 ACK 对应，Linux 还有一个 quick ACK 模式，这种 quick ack 模式下就会对每个数据包都回复一个 ACK。在<u>连接初始建立时候</u> 、<u>收包间隔大于 RTO 时</u> 、<u>收到不在接收窗内的报文的时候</u>  等场景下就会进入 quck ack 模式，进入 quick ac k模式的时候，会把 quick ack 计数器初始化为 16 (也有可能是小于16的某个值)，这就是说随后的 16 个数据包都不采用延迟 ACK。</p>
+</blockquote>
+<h3 id="font-color-red-Nagle-算法-font"><font color='red'>Nagle 算法</font></h3>
+<blockquote>
+<p>如果发送方 TCP 正在为一个创建数据很缓慢的进程服务，则可能引起糊涂窗口综合征。解决方法是防止发送方一个一个字节地发送数据。发送方被迫等待到将数据集成较大的数据块时再发送。那么需要等待多久？太长，延误进程；太短，数据不够长，效率低。Nagle 提供了一个简单的方法解决此问题。</p>
+</blockquote>
+<p><strong>Nagle 算法用于发送方</strong> ，其方法非常简单：</p>
+<ol>
+<li>即使从发送方进程接收来的数据只有 1 字节，也直接将其封装并发送。</li>
+<li>发送第一个段后，发送方在缓冲区积累数据并等待，<strong><font color='orange'>直到发送方接收到 ACK 或数据积累到 MMS 或包中有 FIN 再发送。</font></strong></li>
+</ol>
+<p><strong><mark class="hl-label blue">Nagle与延迟ACK引发死锁</mark> </strong></p>
+<p>当 Nagle 算法和延迟 ACK 同时使能的时候，可能会造成如下情况：</p>
+<ol>
+<li>客户端发送第一个小包，并被服务端接收。</li>
+<li>客户端等待 ACK 或数据长度达到 MMS。</li>
+<li>服务端延迟确认等待下一个包直到超时（0.5s）。</li>
+</ol>
+<p>这使得两端相互等待，引发 <strong>死锁(deadlock)</strong> 。这种情况下就会提升平均时延，降低网络性能，因此可能需要禁用Nagle算法或者延迟ACK算法。另外，对于一些需要小包场景的程序——<strong>比如像telnet或ssh这样的交互性比较强的程序</strong> ，你需要关闭这个算法。在 Socket 设置 <code>TCP_NODELAY</code> 选项来关闭这个算法</p>
+<h3 id="font-color-red-Cork-算法-font"><font color='red'>Cork 算法</font></h3>
+<p><strong>Nagle 算法用于发送方</strong> 。Cork 算法与 Nagle 算法类似，但 Cork 算法则更为激进，一旦打开 Cork 算法，TCP 不关注是否有收到 ACK 报文，只要当前缓存中累积的数据量不满 MMS 时，就不会将数据包发出，直到一个 RTO 超时后才会把不满 MMS 的数据包发出去。</p>
+<p>linux 中可以通过 <code>TCP_CORK</code> 选项来设置 Socket 打开 Cork 算法。<code>TCP_NODELAY</code> 选项和 <code>TCP_CORK</code> 选项在 Linux 早期版本是互斥的，但目前最新的 linux版本已经可以同时打开这两个选项了，但是 <code>TCP_CORK</code> 选项的优先级要比 <code>TCP_NODELAY</code> 选项的优先级要高。</p>
+<blockquote>
+<p>CORK 与 Nagle 的区别是，Nagle 算法是尽量避免大量的小包发送，而 CORK 算法是期望完全避免发送小包（无论是大量还是少量的小包）。</p>
+</blockquote>
+<h3 id="font-color-red-Clark-Solution-font"><font color='red'>Clark Solution</font></h3>
+<p><strong>Clark Solution 用于接收方</strong> 。要避免接收方的糊涂窗口综合征，简单的办法就是不让接收方窗口每次只更新少量可用缓冲区，直到有较大空间时，才通知发送方窗口大小。Clark 解决方法是 <strong><font color='orange'>只要有数据到达就发送确认，但宣布的窗口大小为零，直到窗口足够放入具有最大长度的报文段，或者至少半个缓存空间是空的</font></strong> 。</p>
+<blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lshs/p/6038647.html">Cork</a>，<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lshs/p/6038641.html">Nagle</a>，<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lshs/p/6038635.html">延迟ACK</a>，<a target="_blank" rel="noopener" href="http://www.52im.net/thread-515-1-1.html">TCP简介</a>，《计算机网络自顶向下》</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/08/07/TCP%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E8%AF%A6%E8%A7%A3/">http://jyxcpp.netlify.app/2022/08/07/TCP%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E8%AF%A6%E8%A7%A3/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/15.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/08/07/tcp%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6/"><img class="prev-cover" src="/2022/img/16.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">TCP拥塞控制详解(一)</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/07/TCP%E9%87%8D%E4%BC%A0%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"><img class="next-cover" src="/2022/img/19.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">TCP重传机制详解</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/08/16/IP%E7%BC%96%E5%9D%80/" title="IP编址"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-16</div><div class="title">IP编址</div></div></a></div><div><a href="/2022/08/05/RTT%E7%9A%84%E6%B5%8B%E9%87%8F/" title="RTT的测量（RTTM）"><img class="cover" src="/2022/img/12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-05</div><div class="title">RTT的测量（RTTM）</div></div></a></div><div><a href="/2022/08/04/SYN%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" title="SYN泛洪攻击"><img class="cover" src="/2022/img/10.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-04</div><div class="title">SYN泛洪攻击</div></div></a></div><div><a href="/2022/08/04/TCP-%E5%BA%8F%E5%88%97%E5%8F%B7%E5%9B%9E%E7%BB%95%E9%97%AE%E9%A2%98/" title="时间戳——RTTM与序列号回绕"><img class="cover" src="/2022/img/11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-04</div><div class="title">时间戳——RTTM与序列号回绕</div></div></a></div><div><a href="/2022/08/05/TCP-Fast-Open-TFO/" title="TCP Fast Open(TFO)"><img class="cover" src="/2022/img/14.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-05</div><div class="title">TCP Fast Open(TFO)</div></div></a></div><div><a href="/2022/08/08/TCP%E4%B8%83%E7%A7%8D%E8%AE%A1%E6%97%B6%E5%99%A8%E8%AF%A6%E8%A7%A3/" title="TCP计时器详解"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-08</div><div class="title">TCP计时器详解</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3-font"><span class="toc-number">1.</span> <span class="toc-text">滑动窗口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E5%BB%B6%E8%BF%9F%E7%A1%AE%E8%AE%A4-font"><span class="toc-number">2.</span> <span class="toc-text">延迟确认</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-Nagle-%E7%AE%97%E6%B3%95-font"><span class="toc-number">3.</span> <span class="toc-text">Nagle 算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-Cork-%E7%AE%97%E6%B3%95-font"><span class="toc-number">4.</span> <span class="toc-text">Cork 算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-Clark-Solution-font"><span class="toc-number">5.</span> <span class="toc-text">Clark Solution</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>内存管理-基础-初始化内存池 | 极简</title><meta name="keywords" content="操作系统, 内存管理, 虚拟地址"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="操作系统, 内存管理, 虚拟地址">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存管理-基础-初始化内存池">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="操作系统, 内存管理, 虚拟地址">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/14.jpg">
+<meta property="article:published_time" content="2022-12-02T11:48:14.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:21:07.275Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="自制操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/14.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '内存管理-基础-初始化内存池',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-12 19:21:07'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">131</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">23</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/14.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">内存管理-基础-初始化内存池</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-12-02T11:48:14.000Z" title="发表于 2022-12-02 19:48:14">2022-12-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:07.275Z" title="更新于 2023-03-12 19:21:07">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">6.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>22分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="内存管理-基础-初始化内存池"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>本节对应分支：<code>memory</code></p>
+</blockquote>
+<h3 id="font-color-red-概述-font"><font color='red'>概述</font></h3>
+<p><strong>操作系统内存管理可以说是操作系统中最重要的部分</strong> ，它是未来所有工作的基础。内存管理相当复杂，大约有如下内容：<br>
+<img src="/2022/img/v2-4c9fcddd65b35e84c4c6783aaeee3826_720w.jpg" alt="操作系统—内存管理"></p>
+<p>但本节并不会讨论以上全部内容，而是根据我们自制操作系统的需要来进行。我们当前的任务是完成操作系统的内存划分（本节）以及虚拟内存的申请（下节），即虚拟空间到物理内存的映射，其他内容咋们后续按需补充。本节内容如下：</p>
+<ol>
+<li><strong><font color='orange'>通过 BIOS 中断获取内存容量</font></strong><br>
+既然要分配内存，就一定需要知道系统的内存容量有多大，这通过 BIOS 中断来获取。</li>
+<li><strong><font color='orange'>通过位图来管理内存</font></strong><br>
+管理内存时，肯定需要知道哪些内存已经被使用，哪些还没有使用，这些信息通过我们自己维护的位图来获取。</li>
+<li><strong><font color='orange'>规划内存池</font></strong><br>
+管理内存前，当然还需要对内存做出规划，比如，哪些内存给内核使用，哪些内存又给用户使用。</li>
+<li><strong><font color='orange'>向页表填写映射关系</font></strong><br>
+我们早就实现了分页机制，就差向其中填入映射关系啦！笔者期待已久，让我们开始吧。</li>
+</ol>
+<h3 id="font-color-red-获取内存容量-font"><font color='red'>获取内存容量</font></h3>
+<p>获取内存容量的例程已经由操作系统厂商写好并存入了 BIOS 中，因此我们只需要调用 BIOS 中断即可。现在问题是，进入保护模式后，BIOS 中断无法再被调用，这怎么办呢？不得已，<strong>我们只能回到 loader.s 中，即进入保护模式之前调用 BIOS 中断</strong> 。</p>
+<blockquote>
+<p><strong>为什么进入保护模式后不能再使用 BIOS 中断</strong> ？</p>
+<ol>
+<li>BIOS 中断例程的地址存放在中断向量表（IVT）中，实模式下使用 <code>int</code> 指令调用中断时，会跳转到 IVT 描述符指向的例程地址；而保护模式下使用 <code>int</code> 指令调用中断时，则是跳转到 IDT 描述符所指向的例程。因此，IVT 不再有效。</li>
+<li>BIOS 中断例程是在实模式，即 16 位模式下运行的代码，这些代码并不能直接运行在 32 位保护模式下。</li>
+</ol>
+</blockquote>
+<p>Linux 采用了三种方式来检测内存容量，如果一种方式失败，就调用下一种，全部失败则挂起。这三种方式都是通过调用 0x15 号 BIOS 中断来进行的，它们的功能号及其特点为：</p>
+<ul>
+<li>EAX = 0xE820 ：遍历主机所有内存。</li>
+<li>AX   = 0xE801 ：最大支持 4GB 。</li>
+<li>AH   = 0x88     ：最大支持 64 MB 内存。</li>
+</ul>
+<blockquote>
+<p>功能号需要装在 EAX 或 AX 中。</p>
+</blockquote>
+<p>由于咋们的操作系统最大不会超过 100 KB，因此我们只使用第三种方式，即 0x88 功能号。因为该部分只需要调用中断，没有其他需要强调或理解的地方，所以此处笔者就不详细记录这三个功能号的中断参数和用途了，详情还请读者朋友移步《操作系统真相还原》第 177 页。下面只贴出我们要用到的 0x88 功能号：<br>
+<img src="/2022/img/IMG_0561(20221206-184055).PNG" alt=""><br>
+<strong>需要注意两点：</strong></p>
+<ul>
+<li><strong>0x88 功能号返回的内存不包括低端 1 MB，因此我们算总内存时还需要加上 1MB 。</strong></li>
+<li>返回后 AX 中的值以 1KB 为单位，所以还需要换算成以 1 字节为单位。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">total_mem_bytes dd 0</span><br><span class="line">;-----------------  int 15h ah = 0x88 获取内存大小,只能获取64M之内  ----------</span><br><span class="line">.e801_failed_so_try88:</span><br><span class="line">   ;int 15后，ax存入的是以kb为单位的内存容量</span><br><span class="line">   mov  ah, 0x88</span><br><span class="line">   int  0x15</span><br><span class="line">   jc .error_hlt     ;CF为0则跳转</span><br><span class="line">   and eax,0x0000FFFF;加上1024,即低端的1MB(1024KB)</span><br><span class="line"></span><br><span class="line">   ;16位乘法，被乘数是ax,积为32位.积的高16位在dx中，积的低16位在ax中</span><br><span class="line">   mov cx, 0x400     ;0x400等于1024,将ax中的内存容量换为以byte为单位</span><br><span class="line">   mul cx</span><br><span class="line">   shl edx, 16       ;把dx移到高16位</span><br><span class="line">   or edx, eax       ;把积的低16位组合到edx,为32位的积</span><br><span class="line">   add edx,0x100000  ;0x88子功能只会返回1MB以上的内存,故实际内存大小要加上1MB</span><br><span class="line"></span><br><span class="line">.mem_get_ok:</span><br><span class="line">   mov [total_mem_bytes], edx	 ;将内存换为byte单位后存入total_mem_bytes处。</span><br><span class="line">   jmp prepare       ;跳转,准备进入保护模式</span><br><span class="line"></span><br><span class="line">.error_hlt:          ;出错则挂起</span><br><span class="line">   hlt</span><br></pre></td></tr></table></figure>
+<p>代码逻辑很简单，注释也足够清晰，不再赘述。需要强调的是，标号 <code>total_mem_bytes</code> 用来存放所得结果，此结果待会会在 memory.c 中使用，因此，我们还得手动算出该标号所代表的地址，以方便在 C 文件中通过指针引用该值。有读者可能会疑惑了，为什么还得手动算地址呢？难道不能像我们之前那样，使用 <code>global</code> 关键字导出 <code>total_mem_bytes</code> ，然后在 C 文件中声明 <code>extern total_mem_bytes</code> 来直接引用这个变量吗？是的，不能。原因在于，我们链接时并没有将 loader.o 包含进来，看下面的 makefile 语句：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">KERNEL=build/guide.o  build/print.o  build/main.o build/interrupt.o build/idt.o build/port_io.o \</span><br><span class="line">       build/timer.o  build/intrmgr.o  build/debug.o  build/string.o  build/memory.o  build/bitmap.o \</span><br><span class="line"><span class="variable">$(BUILD)</span>/kernel.bin: <span class="variable">$(KERNEL)</span></span><br><span class="line">	ld  -m elf_i386 <span class="variable">$^</span> -o <span class="variable">$@</span> -Ttext 0x00001500</span><br></pre></td></tr></table></figure>
+<p>其中并没有包含 loader.s 。我猜到你要说什么了：那就包含 loader.s 呗…昂，kernel.bin 可是咋们的内核呀，现在又将 loader 包含进去，可谓不伦不类啦。所以，我们需要手动算出 <code>total_mem_bytes</code> 的地址值，它的位置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">SECTION loader vstart=BASE_ADDR              ;定义用户程序头部段</span><br><span class="line">    program_length  dd program_end           ;程序总长度[0x00]</span><br><span class="line">    ;用户程序入口点</span><br><span class="line">    code_entry      dw start-BASE_ADDR       ;偏移地址[0x04]</span><br><span class="line">                    dd section.loader.start  ;段地址[0x06]</span><br><span class="line">    realloc_tbl_len dw 0                     ;段重定位表项个数为0</span><br><span class="line">;=========================================================</span><br><span class="line">;检测出的总内存大小,位于0x90c处.前面一共0xc，即12字节</span><br><span class="line">    total_mem_bytes dd 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">;BASE_ADDR=0X900</span><br><span class="line">;dd=4bytes, dw=2bytes</span><br><span class="line">BASE_ADDR+4+2+4+2=0x90c</span><br></pre></td></tr></table></figure>
+<p>因此，<code>total_mem_bytes</code> 的地址为 0x90c 。如此，咋们就轻松获取了内存容量的大小，为 32MB，即 0x2000000<br>
+<img src="/2022/img/image-20221207201205263.png" alt=""></p>
+<h3 id="font-color-red-位图-font"><font color='red'>位图</font></h3>
+<p>位图并不止用于内存管理，<strong><u>它是一种映射，用一个位来表示一个对象的状态</u></strong> 。在之前我们也接触过位图，比如 8259A 中的各个寄存器就是关于 IRQ 的位图。现在，我们要使用位图来管理内存，即用一个位来表示某片内存的状态（是否已经使用）。问题是，一个位应该映射成多大的一片内存呢？通过前面内存分页的学习，我们知道内存是按页来分隔的，一页的大小是 4KB，出于这个原因，我们将一个位映射为 4KB 内存，即一个位管理一页内存。<strong><font color='orange'>如果某位为 1，则表示对应的页已经被使用；为 0 则表示该页为空闲状态，可以使用</font></strong> 。<br>
+<img src="/2022/img/IMG_0562(20221206-193514).PNG" style="zoom:67%;" /></p>
+<p>位图结构体的声明如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">bitmap</span> &#123;</span></span><br><span class="line">    <span class="type">uint32_t</span> btmp_bytes_len;</span><br><span class="line"><span class="comment">/* 在遍历位图时,整体上以字节为单位,细节上是以位为单位,所以此处位图的指针必须是单字节 */</span></span><br><span class="line">    <span class="type">uint8_t</span>* bits;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>btmp_bytes_len</code> 表示位图的长度，包含的总位数为 btmp_bytes_len*32 。该值由位图所管理的内存大小决定。</li>
+<li><code>bits</code> 为位图的指针。<strong>位图也当然是存放在内存中的，所以我们用 <code>bits</code> 指针来记录位图的起始地址</strong> 。</li>
+</ul>
+<p>需要注意，虽然 <code>bits</code> 是 <code>uint8_t*</code> 型的指针，步长为 1 字节，但实际操作时我们会细化为按位处理，即通过掩码来判断相应位是否为 1 。<br>
+位图的操作函数有如下几个：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">bitmap_init</span><span class="params">(<span class="keyword">struct</span> bitmap* btmp)</span>;</span><br><span class="line"><span class="type">bool</span> <span class="title function_">bitmap_scan_test</span><span class="params">(<span class="keyword">struct</span> bitmap* btmp, <span class="type">uint32_t</span> bit_idx)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">bitmap_set</span><span class="params">(<span class="keyword">struct</span> bitmap* btmp, <span class="type">uint32_t</span> bit_idx, <span class="type">int8_t</span> value)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">bitmap_apply</span><span class="params">(<span class="keyword">struct</span> bitmap* btmp, <span class="type">uint32_t</span> cnt)</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>bitmap_init</code> ：用来初始化位图，<strong><u>根据传入的 btmp 参数来决定将哪片内存视为位图，并将其初始化为 0</u></strong> 。</li>
+<li><code>bitmap_scan_test</code> ：用来检测位图中第 <code>bit_idx</code> 位是否为 1，该函数只在 <code>bitmap_apply</code> 中调用。</li>
+<li><code>bitmap_set</code> ：用来将位图中的第 <code>bit_idx</code> 位赋值为 0/1 。</li>
+<li><code>bitmap_apply</code> ：在位图中申请<u>连续</u> <code>cnt</code> 个位，若成功则返回起始位的索引(下标)，失败则返回 -1 。</li>
+</ul>
+<p>实现如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//bitmap.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BITMAP_MASK 7</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">bitmap_init</span><span class="params">(<span class="keyword">struct</span> bitmap* btmp)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">memset</span>(btmp-&gt;bits, <span class="number">0</span>, btmp-&gt;btmp_bytes_len);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 判断bit_idx位是否为1,若为1则返回true，否则返回false */</span></span><br><span class="line"><span class="type">bool</span> <span class="title function_">bitmap_scan_test</span><span class="params">(<span class="keyword">struct</span> bitmap* btmp, <span class="type">uint32_t</span> bit_idx)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint32_t</span> byte_idx = bit_idx / <span class="number">8</span>;    <span class="comment">// 向下取整,取得该位所在字节</span></span><br><span class="line">    <span class="type">uint32_t</span> bit_odd  = bit_idx % <span class="number">8</span>;    <span class="comment">// 取余,取得该位在此字节中的位置</span></span><br><span class="line">    <span class="keyword">return</span> (btmp-&gt;bits[byte_idx] &amp; (BITMAP_MASK &gt;&gt; bit_odd));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 在位图中申请连续cnt个位,成功则返回其起始位下标，失败返回-1 */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">bitmap_apply</span><span class="params">(<span class="keyword">struct</span> bitmap* btmp, <span class="type">uint32_t</span> cnt)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint32_t</span> idx_byte = <span class="number">0</span>;	 <span class="comment">// 用于记录空闲位所在的字节</span></span><br><span class="line"><span class="comment">/* 先逐字节比较,蛮力法 */</span></span><br><span class="line">    <span class="keyword">while</span> (( <span class="number">0xff</span> == btmp-&gt;bits[idx_byte]) &amp;&amp; (idx_byte &lt; btmp-&gt;btmp_bytes_len))</span><br><span class="line">    &#123;</span><br><span class="line"><span class="comment">/* 1表示该位已分配,所以若为0xff,则表示该字节内已无空闲位,向下一字节继续找 */</span></span><br><span class="line">        idx_byte++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    assert(idx_byte &lt; btmp-&gt;btmp_bytes_len);</span><br><span class="line">    <span class="keyword">if</span> (idx_byte == btmp-&gt;btmp_bytes_len)</span><br><span class="line">    &#123;  <span class="comment">// 若该内存池找不到可用空间</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 若在位图数组范围内的某字节内找到了空闲位，</span></span><br><span class="line"><span class="comment">     * 在该字节内逐位比对,返回空闲位的索引。*/</span></span><br><span class="line">    <span class="type">int</span> idx_bit = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">/* 和btmp-&gt;bits[idx_byte]这个字节逐位对比 */</span></span><br><span class="line">    <span class="keyword">while</span> ((<span class="type">uint8_t</span>)(BITMAP_MASK &gt;&gt; idx_bit) &amp; btmp-&gt;bits[idx_byte])</span><br><span class="line">        idx_bit++;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> bit_idx_start = idx_byte * <span class="number">8</span> + idx_bit;    <span class="comment">// 空闲位在位图内的下标</span></span><br><span class="line">    <span class="keyword">if</span> (cnt == <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> bit_idx_start;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> bit_left = (btmp-&gt;btmp_bytes_len * <span class="number">8</span> - bit_idx_start);  <span class="comment">// 记录还有多少位可以判断</span></span><br><span class="line">    <span class="type">uint32_t</span> next_bit = bit_idx_start + <span class="number">1</span>;</span><br><span class="line">    <span class="type">uint32_t</span> count = <span class="number">1</span>;	      <span class="comment">// 用于记录找到的空闲位的个数</span></span><br><span class="line"></span><br><span class="line">    bit_idx_start = <span class="number">-1</span>;	      <span class="comment">// 先将其置为-1,若找不到连续的位就直接返回</span></span><br><span class="line">    <span class="keyword">while</span> ((bit_left--) &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!(bitmap_scan_test(btmp, next_bit)))  <span class="comment">// 若next_bit为0</span></span><br><span class="line">            count++;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (count == cnt)     <span class="comment">//若找到连续的cnt个空位</span></span><br><span class="line">        &#123;</span><br><span class="line">            bit_idx_start = next_bit - cnt + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        next_bit++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bit_idx_start;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 将位图btmp的bit_idx位设置为value */</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">bitmap_set</span><span class="params">(<span class="keyword">struct</span> bitmap* btmp, <span class="type">uint32_t</span> bit_idx, <span class="type">int8_t</span> value)</span></span><br><span class="line">&#123;</span><br><span class="line">    assert(value == <span class="number">1</span>);</span><br><span class="line">    assert(value == <span class="number">0</span>);</span><br><span class="line">    <span class="type">uint32_t</span> byte_idx = bit_idx / <span class="number">8</span>;    <span class="comment">// 向下取整,取得该位所在字节</span></span><br><span class="line">    <span class="type">uint32_t</span> bit_odd  = bit_idx % <span class="number">8</span>;    <span class="comment">// 取余,取得该位在此字节中的位置</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 将1任意移动后再取反,或者先取反再移位,可用来对位置0操作。*/</span></span><br><span class="line">    <span class="keyword">if</span> (value)    <span class="comment">// 如果value为1</span></span><br><span class="line">        btmp-&gt;bits[byte_idx] |= (BITMAP_MASK &gt;&gt; bit_odd);</span><br><span class="line">    <span class="keyword">else</span>          <span class="comment">// 若为0</span></span><br><span class="line">        btmp-&gt;bits[byte_idx] &amp;= ~(BITMAP_MASK &gt;&gt; bit_odd);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注释较清晰，下面挑重点解释：</p>
+<ul>
+<li>
+<p>第 13 行，重点理解这个按位检测，逻辑也比较简单。需要说明的是，《真相还原》中的原代码是：</p>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> BITMAP_MASK 1</span></span><br><span class="line"><span class="comment">//.......</span></span><br><span class="line"><span class="keyword">return</span> (btmp-&gt;bits[byte_idx] &amp; (BITMAP_MASK &lt;&lt; bit_odd));</span><br><span class="line"><span class="comment">//.......</span></span><br></pre></td></tr></table></figure>
+<p>这和我们的代码效果是相同的，笔者之所以作如此改动，是因为改动之后的逻辑更符合我们直觉，即，位是按顺序排列的：<br>
+<img src="/2022/img/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE23.png" alt=""></p>
+<p>而原代码的逻辑是：<br>
+<img src="/2022/img/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE21.png" alt=""></p>
+</li>
+<li>
+<p>第 41 行，为什么要把 cnt==1 的情况单独拿出来呢？因为后面我们申请物理内存时，物理内存池中的页可以不连续，所以传参时 cnt=1；申请虚拟内存时，必须连续，所以 cnt 不必为 1 。由于会大量用到 cnt=1 的情况，所以单独拿出来，避免再做后续处理以提高效率。</p>
+<blockquote>
+<p>没懂上述解释的同学不用慌，下节内存管理进阶我们还会说到这点。</p>
+</blockquote>
+</li>
+<li>
+<p>第 54 行，每当连续的位被断开时，cnt 就需要清零，因为函数要求的是找出连续的 cnt 个位。</p>
+</li>
+</ul>
+<p>位图的介绍就是这些，下面我们用位图来规划内存。</p>
+<blockquote>
+<p>值得一提的是，位图只是内存管理的一种方法，其他常用的方式还有链表，参见<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_22238021/article/details/80175461">空闲内存管理，位图，空闲链表-CSDN</a></p>
+</blockquote>
+<h3 id="font-color-red-规划内存池-font"><font color='red'>规划内存池</font></h3>
+<p><strong><mark class="hl-label blue">什么是内存池？</mark> </strong></p>
+<p>说得高深一点，内存池是内存集合的抽象；说白了，内存池就是上面所说的用来管理内存的位图。所以，内存池的职责就是管理内存，需要内存时，从内存池（位图）中申请；回收内存时，则归还内存池。</p>
+<blockquote>
+<p>可以将位图理解成内存池的物理形式。既然将内存池等同于位图，就说明<strong>内存池的存取粒度和位图一样，都是以 4KB 为单位</strong> 。</p>
+</blockquote>
+<p><strong><mark class="hl-label blue">如何规划内存池</mark> </strong><br>
+规划内存池，分为两个大的方向：</p>
+<ol>
+<li><strong><font color='orange'>物理内存和虚拟内存的规划</font></strong></li>
+<li><strong><font color='orange'>用户内存和内核内存的规划</font></strong></li>
+</ol>
+<p>这两者必须结合在一起讨论。我们已经知道，虚拟内存这个概念，其本身是针对于进程而言的，每个进程都有 4GB 的虚拟内存，<u>其中一部分</u>虚拟地址会映射到物理内存。那么，我们就不得不考虑如下两点：</p>
+<ul>
+<li>
+<p>这么多进程都有各自的虚拟空间，它们都会争用物理内存，所以<u><strong>操作系统必须知道哪些物理内存被用了，哪些还未被使用</strong></u> ，因此，我们需要建立物理内存池，以管理物理内存的使用情况。</p>
+</li>
+<li>
+<p>虽然每个进程都有自己的虚拟 4GB 空间，但在进程内部，虚拟内存也不能重复使用，即，<strong><u>虚拟地址在进程内是唯一的</u></strong> 。同样，为了管理虚拟地址的使用情况，我们需要建立虚拟内存池。</p>
+<blockquote>
+<p><strong><font color='orange'>注意，虚拟内存在进程是唯一的，但多个进程之间，可以使用相同的虚拟地址，各自的虚拟地址对外是不可见的，相互独立的！</font></strong></p>
+</blockquote>
+</li>
+</ul>
+<p>除此之外，我们还需要将物理内存分为内核内存和用户内存，这是基于以下两点原因：</p>
+<ul>
+<li>操作系统会占用较多内存，毕竟它是其他用户进程的载体，不仅要引导用户程序的运行，还要负责任务调度，内存开辟等诸多重要任务。</li>
+<li>为了内核的正常运行，<u>不能用户申请多少内存就给多少，否则有可能因为物理内存不足而导致内核自己都不能正常运行</u>。</li>
+</ul>
+<p>因此，咋们专门分出内核的专属内存，其他物理内存则划给用户。</p>
+<p>综上所述，我们最后划出三个内存池：<strong><font color='gree'>1）内核物理内存池；2）内核虚拟内存池；3）用户物理内存池</font></strong> 。<br>
+<strong><font color='red'>有了前两者，当内核申请内存时，便会先从内核虚拟地址池中申请发配虚拟地址，接着从内核物理地址池中申请分配物理地址，最后在内核自己的页表中建立虚拟地址到物理地址的映射关系</font></strong> 。这个过程我们很快就会用代码展现出来。接着，你一定会问，为什么只有用户物理内存池，而没有用户虚拟内存池呢？是这样的，用户物理内存池是供所有用户进程使用的，用户共享这一片物理内存池；而 <strong>用户虚拟内存池则是每个用户进程私有的，当创建用户进程时，也会在其内部开辟虚拟池给自己使用</strong> 。用户虚拟内存池将在我们实现用户进程时介绍。</p>
+<p><strong><mark class="hl-label blue">规划细节</mark> </strong><br>
+话不多说，先放出本操作系统的具体内存安排：<br>
+<img src="/2022/img/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE20.png" alt=""></p>
+<p>下面对以上内存规划进行阐述：</p>
+<ul>
+<li>
+<p>低端 1 MB 完全给内核使用，内核的代码只运行在这 1MB 内，且低端 1MB 物理内存和虚拟内存是一一映射的。这点在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/">开启分页-代码详解</a>中讲解过。</p>
+</li>
+<li>
+<p>为什么将这三个内存池位图放在低端 1MB 内呢？因为 <strong><font color='orange'>低端 1MB 是不会放入内存池中的</font></strong> ，这 1MB 空间相当于是上帝视角，不受内存管理约束，原因很简单——它自己就是管理者。内存池用于管理其他内存，而不用关心自己所在的内存，否则就是自己管理自己啦，这么说来，将自己所在内存的对应位置 1，岂不是相当于自杀了？哈哈哈哈开个玩笑，原因大概就是如此。</p>
+</li>
+<li>
+<p>PCB (Process Control Block, 进程控制块)，用来管理进程，每个进程的信息（pid、进程状态等）都保存在各自的 PCB 内。关于 PCB 的详细内容会在后面讲线程时提到，现在读者只需记住两点：</p>
+<ul>
+<li>
+<p><strong><u>PCB 需要用一个自然页存放</u></strong> ，即 PCB 的起始地址必须为 0xXXXXX000，结尾必须是 0xXXXXXfff 。</p>
+<blockquote>
+<p>这就是为什么 0x9f000~0x9fbff 未使用的原因——为了凑一个自然页。这么说大家可能还不清楚什么叫做未使用，放一张图各位就知道了：<br>
+<img src="/2022/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2phZGVzaHU=,size_16,color_FFFFFF,t_70-1670387128776-1.png" alt=""><br>
+原本 0x7E00~0x9FBFF 都是空闲区域，咋们大可以将 PCB 放在 0x9E000~0x9FBFF 处，但无奈 PCB 只能占用一个自然页，所以 0x9F000~0x9FBFF 只能被废弃。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>PCB 的最高处 0xXXXXXfff 以下用于进程/线程在 <u>ring0 下使用的栈</u></strong> 。为什么将栈放置于 PCB 内以及为什么只用于 ring0，这会在后面实现线程时详细阐述。现在读者仍只需知晓，<strong><u>我们的内核代码本身就是一个线程（主线程，或者说单线程进程），所以它也有自己的 PCB</u></strong> ，没错，就是上上图的那个 PCB。因此，在进入内核前（guide.s），我们会将 esp 指向 PCB 的顶端（栈底），即 <code>mov esp,0x9f000</code> 。</p>
+<blockquote>
+<p><strong>先向读者透露一下，PCB 中的栈与线程切换息息相关，可以说，线程切换就是通过栈操作来进行的。</strong></p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p>注意，在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5%E6%9C%BA%E5%88%B6/">开启分页</a>中，我们将页目录表和页表放在了 1MB 地址之上，刚好占用了 1MB~2MB 地址。<u>这里的目录表和页表是供内核进程使用的，已经被占用</u>，<strong><font color='orange'>所以这部分内存也不能划入用户/内核物理内存池</font></strong> 。</p>
+</li>
+<li>
+<p>除开低 2MB 的内存外，<strong><font color='orange'>剩下的 30MB 物理内存<u>平均</u>(各自15MB)分给用户/内核物理内存池</font></strong> 。注意，内核物理内存池位图管理 15MB 物理内存（kernel_pool），所以内核虚拟内存池位图也管理 15MB 虚拟内存；用户物理内存池位图虽然管理 15MB 物理内存（user_pool），用户虚拟内存池位图（位于用户进程中）却管理 4GB 虚拟内存。</p>
+</li>
+<li>
+<p>注意，虽然图示中 0x9a000~0x9e000 用来存放这三个位图，但实际上并没有完全放满。因为我们的操作系统目前就 32MB，压根用不了这么多，这个位图空间我们只用了一小部分（三个位图一共才占 0x5a0 字节），其他剩余空间是预留的，以便于未来扩展此操作系统。</p>
+</li>
+</ul>
+<p><strong><mark class="hl-label blue">内存规划代码剖析</mark> </strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//memory.h</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">virtual_addr</span> &#123;</span>          </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bitmap</span> <span class="title">vaddr_bitmap</span>;</span>  <span class="comment">// 内核虚拟内存池用到的位图结构</span></span><br><span class="line">    <span class="type">uint32_t</span> vaddr_start;        <span class="comment">// 内核虚拟起始地址</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pool</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bitmap</span> <span class="title">pool_bitmap</span>;</span>	 <span class="comment">// 内核/用户物理内存池用到的位图结构</span></span><br><span class="line">    <span class="type">uint32_t</span> phy_addr_start;	 <span class="comment">// 内存池所管理物理内存的起始地址</span></span><br><span class="line">    <span class="type">uint32_t</span> pool_size;		     <span class="comment">// 内存池字节容量</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>virtual_addr</code> 结构体目前仅用于内核<u>虚拟</u>内存池，后期还会用该结构管理用户虚拟内存池。</li>
+<li><code>pool</code> 结构体用于内核与用户<u>物理</u>内存池的管理。为什么 <code>pool</code> 比 <code>virtual_addr</code> 多一个 pool_size 成员呢？这是因为，物理内存是很有限的（本OS为32MB），虽然虚拟地址最大为 4GB，但相对而言却是无限的，因此 virtual_addr 无需记录容量。</li>
+<li>至于为什么还需要指定起始地址，阅读下面的代码后你就会彻底明白。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//memory.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PG_SIZE 4096</span></span><br><span class="line"><span class="comment">/***************  位图地址 ********************</span></span><br><span class="line"><span class="comment">* 因为0xc009f000是内核主线程栈顶，0xc009e000是内核主线程的pcb.</span></span><br><span class="line"><span class="comment">* 一个页框大小的位图可表示128M内存, 位图位置安排在地址0xc009a000,</span></span><br><span class="line"><span class="comment">* 这样本系统最大支持4个页框的位图,即512M */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MEM_BITMAP_BASE 0xc009a000</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 0xc0000000是内核从虚拟地址3G起. 0x100000意指跨过低端1M内存,使虚拟地址在逻辑上连续 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> K_HEAP_START 0xc0100000</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MEM_SIZE_ADDR  0x90c</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pool</span> <span class="title">kernel_pool</span>, <span class="title">user_pool</span>;</span>      <span class="comment">// 生成内核内存池和用户内存池</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">virtual_addr</span> <span class="title">kernel_vaddr</span>;</span>        <span class="comment">// 此结构是用来给内核分配虚拟地址</span></span><br><span class="line"><span class="comment">/* 初始化内存池 */</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">mem_pool_init</span><span class="params">(<span class="type">uint32_t</span> all_mem)</span> &#123;</span><br><span class="line">    put_str(<span class="string">&quot;\nmem_pool_init start...\n&quot;</span>,DEFUALT);</span><br><span class="line">    <span class="type">uint32_t</span> page_table_size = PG_SIZE * <span class="number">256</span>;         <span class="comment">// 为什么乘256,详见下文解析</span></span><br><span class="line">    <span class="type">uint32_t</span> used_mem = page_table_size + <span class="number">0x100000</span>;   <span class="comment">// 低端1M内存+页表/目录表都不算入内存池</span></span><br><span class="line">    <span class="type">uint32_t</span> free_mem = all_mem - used_mem;</span><br><span class="line">    <span class="type">uint16_t</span> all_free_pages = free_mem / PG_SIZE;     <span class="comment">// 1页为4k,不管总内存是不是4k的倍数,</span></span><br><span class="line">    <span class="comment">// 对于以页为单位的内存分配策略，不足1页的内存不用考虑了。</span></span><br><span class="line">    <span class="type">uint16_t</span> kernel_free_pages = all_free_pages / <span class="number">2</span>;  <span class="comment">// 平均分给内核物理内存池和用户物理内存池</span></span><br><span class="line">    <span class="type">uint16_t</span> user_free_pages = all_free_pages - kernel_free_pages;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 为简化位图操作，余数不处理，坏处是这样做会丢内存。</span></span><br><span class="line"><span class="comment">    好处是不用做内存的越界检查,因为位图表示的内存少于实际物理内存*/</span></span><br><span class="line">    <span class="type">uint32_t</span> kbm_length = kernel_free_pages / <span class="number">8</span>;      <span class="comment">// Kernel BitMap的长度,位图中的一位表示一页,以字节为单位</span></span><br><span class="line">    <span class="type">uint32_t</span> ubm_length = user_free_pages   / <span class="number">8</span>;      <span class="comment">// User BitMap的长度.</span></span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> kp_start = used_mem;                     <span class="comment">// Kernel Pool start,内核内存池的起始地址</span></span><br><span class="line">    <span class="type">uint32_t</span> up_start = kp_start + kernel_free_pages * PG_SIZE;	  <span class="comment">// User Pool start,用户内存池的起始地址</span></span><br><span class="line"></span><br><span class="line">    kernel_pool.phy_addr_start = kp_start;</span><br><span class="line">    user_pool.phy_addr_start   = up_start;</span><br><span class="line"></span><br><span class="line">    kernel_pool.pool_size = PG_SIZE * kernel_free_pages;</span><br><span class="line">    user_pool.pool_size	  = PG_SIZE * user_free_pages  ;</span><br><span class="line"></span><br><span class="line">    kernel_pool.pool_bitmap.btmp_bytes_len = kbm_length;</span><br><span class="line">    user_pool.pool_bitmap.btmp_bytes_len   = ubm_length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*********    内核内存池和用户内存池位图   ***********</span></span><br><span class="line"><span class="comment">    *   位图是全局的数据，长度不固定。</span></span><br><span class="line"><span class="comment">    *   全局或静态的数组需要在编译时知道其长度，</span></span><br><span class="line"><span class="comment">    *   而我们需要根据总内存大小算出需要多少字节。</span></span><br><span class="line"><span class="comment">    *   所以改为指定一块内存来生成位图.</span></span><br><span class="line"><span class="comment">    *   ************************************************/</span></span><br><span class="line">    <span class="comment">// 内核使用的最高地址是0xc009f000,这是主线程的栈地址.(内核的大小预计为70K左右)</span></span><br><span class="line">    <span class="comment">// 32M内存占用的位图是2k.内核内存池的位图先定在MEM_BITMAP_BASE(0xc009a000)处.</span></span><br><span class="line">    kernel_pool.pool_bitmap.bits = (<span class="type">void</span>*)MEM_BITMAP_BASE;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 用户内存池的位图紧跟在内核内存池位图之后 */</span></span><br><span class="line">    user_pool.pool_bitmap.bits = (<span class="type">void</span>*)(MEM_BITMAP_BASE + kbm_length);</span><br><span class="line">    <span class="comment">/******************** 输出内存池信息 **********************/</span></span><br><span class="line">    put_str(<span class="string">&quot;\nkernel_pool_bitmap_start:        &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint((<span class="type">uint32_t</span>)kernel_pool.pool_bitmap.bits,DEFUALT,HEX);</span><br><span class="line">    put_str(<span class="string">&quot;\nkernel_pool_bitmap_end:          &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint((<span class="type">uint32_t</span>)kernel_pool.pool_bitmap.bits + kernel_pool.pool_bitmap.btmp_bytes_len,DEFUALT,HEX);</span><br><span class="line">    put_str(<span class="string">&quot;\nkernel_pool_phy_addr_start:      &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint(kernel_pool.phy_addr_start,DEFUALT,HEX);</span><br><span class="line">    put_str(<span class="string">&quot;\nkernel_pool_phy_addr_end:        &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint(kernel_pool.phy_addr_start + kernel_pool.pool_size,DEFUALT,HEX);</span><br><span class="line">    put_str(<span class="string">&quot;\nuser_pool_bitmap_start:          &quot;</span>,DEFUALT);</span><br><span class="line"></span><br><span class="line">    put_uint((<span class="type">uint32_t</span>)user_pool.pool_bitmap.bits,DEFUALT,HEX);</span><br><span class="line">    put_str(<span class="string">&quot;\nuser_pool_bitmap_end:            &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint((<span class="type">uint32_t</span>)user_pool.pool_bitmap.bits + user_pool.pool_bitmap.btmp_bytes_len,DEFUALT,HEX);</span><br><span class="line">    put_str(<span class="string">&quot;\nuser_pool_phy_addr_start:        &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint(user_pool.phy_addr_start,DEFUALT,HEX);</span><br><span class="line">    put_str(<span class="string">&quot;\nuser_pool_phy_addr_end:          &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint(user_pool.phy_addr_start + user_pool.pool_size,DEFUALT,HEX);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 将位图置0*/</span></span><br><span class="line">    bitmap_init(&amp;kernel_pool.pool_bitmap);</span><br><span class="line">    bitmap_init(&amp;user_pool.pool_bitmap);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 下面初始化内核虚拟地址的位图,按实际物理内存大小生成数组。*/</span></span><br><span class="line">    <span class="comment">// 用于维护内核堆的虚拟地址,所以要和内核内存池大小一致</span></span><br><span class="line">    kernel_vaddr.vaddr_bitmap.btmp_bytes_len = kbm_length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 位图的数组指向一块未使用的内存,目前定位在内核内存池和用户内存池之外*/</span></span><br><span class="line">    kernel_vaddr.vaddr_bitmap.bits = (<span class="type">void</span>*)(MEM_BITMAP_BASE + kbm_length + ubm_length);</span><br><span class="line">    kernel_vaddr.vaddr_start = K_HEAP_START;</span><br><span class="line">    put_str(<span class="string">&quot;\nkernel_vaddr.vaddr_bitmap.start: &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint((<span class="type">uint32_t</span>)kernel_vaddr.vaddr_bitmap.bits,DEFUALT,HEX);</span><br><span class="line">    put_str(<span class="string">&quot;\nkernel_vaddr.vaddr_bitmap.end:   &quot;</span>,DEFUALT);</span><br><span class="line">    put_uint((<span class="type">uint32_t</span>)kernel_vaddr.vaddr_bitmap.bits + kernel_vaddr.vaddr_bitmap.btmp_bytes_len,DEFUALT,HEX);</span><br><span class="line"></span><br><span class="line">    bitmap_init(&amp;kernel_vaddr.vaddr_bitmap);</span><br><span class="line">    put_str(<span class="string">&quot;\nmem_pool_init done\n&quot;</span>,DEFUALT);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 内存管理部分初始化入口 */</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">mem_init</span><span class="params">()</span> &#123;</span><br><span class="line">    put_str(<span class="string">&quot;mem_init start...\n&quot;</span>,DEFUALT);</span><br><span class="line">    <span class="type">uint32_t</span> mem_bytes_total = *((<span class="type">uint32_t</span>*)MEM_SIZE_ADDR);</span><br><span class="line">    put_str(<span class="string">&quot;memory size:&quot;</span>,DEFUALT);</span><br><span class="line">    put_uint(mem_bytes_total,DEFUALT,HEX);</span><br><span class="line">    mem_pool_init(mem_bytes_total);</span><br><span class="line">    put_str(<span class="string">&quot;\nmem_init done\n&quot;</span>,DEFUALT);</span><br><span class="line">&#125;<span class="comment">/* 初始化内存池 */</span></span><br></pre></td></tr></table></figure>
+<p>上面的代码配合注释以及之前的讲解，是完全能够看懂的，便不再挨个解释了，只对部分内容进行说明：</p>
+<ul>
+<li>
+<p>第 12 行，<code>MEM_SIZE_ADDR</code> ，即 0x90c ，这就是前文我们存放内存容量的地址；第 98 行，通过对该地址解引用，取得内存大小，随后传参给 <code>mem_pool_init()</code> ，开始初始化内存池。</p>
+</li>
+<li>
+<p>第 19 行，为什么页目录和页表所占内存大小是 <code>PG_SIZE*256</code> ？（1）页目录表，占 1 页；（2）第0、768号页目录项都指向第 0 号页表，此页表占 1 页；（3）第 769~1022 号页目录项一共指向 254 个页表，占 254 页。因此，所占内存大小为 <code>4096*(1+1+254)=PG_SIZE*256</code> 。</p>
+<blockquote>
+<p>有人肯定纳闷了，我们之前不是仅为 769~1022 号页目录项安装了页表的地址吗？并没有创建页表页呀？那为什么还要算入这 254 页的内存大小呢？就是因为我们提前指向了这些页表的地址，每个地址相差 4096 字节，所以才必须为这些页表预留空间哒！笔者起初对这点很疑惑，想了好一会才反应过来，不知道读者会不会有这样的问题。另外，我们在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/">开启分页-代码详解</a>中也提到过，提前为 769~1022 号页目录项安装页表的地址是为了实现内核的完全共享，忘记的朋友不妨回头看看。</p>
+</blockquote>
+</li>
+<li>
+<p>第 35 行，<strong>物理内存池所管理的物理内存被规定为从 2MB 开始</strong> ，那么为什么要跳过这 2MB 呢？这在前文已经详细说明，0~1MB 是内核空间，1~2MB 是内核进程的页目录和页表，因此这部分物理内存不能再使用，所以不可划入内存池。</p>
+</li>
+<li>
+<p>第 86 行，为什么将内核虚拟起始地址设为 <code>K_HEAP_START</code> ，即 0xc0100000 ？这是因为在<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/13/%E5%BC%80%E5%90%AF%E5%88%86%E9%A1%B5-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/">开启分页-代码详解</a>中，<strong>我们已经将虚拟空间高 1GB 处的起始 1MB 直接映射到物理内存的低 1MB 了，所以 0x0~0xc0100000 实际上是运行的内核代码（内核镜像）。因此，内核虚拟池中对应的起始虚拟地址必须跳过这 1MB，即从 0xc0100000 开始分配</strong> 。另外，从 <code>K_HEAP_START</code> 应该也能看出，<strong><font color='gree'><u>内核物理池是用来存放内核开辟的堆</u></font></strong> ，读者应该对堆很熟悉了吧，这就是程序在运行时动态开辟的内存。<strong>内核代码都存放在 0x9a000 内，注意，代码是不会运行在内核物理池中的！</strong></p>
+</li>
+</ul>
+<p><img src="/2022/img/image-20221208113835640.png" alt=""></p>
+<p>好了，本节内容大致就是如此，各位一定还有未能想明白的问题，可在评论区留言。同时也请别着急，进入下一节<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/12/08/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-%E8%BF%9B%E9%98%B6-%E5%88%86%E9%85%8D%E9%A1%B5%E5%86%85%E5%AD%98/">内存管理-进阶-分配页内存</a>后，也许你就会恍然大悟。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">http://jyxcpp.netlify.app/2022/12/02/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/14.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/12/03/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"><img class="prev-cover" src="/2022/img/7.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">线程-基础-加载线程</div></div></a></div><div class="next-post pull-right"><a href="/2022/12/01/string/"><img class="next-cover" src="/2022/img/1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">string</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/10/31/32%E4%BD%8D%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%A7%88/" title="32位保护模式概览"><img class="cover" src="/2022/img/17.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">32位保护模式概览</div></div></a></div><div><a href="/2022/10/27/bochs%E4%BD%BF%E7%94%A8/" title="bochs虚拟机的使用"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-27</div><div class="title">bochs虚拟机的使用</div></div></a></div><div><a href="/2022/11/29/%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8-8259a/" title="对8259a芯片编程"><img class="cover" src="/2022/img/21.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-29</div><div class="title">对8259a芯片编程</div></div></a></div><div><a href="/2022/10/31/%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E6%A6%82%E8%BF%B0/" title="GDT&amp;段描述符&amp;选择子概述"><img class="cover" src="/2022/img/9.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-31</div><div class="title">GDT&amp;段描述符&amp;选择子概述</div></div></a></div><div><a href="/2022/12/08/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-%E8%BF%9B%E9%98%B6-%E5%88%86%E9%85%8D%E9%A1%B5%E5%86%85%E5%AD%98/" title="内存管理-进阶-分配页内存"><img class="cover" src="/2022/img/6.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-08</div><div class="title">内存管理-进阶-分配页内存</div></div></a></div><div><a href="/2022/11/01/%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%E4%BF%9D%E6%8A%A4%E4%B8%8E%E5%82%A8%E5%AD%98%E5%99%A8%E4%BF%9D%E6%8A%A4/" title="内存段与段寄存器保护"><img class="cover" src="/2022/img/6.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-01</div><div class="title">内存段与段寄存器保护</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E6%A6%82%E8%BF%B0-font"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E8%8E%B7%E5%8F%96%E5%86%85%E5%AD%98%E5%AE%B9%E9%87%8F-font"><span class="toc-number">2.</span> <span class="toc-text">获取内存容量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E4%BD%8D%E5%9B%BE-font"><span class="toc-number">3.</span> <span class="toc-text">位图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#font-color-red-%E8%A7%84%E5%88%92%E5%86%85%E5%AD%98%E6%B1%A0-font"><span class="toc-number">4.</span> <span class="toc-text">规划内存池</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
