@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/10.jpg">
 <meta property="article:published_time" content="2022-08-04T03:42:00.000Z">
-<meta property="article:modified_time" content="2023-03-12T11:21:28.524Z">
+<meta property="article:modified_time" content="2023-03-20T09:27:48.893Z">
 <meta property="article:author" content="极简">
 <meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary">
@@ -53,7 +53,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2023-03-12 19:21:28'
+  postUpdate: '2023-03-20 17:27:48'
 }</script><noscript><style type="text/css">
   #nav {
     opacity: 1
@@ -143,13 +143,13 @@
     }
     detectApple()
     })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
-</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/10.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">SYN泛洪攻击</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-04T03:42:00.000Z" title="发表于 2022-08-04 11:42:00">2022-08-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:28.524Z" title="更新于 2023-03-12 19:21:28">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCP/">TCP</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="SYN泛洪攻击"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><strong><mark class="hl-label blue">什么是 SYN 泛洪攻击？</mark> </strong></p>
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/10.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">SYN泛洪攻击</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-04T03:42:00.000Z" title="发表于 2022-08-04 11:42:00">2022-08-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-20T09:27:48.893Z" title="更新于 2023-03-20 17:27:48">2023-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCP/">TCP</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>4分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="SYN泛洪攻击"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><strong><mark class="hl-label blue">什么是 SYN 泛洪攻击？</mark> </strong></p>
 <p>SYN 洪水（半开连接攻击）是一种<u>拒绝服务 (DDoS) 攻击</u> ，旨在耗尽可用服务器资源，致使服务器无法传输合法流量。通过 TCP 三次握手时，重复发送初始连接请求 (SYN) 数据包，攻击者将占满目标服务器上的所有 <strong>半连接队列</strong> ，导致服务器在响应合法流量时表现迟钝乃至全无响应。</p>
 <p><strong><mark class="hl-label blue">SYN 泛洪攻击原理？</mark> </strong></p>
 <ol>
 <li>攻击者通常使用伪造的不同的 IP 地址向目标服务器发送大量 <code>SYN</code> 数据包。</li>
 <li>然后，服务器分别对每一项连接请求做出响应（发送 <code>ACK+SYN</code> 包），并确保打开的端口做好接收响应的准备。</li>
-<li>在服务器等待最后一个 <code>ACK</code> 数据包（永远不会到达）的过程中，攻击者将继续发送更多 <code>SYN</code> 数据包。每当有新的 <code>SYN</code> 数据包到达，服务器都会临时打开一个新的端口并在一段特定时间内保持连接，久而久之就会占满服务端的 <strong>半连接队列</strong> ，使得服务器不能为正常用户服务。</li>
+<li>在服务器等待最后一个 <code>ACK</code> 数据包（永远不会到达）的过程中，攻击者将继续发送更多 <code>SYN</code> 数据包，久而久之就会占满服务端各个端口的 <strong>半连接队列</strong> ，使得服务器不能为正常用户服务。</li>
 </ol>
 <p><strong><mark class="hl-label blue">半连接队列与全连接队列</mark> </strong></p>
 <p>正常流程：</p>
@@ -161,23 +161,22 @@
 </ul>
 <img src="/2022/img/3d05f574867b70d1134e685e5f5ac137.jpg" alt="示意图" style="zoom:50%;" />
 <p>而在 SYN 泛洪攻击下，SYN 队列将不断接收攻击者发送的 SYN 包直到队列溢出，这种情况下，正常用户发送的连接请求也会被延迟或者拒绝。</p>
-<p><strong><mark class="hl-label blue">如何预防SYN泛洪？</mark> </strong></p>
-<ol>
-<li>
-<p><strong><font color='orange'>SYN Cookie</font></strong></p>
-<p><code>Syn-Flood</code> 攻击成立的关键在于服务器资源是有限的，而服务器收到请求会分配资源。通常来说，服务器用这些资源保存此次请求的关键信息，包括请求五元组，以及 TCP 选项，如 <code>MSS</code> 、<code>timestamp</code> 、<code>Sack</code>、<code>Wscale</code> 等等。当后续的 <code>ACK</code> 报文到达，三次握手完成，新的连接创建，这些信息才会被复制到连接结构中，用来指导后续的报文收发。</p>
-<p>那么现在的问题就是服务器 <strong>如何在不分配资源的情况下</strong></p>
+<p><strong><mark class="hl-label blue">SYN-Cookie原理</mark> </strong></p>
+<p><strong><font color='orange'><code>Syn-Flood</code> 攻击成立的关键在于服务器资源是有限的，而服务器收到请求会分配资源</font></strong> 。通常来说，服务器用这些资源保存此次请求的关键信息，包括请求五元组，以及 TCP 选项，如 <code>MSS</code> 、<code>timestamp</code> 、<code>Sack</code>、<code>Wscale</code> 等等。当后续的 <code>ACK</code> 报文到达，三次握手完成，新的连接创建，这些信息才会被复制到连接结构中，用来指导后续的报文收发。</p>
+<p>那么现在的问题就是服务器 <strong><font color='orange'>如何在不分配资源的情况下</font></strong></p>
 <ul>
 <li>
-<p>验证之后可能到达的 <code>ACK</code> 的有效性，保证这是一次完整的握手</p>
+<p><strong>验证之后可能到达的 <code>ACK</code> 的有效性，保证这是一次完整的握手</strong></p>
 </li>
 <li>
 <p><strong>保存 <code>SYN</code> 报文中携带的 TCP 选项信息</strong></p>
 </li>
 </ul>
 <blockquote>
-<mark class="hl-label blue">SYN Cookie 原理</mark>  ：
-<p>TCP 连接建立时，双方的起始报文序号是可以任意的。<code>SYN cookies</code> 利用这一点，按照以下规则构造初始序列号：</p>
+<p><strong>前两次握手本质上就是双方协商 TCP 状态的过程，有些状态的协商只会出现在前两次握手，比如 <code>MSS</code> 和 <code>WSOPT</code> ，且此后都不会再改变。因此，本端必须解析对端发来的 SYN 报文才能知道对方的 TCP 状态。</strong></p>
+</blockquote>
+<p><strong>下面来看 SYN-cookie 是如何在不分配资源的前提下做到以上两点的。</strong></p>
+<p><strong><font color='orange'>TCP 连接建立时，双方的起始报文序号是可以任意的，既然是任意的，那么为什么不利用它来保存对端的 TCP 信息呢？</font></strong> 这是 <code>SYN cookies</code> 最核心的一点，因此<u>服务器端</u>按照以下规则构造初始序列号：</p>
 <ul>
 <li>设 <code>t</code> 为一个缓慢增长的时间戳(典型实现是每64s递增一次)</li>
 <li>设 <code>m</code> 为客户端发送的 <code>SYN</code> 报文中的 <code>MSS</code> 选项值</li>
@@ -189,41 +188,46 @@
 <li>接下来<strong>3</strong>位为 <code>m</code> 的编码值</li>
 <li>低 <strong>24</strong> 位为 <code>s</code></li>
 </ul>
-<p>当客户端收到此 <code>SYN+ACK</code> 报文后，它会回复 <code>ACK</code> 报文，且报文中 <code>ack = n + 1</code> ，那么在服务器收到它时，将<code>ack - 1</code> 就可以拿回当初发送的 <code>SYN+ACK</code> 报文中的序号了！服务器巧妙地通过这种方式间接保存了一部分 <code>SYN</code> 报文的信息。接下来，服务器需要对 <code>ack - 1</code> 这个序号进行检查：</p>
+<blockquote>
+<p>这样就将本次连接的状态信息保存到了 SYN+ACK 报文中，而不是另外在服务器内部开辟资源来保存。</p>
+</blockquote>
+<p><strong>当客户端收到此 <code>SYN+ACK</code> 报文后，它会回复 <code>ACK</code> 报文，且报文中 <code>ack = n + 1</code> ，那么在服务器收到它时，将<code>ack - 1</code> 就可以拿回当初发送的 <code>SYN+ACK</code> 报文中的序号了！</strong> 服务器通过这种方式巧妙、间接地保存了一部分客户端 <code>SYN</code> 报文的信息。接下来，服务器需要对 <code>ack - 1</code> 这个序号进行检查：</p>
 <ul>
 <li>将高 <strong>5</strong> 位表示的 <code>t</code> 与当前之间比较，看其到达的时间是否能接受。</li>
 <li>根据 <code>t</code> 和连接元组重新计算 <code>s</code> ，看是否和低 <strong>24</strong> 一致，若不一致，说明这个报文是被伪造的。</li>
 <li>解码序号中隐藏的 <code>mss</code> 信息</li>
 </ul>
 <p>到此，连接就可以顺利建立了。</p>
-<mark class="hl-label blue">SYN Cookie 缺点</mark>  ：
-<ol>
-<li><code>MSS</code> 的编码只有<strong>3</strong>位，因此最多只能使用 <strong>8</strong> 种 <code>MSS</code> 值</li>
-<li>服务器必须拒绝客户端 <code>SYN</code> 报文中的其他只在 <code>SYN</code> 和 <code>SYN+ACK</code> 中协商的选项，原因是服务器没有地方可以保存这些选项，比如<code>Wscale</code>和 <code>SACK</code></li>
-</ol>
-<mark class="hl-label blue">SYN Cookie 与时间戳</mark>  ：
-<p>如果服务器和客户端<strong>都</strong>打开了时间戳选项，那么服务器可以将客户端在 <code>SYN</code> 报文中携带的 TCP 选项的信息暂时保存在时间戳中。<br>
-<img src="/2022/img/" alt="img"></p>
+<p>所以，<strong><font color='gree'>SYN Cookies 的核心在于：可以在不使用 SYN 半连接队列的情况下成功建立连接</font></strong>  ：<br>
+<img src="/2022/img/39-1679303729834-1.jpg" alt=""></p>
+<blockquote>
+<p>如果服务器和客户端 <strong>都</strong> 打开了时间戳选项，那么服务器可以将客户端在 <code>SYN</code> 报文中携带的 TCP 选项的信息暂时保存在时间戳中。</p>
 </blockquote>
-</li>
-<li>
+<p><strong><mark class="hl-label blue">如何预防 SYN 泛洪</mark> </strong></p>
 <p><strong><font color='orange'>修改 Linux 内核参数</font></strong></p>
 <ul>
 <li>
-<p>控制半队列的最大值如下参数：<mark class="hl-label default">net.core.netdev_max_backlog</mark> </p>
+<p><strong>增大半连接队列</strong><br>
+内容较多，不在此阐述，详细方法请移步本系列另一篇文章-<a href="">全连接与半连接队列</a></p>
 </li>
 <li>
-<p>SYN_RCVD 状态连接的最大个数：<mark class="hl-label default">net.ipv4.tcp_max_syn_backlog</mark> </p>
-</li>
-<li>
-<p>超出处理能时，对新的 SYN 直接回报 RST，丢弃连接：<mark class="hl-label default">net.ipv4.tcp_abort_on_overflow</mark> </p>
+<p><strong>开启 SYN-Cookie</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> 1 &gt; /proc/sys/net/ipv4/tcp_syncookies</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>半/全连接队列的相关参数和源码分析请参见笔者其他文章。</p>
+<ul>
+<li>0 值，表示关闭该功能；</li>
+<li>1 值，表示仅当 SYN 半连接队列放不下时，再启用它；</li>
+<li>2 值，表示无条件开启功能；</li>
+</ul>
 </blockquote>
 </li>
-</ul>
+<li>
+<p><strong>减少 SYN+ACK 重传次数</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//将重传次数设为1次</span><br><span class="line"><span class="built_in">echo</span> 1 &gt; /proc/sys/net/ipv4/tcp_synack_retries</span><br></pre></td></tr></table></figure>
+<p>笔者操作系统上默认为 5 次。<br>
+<img src="/2022/img/image-20230320172721725.png" alt=""></p>
 </li>
-</ol>
+</ul>
 <blockquote>
 <p>参考：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000019292140">深入浅出TCP中的SYN-Cookies</a> ，<a target="_blank" rel="noopener" href="https://xiaolincoding.com/network/3_tcp/tcp_interview.html#tcp-%E8%BF%9E%E6%8E%A5%E5%BB%BA%E7%AB%8B">小林coding</a> ，<a target="_blank" rel="noopener" href="https://www.cloudflare.com/zh-cn/learning/ddos/syn-flood-ddos-attack/">cloudflare</a></p>
 </blockquote>
