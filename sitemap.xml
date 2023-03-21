@@ -20,6 +20,15 @@
   </url>
   
   <url>
+    <loc>http://jyxcpp.netlify.app/2022/08/03/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E6%8C%A5%E6%89%8B/</loc>
+    
+    <lastmod>2023-03-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://jyxcpp.netlify.app/2023/03/05/Socket%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/</loc>
     
     <lastmod>2023-03-20</lastmod>
@@ -84,15 +93,6 @@
   
   <url>
     <loc>http://jyxcpp.netlify.app/2023/03/16/TIME-WAIT%E5%AE%9E%E8%B7%B5%E6%8E%A2%E7%A9%B6/</loc>
-    
-    <lastmod>2023-03-16</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://jyxcpp.netlify.app/2022/08/03/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E6%8C%A5%E6%89%8B/</loc>
     
     <lastmod>2023-03-16</lastmod>
     
