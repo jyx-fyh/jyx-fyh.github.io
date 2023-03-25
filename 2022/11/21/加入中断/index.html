@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/21.jpg">
 <meta property="article:published_time" content="2022-11-21T06:47:15.000Z">
-<meta property="article:modified_time" content="2023-03-12T11:21:14.821Z">
+<meta property="article:modified_time" content="2023-03-21T07:01:57.694Z">
 <meta property="article:author" content="极简">
 <meta property="article:tag" content="自制操作系统">
 <meta name="twitter:card" content="summary">
@@ -53,7 +53,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2023-03-12 19:21:14'
+  postUpdate: '2023-03-21 15:01:57'
 }</script><noscript><style type="text/css">
   #nav {
     opacity: 1
@@ -143,7 +143,7 @@
     }
     detectApple()
     })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
-<script src="/assets/js/DPlayer.min.js"></script></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/21.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">中断/IDT超详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-11-21T06:47:15.000Z" title="发表于 2022-11-21 14:47:15">2022-11-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-12T11:21:14.821Z" title="更新于 2023-03-12 19:21:14">2023-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">4.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>13分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="中断/IDT超详解"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<script src="/assets/js/DPlayer.min.js"></script></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">138</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">29</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/21.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">中断/IDT超详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-11-21T06:47:15.000Z" title="发表于 2022-11-21 14:47:15">2022-11-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-21T07:01:57.694Z" title="更新于 2023-03-21 15:01:57">2023-03-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%88%B6%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">自制操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">4.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>13分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="中断/IDT超详解"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
 <p>本文前置内容：<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/26/%E7%89%B9%E6%9D%83%E7%BA%A7%E5%85%A8%E9%9D%A2%E5%89%96%E6%9E%90/">特权级全面剖析</a><br>
 文章参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/wlf_go/article/details/80319417">中断的作用</a> ，《真相还原》，<a target="_blank" rel="noopener" href="https://blog.csdn.net/WriteAnything_/article/details/119205756">Bochs源码分析</a> ，《X86汇编：从实模式到保护模式》</p>
 </blockquote>
@@ -172,7 +172,7 @@
 <img src="/2022/img/未命名绘图14-1669431386307-9.png" alt="" style="zoom:80%;" />
 <ul>
 <li>
-<p><strong><font color='gree'>外中断</font></strong> ：即来自 CPU 外部的中断，中断源为外部硬件，故而又叫硬件中断。<strong>外中断又分为可屏蔽中断和不可屏蔽中断：</strong></p>
+<p><strong><font color='gree'>硬中断</font></strong> ：即来自 CPU 外部的中断，中断源为外部硬件，故而又叫硬件中断。<strong>外中断又分为可屏蔽中断和不可屏蔽中断：</strong></p>
 <ul>
 <li>
 <p><strong><font color='gree'>可屏蔽中断</font></strong> ：<u>绝大多数外中断都是可屏蔽中断</u>，例如网卡收到网络包并通知 CPU；打印机向 CPU 发出提示等。当 eflags 中的 IF 位为 0 时，CPU 忽视可屏蔽中断；IF 为 1 时，接收可屏蔽中断。<strong><font color='red'>IF 仅对可屏蔽中断有效</font></strong> 。</p>
@@ -186,12 +186,12 @@
 </ul>
 </li>
 <li>
-<p><strong><font color='gree'>内中断</font></strong> ：来自 CPU 内部或软件的中断，分为以下三类：</p>
+<p><strong><font color='gree'>软中断</font></strong> ：来自 CPU 内部或软件的中断，分为以下三类：</p>
 <ul>
 <li>
-<p><strong><font color='gree'>软中断(trap, 陷入)</font></strong> ：陷入是软件<u>主动</u>发起的中断，并不是某种内部错误。<strong><font color='red'>软中断是实现系统 API 函数调用的手段</font></strong> 。<strong>软中断通过 <code>int</code> 指令调用，如 <code>int 0x80</code></strong> 。</p>
+<p><strong><font color='gree'>陷阱(trap)</font></strong> ：陷阱是软件<u>主动</u>发起的中断，并不是某种内部错误。<strong><font color='red'>陷阱是实现系统 API 函数调用的手段</font></strong> 。<strong>陷阱通过 <code>int</code> 指令调用，如 <code>int 0x80</code></strong> 。</p>
 <blockquote>
-<p>在 Linux 中，使用了一个，也是唯一的一个软中断，就是 int 0x80 系统调用。</p>
+<p>在 Linux 中，使用了一个，也是唯一的一个 trap，就是 int 0x80 系统调用。</p>
 </blockquote>
 </li>
 <li>
@@ -210,18 +210,18 @@
 </li>
 </ol>
 <blockquote>
-<p>顺便提一下常见的两个<u>陷入</u>：</p>
+<p>顺便提一下常见的两个<u>陷阱</u>：</p>
 <ol>
 <li>into：中断溢出指令，触发 4 号中断。是否能触发还要看 eflags 寄存器中的 OF 位是否为 1，若不为 1，则直接无视。</li>
 <li>int3：调试断点指令，触发 3 号中断。注意是 int3 而非 int 3，这两者不同。</li>
 </ol>
-<p>需要注意的是，into 与 int3 指令经常被划为异常，实际上它们是陷入，原因下面阐述。</p>
+<p>需要注意的是，into 与 int3 指令经常被划为异常，实际上它们是陷阱，原因下面阐述。</p>
 </blockquote>
 </li>
 </ul>
 </li>
 </ul>
-<p>这里重点强调陷入和异常的区别：<strong><font color='red'>陷入时，会向栈中压入 EIP，该 EIP 指向触发异常的那条指令的<u>下一条指令</u> ；而异常发生时，压入的 EIP 是指向触发异常的那条指令</font></strong> ！<strong><font color='red'>因此，当从异常返回时，异常会重新执行那条指令；而陷入就不会重新执行</font></strong> 。这一点实际上也是相当重要的，比如我们熟悉的缺页异常（page fault），由于是 fault，所以当缺页异常处理完成之后，还会去尝试重新执行那条触发异常的指令（此时所缺页一般已经被加载进内存）。而上面我们谈到的 into/int3 中断执行完后并不会再执行原指令，所以它应该是 trap 而非 fault 。下面调用除零溢出来证实上面观点，见下图：<br>
+<p>这里重点强调陷阱和异常的区别：<strong><font color='red'>陷阱时，会向栈中压入 EIP，该 EIP 指向触发异常的那条指令的<u>下一条指令</u> ；而异常发生时，压入的 EIP 是指向触发异常的那条指令</font></strong> ！<strong><font color='red'>因此，当从异常返回时，异常会重新执行那条指令；而陷阱就不会重新执行</font></strong> 。这一点实际上也是相当重要的，比如我们熟悉的缺页异常（page fault），由于是 fault，所以当缺页异常处理完成之后，还会去尝试重新执行那条触发异常的指令（此时所缺页一般已经被加载进内存）。而上面我们谈到的 into/int3 中断执行完后并不会再执行原指令，所以它应该是 trap 而非 fault 。下面调用除零溢出来证实上面观点，见下图：<br>
 <img src="/2022/img/image-202211252258470191.png" alt=""><br>
 大家快看！咋们只 div 了一次，却一直循环发生除零错误，这就是因为当异常处理完毕后，还会跳转到之前那条触发异常的指令。图中还夹杂了时钟中断，后续会详解。<strong>需要说明的是，如果你手动调用异常，就不会循环跳转了</strong> ：<br>
 <img src="/2022/img/image-20221125230745566-1669431365728-6.png" alt=""></p>
@@ -233,7 +233,7 @@
 <p>另外，外中断是通过 INTR(interrupt) 和 NMI(Non Maskable Interrupt) 这两根信号线来通知 CPU 的。<strong>从 INTR 引脚收到的外中断是可屏蔽中断，由 eflags 的 IF 位决定是否接受；从 NMI 引脚收到的是不可屏蔽中断</strong> ，不可忽略。图示如下：<br>
 <img src="/2022/img/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE15-1669431351849-2.png" alt=""><br>
 需要注意的是，由于不可屏蔽中断一旦发生，就意味着局面已经无法挽回，操作系统也无能为力，所以就没必要再细分原因。因此，<strong><font color='orange'>所有不可屏蔽中断都被划入一个中断号，即 0x2</font></strong> 。</p>
-<p><strong><font color='gree'>异常和不可屏蔽中断的中断向量号由 CPU 自动提供，不能修改；可屏蔽中断的中断向量号由中断代理(8259A)提供；软中断(陷入)的中断向量号由操作系统提供</font></strong> 。<strong>CPU 为了处理并发的中断请求，规定了中断的优先权，中断优先权由高到低的顺序是： （1）除法错、溢出中断、软件中断 （2）不可屏蔽中断 （3）可屏蔽中断 （4）单步中断。</strong></p>
+<p><strong><font color='gree'>异常和不可屏蔽中断的中断向量号由 CPU 自动提供，不能修改；可屏蔽中断的中断向量号由中断代理(8259A)提供；陷阱的中断向量号由操作系统提供</font></strong> 。<strong>CPU 为了处理并发的中断请求，规定了中断的优先权，中断优先权由高到低的顺序是： （1）除法错、溢出中断、陷阱 （2）不可屏蔽中断 （3）可屏蔽中断 （4）单步中断。</strong></p>
 <h3 id="font-color-red-中断描述符表IDT-font"><font color='red'>中断描述符表IDT</font></h3>
 <p><strong>中断描述符表（Interrupt Descriptor Table，IDT）</strong> 是 <strong><u>保护模式</u></strong> 下用于储存中断程序入口地址的表。当 CPU 接收到中断时，需要用该中断的中断号去检索 IDT 中对应的描述符，描述符中储存着该中断例程的地址，接着跳到该地址处执行程序。</p>
 <blockquote>
@@ -266,17 +266,17 @@
 <li><strong>TI</strong> ：<u>仅在 IDT 为 0 时有效</u>。此位为 1 时，指向 GDT；为 0 时，指向 LDT 。</li>
 </ul>
 <p>需要重点强调的是，<strong><font color='orange'>当通过 iret/iretd 指令从中断程序返回时，CPU 并不会自动弹出错误码</font></strong> ！因此，<strong><font color='red'>对于那些有错误码的中断例程(见上文的中断图)，必须在 iret/iretd 前手动弹出错误代码</font></strong> ，否则堆栈将失衡，最终引发程序崩溃。演示如下（先别管代码）：</p>
-<div id="dplayer1" class="dplayer hexo-tag-dplayer-mark" style="margin-bottom: 20px;"></div><script>(function(){var player = new DPlayer({"container":document.getElementById("dplayer1"),"autoplay":true,"theme":"#FADFA3","loop":true,"lang":"zh-cn//语言","screenshot":true,"hotkey":true,"preload":"auto","volume":0.9,"video":{"url":"/2022/video/error_code.mp4","pic":"/2022/image/1.jpg"},"danmaku":{"id":"9E2E3368B56CD123BB4","api":"https://api.prprpr.me/dplayer/","token":"tokendemo","maximum":1000,"addition":["['https://api.prprpr.me/dplayer/v3/bilibili?aid=4157142']"]}});window.dplayers||(window.dplayers=[]);window.dplayers.push(player);})()</script>
+<div id="dplayer0" class="dplayer hexo-tag-dplayer-mark" style="margin-bottom: 20px;"></div><script>(function(){var player = new DPlayer({"container":document.getElementById("dplayer0"),"autoplay":true,"theme":"#FADFA3","loop":true,"lang":"zh-cn//语言","screenshot":true,"hotkey":true,"preload":"auto","volume":0.9,"video":{"url":"/2022/video/error_code.mp4","pic":"/2022/image/1.jpg"},"danmaku":{"id":"9E2E3368B56CD123BB4","api":"https://api.prprpr.me/dplayer/","token":"tokendemo","maximum":1000,"addition":["['https://api.prprpr.me/dplayer/v3/bilibili?aid=4157142']"]}});window.dplayers||(window.dplayers=[]);window.dplayers.push(player);})()</script>
 <p>另外，<strong><font color='orange'>对于外部异常（由 CPU 引脚触发），以及用软中断指令 int n 引发的异常，处理器不会压入错误代码，即使它原本是一个有错误代码的异常</font></strong> ！演示如下：</p>
-<div id="dplayer2" class="dplayer hexo-tag-dplayer-mark" style="margin-bottom: 20px;"></div><script>(function(){var player = new DPlayer({"container":document.getElementById("dplayer2"),"theme":"#FADFA3","lang":"zh-cn//语言","screenshot":true,"hotkey":true,"preload":"auto","volume":0.9,"video":{"url":"/2022/video/positive_intr.mp4","pic":"/2022/image/1.jpg"},"danmaku":{"id":"9E2E3368B56CD123BB4","api":"https://api.prprpr.me/dplayer/","token":"tokendemo","maximum":1000,"addition":["['https://api.prprpr.me/dplayer/v3/bilibili?aid=4157142']"]}});window.dplayers||(window.dplayers=[]);window.dplayers.push(player);})()</script>
-<p>能压入错误码的中断属于 0~32 号的异常，外部中断和陷入不会压入错误码。</p>
+<div id="dplayer1" class="dplayer hexo-tag-dplayer-mark" style="margin-bottom: 20px;"></div><script>(function(){var player = new DPlayer({"container":document.getElementById("dplayer1"),"theme":"#FADFA3","lang":"zh-cn//语言","screenshot":true,"hotkey":true,"preload":"auto","volume":0.9,"video":{"url":"/2022/video/positive_intr.mp4","pic":"/2022/image/1.jpg"},"danmaku":{"id":"9E2E3368B56CD123BB4","api":"https://api.prprpr.me/dplayer/","token":"tokendemo","maximum":1000,"addition":["['https://api.prprpr.me/dplayer/v3/bilibili?aid=4157142']"]}});window.dplayers||(window.dplayers=[]);window.dplayers.push(player);})()</script>
+<p><strong>能压入错误码的中断属于 0~32 号的异常，外部中断和陷阱不会压入错误码。</strong></p>
 <h3 id="font-color-red-中断处理及其压栈过程-font"><font color='red'>中断处理及其压栈过程</font></h3>
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/11/26/%E7%89%B9%E6%9D%83%E7%BA%A7%E5%85%A8%E9%9D%A2%E5%89%96%E6%9E%90/">特权级全面剖析</a> 中剖析了调用门的处理过程，建议读者将中断门处理和调用门处理对比阅读。</p>
 </blockquote>
 <p><strong><font color='gree'>（1）</font></strong> 发生中断，CPU 收到中断向量号，由此在 IDT 中定位到响应中断描述符。<br>
 <strong><font color='gree'>（2）</font></strong> 进行特权级检查。<strong><font color='orange'>由于中断向量号只是一个整数，所以特权级检查并不涉及 RPL</font></strong> 。分以下两种情况：<br>
-a）由陷入 <code>int n</code> ，<code>int3</code> ，<code>into</code> 引起的中断，这些中断由用户主动发起，因此进行如下检查：</p>
+a）由陷阱 <code>int n</code> ，<code>int3</code> ，<code>into</code> 引起的中断，这些中断由用户主动发起，因此进行如下检查：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">目标代码段的DPL≤CPL≤门描述符的DPL</span><br><span class="line">其中目标代码段指的是该中断门描述符中的选择子指向的代码段描述符</span><br></pre></td></tr></table></figure>
 <p>​		b）由外部设备(可屏蔽中断)和异常引起的，只作如下检查：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">目标代码段的DPL≤CPL</span><br></pre></td></tr></table></figure>
