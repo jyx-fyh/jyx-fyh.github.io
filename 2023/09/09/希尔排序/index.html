@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>希尔排序 | 极简</title><meta name="keywords" content="数据结构与算法"><meta name="author" content="极简"><meta name="copyright" content="极简"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="referrer" content="no-referrer"><meta name="description" content="文章参考：知乎-冒泡 、wiki 、chatGPT、知乎-helloCode  希尔排序是一种不稳定排序算法，最坏复杂度为 O(N^2^) ，但它是插入排序的改进版本，是基于插入排序的以下两点性质而提出改进方法的：  插入排序在对几乎已经排好序的数据操作时，效率高，即可以达到线性排序的效率 但插入排序一般来说是低效的，因为插入排序每次只能将数据移动一位，即每次只能消除一个逆序对   假设我们要从">
+<meta property="og:type" content="article">
+<meta property="og:title" content="希尔排序">
+<meta property="og:url" content="http://jyxcpp.netlify.app/2023/09/09/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/index.html">
+<meta property="og:site_name" content="极简">
+<meta property="og:description" content="文章参考：知乎-冒泡 、wiki 、chatGPT、知乎-helloCode  希尔排序是一种不稳定排序算法，最坏复杂度为 O(N^2^) ，但它是插入排序的改进版本，是基于插入排序的以下两点性质而提出改进方法的：  插入排序在对几乎已经排好序的数据操作时，效率高，即可以达到线性排序的效率 但插入排序一般来说是低效的，因为插入排序每次只能将数据移动一位，即每次只能消除一个逆序对   假设我们要从">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://jyxcpp.netlify.app/2022/img/35.jpg">
+<meta property="article:published_time" content="2023-09-09T10:49:01.000Z">
+<meta property="article:modified_time" content="2023-09-09T12:19:23.078Z">
+<meta property="article:author" content="极简">
+<meta property="article:tag" content="数据结构与算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jyxcpp.netlify.app/2022/img/35.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://jyxcpp.netlify.app/2023/09/09/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":300,"position":"top","messagePrev":"本篇文章于","messageNext":"天前发表，某些内容可能已经过时，请注意甄别。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: 极简","link":"链接: ","source":"来源: 极简","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '希尔排序',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2023-09-09 20:19:23'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- 谷歌的html标记--><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="极简" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">130</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">27</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> Comment</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/img/35.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">极简</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> Comment</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">希尔排序</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-09-09T10:49:01.000Z" title="发表于 2023-09-09 18:49:01">2023-09-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-09T12:19:23.078Z" title="更新于 2023-09-09 20:19:23">2023-09-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F/">排序</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="希尔排序"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>文章参考：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/24637339/answer/84079774">知乎-冒泡</a> 、<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F">wiki</a> 、chatGPT、<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/24637339/answer/3159556193">知乎-helloCode</a></p>
+</blockquote>
+<p>希尔排序是一种不稳定排序算法，最坏复杂度为 O(N^2^) ，但它是插入排序的改进版本，是基于插入排序的以下两点性质而提出改进方法的：</p>
+<ul>
+<li>插入排序在对几乎已经排好序的数据操作时，效率高，即可以达到线性排序的效率</li>
+<li>但插入排序一般来说是低效的，<strong><font color='orange'>因为插入排序每次只能将数据移动一位，即每次只能消除一个逆序对</font></strong></li>
+</ul>
+<blockquote>
+<p><strong><u>假设我们要从小到大排序，一个数组中取两个元素如果前面比后面大，则为一个逆序，容易看出排序的本质就是消除逆序数，可以证明对于随机数组，逆序数是O(N^2^) 的，而如果采用交换相邻元素的办法来消除逆序，每次正好只消除一个，因此必须执行O(N^2^)的交换次数，这就是为啥冒泡、选择、插入等算法只能到平方级别的原因，反过来，基于交换元素的排序要想突破这个下界，必须执行一些比较，交换相隔比较远的元素，使得一次交换能消除一个以上的逆序，希尔、快排、堆排等等算法都是交换比较远的元素，只不过规则各不同罢了。</u></strong><br>
+——引自<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/24637339/answer/84079774">知乎-冒泡</a></p>
+<p>这段总结真是醍醐灌顶！！！不过有个问题，插入排序并非交换相邻元素，为什么其复杂度仍为 O(N^2^) 呢？</p>
+</blockquote>
+<p>那么希尔排序是如何进行的呢？概括其思路： <strong>先将数组分为多个（不连续）小数组，对每个小数组排序（以尽可能多地消除逆序对），从而使大数组相对有序，最终对整个数组进行插入排序，而此时数组已经大概有序了，插入排序就能高效地进行</strong> 。看以下图解：<br>
+<img src="/2022/img/v2-e7da344ba84144f716e7e0cb87148f13_1440w.webp" alt="本图引自知乎-土豆"></p>
+<p>第一次步长为 7，那么一次交换就可能消除最多 7 个逆序对！这或许就是比插入排序更高级的原因吧。下面直接给出 C++ 描述：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> cmptor&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">shellSort</span><span class="params">(T* vec, <span class="type">int</span> len, cmptor cmp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> gap;</span><br><span class="line">    <span class="keyword">for</span> (gap = len / <span class="number">2</span>; gap &gt; <span class="number">0</span>; gap /= <span class="number">2</span>)<span class="comment">//步长每次减半</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span> ;i &lt; gap; i++) <span class="comment">//组数=步长,对每组分别排序</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//以下是插入排序</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = i + gap; j &lt; len; j += gap) </span><br><span class="line">            &#123;</span><br><span class="line">				<span class="keyword">for</span>(<span class="type">int</span> m = j; m &gt;= i; m-=gap)	</span><br><span class="line">				&#123;</span><br><span class="line">					<span class="keyword">if</span>(m-gap &gt;=<span class="number">0</span> &amp;&amp; !<span class="built_in">cmp</span>(vec[m-gap], vec[m]))<span class="comment">//这里必须检查m-gap&gt;=0</span></span><br><span class="line">						<span class="built_in">swap</span>(vec[m-gap], vec[m]);</span><br><span class="line">					<span class="keyword">else</span></span><br><span class="line">						<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><font color='orange'>步长=组数！见上示意图</font></strong></li>
+<li><strong><font color='orange'>i 相当于每组的起始下标</font></strong></li>
+<li><strong><font color='orange'>10 行后参见<a target="_blank" rel="noopener" href="https://jyx-fyh.github.io/2022/09/11/%E5%86%92%E6%B3%A1%E3%80%81%E9%80%89%E6%8B%A9%E3%80%81%E6%8F%92%E5%85%A5%E3%80%81%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/">插入排序</a></font></strong></li>
+<li><strong><font color='orange'>第 14 行务必检查下标是否越界！！！</font></strong></li>
+</ul>
+<p>另外，这里我们的步长 gap 每次递减 1/2 ，实际上这并不高效。<strong><font color='orange'>步长的选择是希尔排序的重要部分，将直接影响最终的排序效率！</font></strong> 常用步长序列有以下几种：常用的步长序列有以下几种：</p>
+<ol>
+<li>希尔原始序列：希尔最初提出的间隔序列是使用 n/2 作为初始间隔，然后每次缩小一半，直到间隔为 1 。</li>
+<li>Hibbard 序列：Hibbard 序列使用 2^k - 1 作为间隔，其中 k 从初始间隔递减到 1 。例如，对于数组长度为 n 的序列，Hibbard 序列为1, 3, 7, 15, …, 2^k - 1。</li>
+<li>Sedgewick 序列：Sedgewick 序列是由 Robert Sedgewick 提出的一种间隔序列。它结合了希尔原始序列和 Hibbard 序列的优点，并且在实践中表现良好。Sedgewick 序列的具体定义较为复杂，可以参考相关文献进行了解。</li>
+</ol>
+<p><strong>优点</strong></p>
+<ol>
+<li>相对于传统的插入排序，希尔排序通过将元素分组进行排序，减少了逆序对的数量，从而加快了排序过程。</li>
+<li>希尔排序是原地排序算法，只需在原始数组上进行元素的交换和移动，不需要额外的辅助空间。</li>
+</ol>
+<p><strong>缺点</strong></p>
+<ol>
+<li>希尔排序的最坏情况时间复杂度并不稳定，通常在 O(N^2^) 到 O(NlogN) 之间。虽然平均情况下性能较好，但在某些特定情况下，性能可能不如其他高级排序算法。</li>
+<li>步长序列的选择对性能产生影响，选择不当可能导致排序效率下降。</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app">极简</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://jyxcpp.netlify.app/2023/09/09/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/">http://jyxcpp.netlify.app/2023/09/09/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://jyxcpp.netlify.app" target="_blank">极简</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a></div><div class="post_share"><div class="social-share" data-image="/2022/img/35.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/09/07/%E5%85%A5%E5%9D%91vim/"><img class="next-cover" src="/2022/img/45.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">入坑vim</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/06/18/kruskal%E7%AE%97%E6%B3%95%E5%89%96%E6%9E%90/" title="kruskal算法剖析"><img class="cover" src="/2022/img/9.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-18</div><div class="title">kruskal算法剖析</div></div></a></div><div><a href="/2022/06/19/%E4%BA%8C%E5%8F%89%E6%8E%92%E5%BA%8F%E6%A0%91%E7%9A%84%E6%93%8D%E4%BD%9C/" title="二叉排序树的操作"><img class="cover" src="/2022/img/13.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-19</div><div class="title">二叉排序树的操作</div></div></a></div><div><a href="/2022/06/19/%E5%85%AB%E7%9A%87%E5%90%8E%E5%9B%9E%E6%BA%AF%E7%AE%97%E6%B3%95/" title="回溯法一:八皇后回溯"><img class="cover" src="/img/11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-19</div><div class="title">回溯法一:八皇后回溯</div></div></a></div><div><a href="/2022/09/11/%E5%86%92%E6%B3%A1%E3%80%81%E9%80%89%E6%8B%A9%E3%80%81%E6%8F%92%E5%85%A5%E3%80%81%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/" title="冒泡、选择、插入排序"><img class="cover" src="/2022/img/15.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-11</div><div class="title">冒泡、选择、插入排序</div></div></a></div><div><a href="/2022/09/05/%E5%88%9D%E8%AF%86%E5%A4%8D%E6%9D%82%E5%BA%A6%E4%B8%8E%E5%AF%B9%E6%95%B0%E5%99%A8/" title="初识复杂度与对数器"><img class="cover" src="/2022/img/1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-05</div><div class="title">初识复杂度与对数器</div></div></a></div><div><a href="/2022/09/23/%E5%88%9D%E8%AF%86%E6%AF%94%E8%BE%83%E5%99%A8/" title="比较器与仿函数"><img class="cover" src="/2022/img/28.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-23</div><div class="title">比较器与仿函数</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">极简</div><div class="author-info__description">轩的个人博客</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">130</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">27</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/jyxcpp"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/jyxcpp" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1572676601@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/09/09/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/" title="希尔排序"><img src="/2022/img/35.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="希尔排序"/></a><div class="content"><a class="title" href="/2023/09/09/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F/" title="希尔排序">希尔排序</a><time datetime="2023-09-09T10:49:01.000Z" title="发表于 2023-09-09 18:49:01">2023-09-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/09/07/%E5%85%A5%E5%9D%91vim/" title="入坑vim"><img src="/2022/img/45.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="入坑vim"/></a><div class="content"><a class="title" href="/2023/09/07/%E5%85%A5%E5%9D%91vim/" title="入坑vim">入坑vim</a><time datetime="2023-09-07T08:10:10.000Z" title="发表于 2023-09-07 16:10:10">2023-09-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/09/05/%E5%90%91%E6%A8%A1%E6%9D%BF%E5%8F%82%E6%95%B0%E4%BC%A0%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF/" title="C++模板问题小记"><img src="/2022/img/10.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="C++模板问题小记"/></a><div class="content"><a class="title" href="/2023/09/05/%E5%90%91%E6%A8%A1%E6%9D%BF%E5%8F%82%E6%95%B0%E4%BC%A0%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF/" title="C++模板问题小记">C++模板问题小记</a><time datetime="2023-09-05T08:22:19.000Z" title="发表于 2023-09-05 16:22:19">2023-09-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/07/22/23%E5%A4%A9%E8%8B%B1%E8%AF%AD%E8%83%8C%E8%AF%B5/" title="23天英语背诵"><img src="/2022/img/50.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="23天英语背诵"/></a><div class="content"><a class="title" href="/2023/07/22/23%E5%A4%A9%E8%8B%B1%E8%AF%AD%E8%83%8C%E8%AF%B5/" title="23天英语背诵">23天英语背诵</a><time datetime="2023-07-22T10:39:08.000Z" title="发表于 2023-07-22 18:39:08">2023-07-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/20/gdb%E8%B0%83%E8%AF%95-%E5%9F%BA%E7%A1%80/" title="gdb调试-基础"><img src="/2022/img/17.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="gdb调试-基础"/></a><div class="content"><a class="title" href="/2023/05/20/gdb%E8%B0%83%E8%AF%95-%E5%9F%BA%E7%A1%80/" title="gdb调试-基础">gdb调试-基础</a><time datetime="2023-05-20T06:49:17.000Z" title="发表于 2023-05-20 14:49:17">2023-05-20</time></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(to right bottom, rgb(0, 255, 240), rgb(92, 159, 247) 40%, rgb(211, 34, 255) 80%);"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By 极简</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,welcome to my blog.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ppICFLHVi3M0o7XY5Cntsens-gzGzoHsz',
+      appKey: '6qgu3NQ0HfB3CGG9ruP46nAm',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
